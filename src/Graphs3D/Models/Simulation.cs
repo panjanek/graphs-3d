@@ -56,6 +56,7 @@ namespace Graphs3D.Models
             {
                 edges[i].a = (uint)rnd.Next(0, config.nodesCount);
                 edges[i].b = (uint)rnd.Next(0, config.nodesCount);
+                edges[i].restLength = 10;
             }
         }
 

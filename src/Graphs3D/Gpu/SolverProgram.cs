@@ -24,11 +24,11 @@ namespace Graphs3D.Gpu
 
         private int uboConfig;
 
-        private int edgesBuffer;
+        public int edgesBuffer;
 
-        private int pointsBufferA;
+        public int pointsBufferA;
 
-        private int pointsBufferB;
+        public int pointsBufferB;
 
         private int trackingBuffer;
 
@@ -140,7 +140,11 @@ namespace Graphs3D.Gpu
 
             GL.UseProgram(solvingProgram);
             GL.DispatchCompute(dispatchGroupsX, 1, 1);
-            GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+            GL.MemoryBarrier(
+                MemoryBarrierFlags.ShaderStorageBarrierBit |
+                MemoryBarrierFlags.VertexAttribArrayBarrierBit |
+                MemoryBarrierFlags.BufferUpdateBarrierBit
+            );
 
             (pointsBufferA, pointsBufferB) = (pointsBufferB, pointsBufferA);
         }

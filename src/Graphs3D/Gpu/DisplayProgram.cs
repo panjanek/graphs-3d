@@ -31,6 +31,8 @@ namespace Graphs3D.Gpu
 
         private int quadEbo;
 
+        private int edgesVAO;
+
         private int edgesProgram;
 
         private int projEdgesLocation;
@@ -68,6 +70,7 @@ namespace Graphs3D.Gpu
             quadVao = GL.GenVertexArray();
             quadVbo = GL.GenBuffer();
             quadEbo = GL.GenBuffer();
+            edgesVAO = GL.GenVertexArray();
 
             GL.BindVertexArray(quadVao);
 
@@ -95,7 +98,7 @@ namespace Graphs3D.Gpu
 
         }
 
-        public void Run(Matrix4 projectionMatrix, int particlesCount, float particleSize, Vector2 viewportSize, Matrix4 view, Vector4 trackedPos, int edgesCount)
+        public void Run(int nodesBuffer, int edgesBuffer, Matrix4 projectionMatrix, int particlesCount, float particleSize, Vector2 viewportSize, Matrix4 view, Vector4 trackedPos, int edgesCount)
         {
             GL.Clear(
                 ClearBufferMask.ColorBufferBit |
@@ -103,8 +106,9 @@ namespace Graphs3D.Gpu
             );
 
             GL.UseProgram(nodesProgram);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 2, nodesBuffer);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 3, edgesBuffer);
             GL.BindVertexArray(quadVao);
-
             GL.UniformMatrix4(projNodesLocation, false, ref projectionMatrix);
             GL.Uniform1(particleSizeLocation, particleSize);
             GL.Uniform2(viewportSizeLocation, viewportSize);
@@ -119,18 +123,17 @@ namespace Graphs3D.Gpu
                 particlesCount * 1
             );
 
+
             GL.UseProgram(edgesProgram);
-            GL.UniformMatrix4(projEdgesLocation, false, ref projectionMatrix);
-            GL.LineWidth(1.5f);
-            GL.DrawElements(
-                PrimitiveType.Lines,
-                edgesCount,
-                DrawElementsType.UnsignedInt,
-                0
-            );
-
-
-
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 2, nodesBuffer);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 3, edgesBuffer);
+            GL.BindVertexArray(edgesVAO);
+            var projection = view * projectionMatrix;
+            GL.UniformMatrix4(projEdgesLocation, false, ref projection);
+            GL.Enable(EnableCap.LineSmooth);
+            GL.Hint(HintTarget.LineSmoothHint, HintMode.Nicest);
+            GL.LineWidth(1.2f);
+            GL.DrawArrays(PrimitiveType.Lines, 0, edgesCount * 2);
         }
     }
 }

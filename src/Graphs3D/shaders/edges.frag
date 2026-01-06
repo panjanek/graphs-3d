@@ -7,12 +7,13 @@ out vec4 FragColor;
 
 //uniform float uFogNear;
 //uniform float uFogFar;
-uniform vec3 uBaseColor;
+//uniform vec3 uBaseColor;
 
 void main()
 {
     float uFogNear = 5.0;
     float uFogFar = 1000;
+    vec3 uBaseColor = vec3(1,1,1);
 
     float fog = clamp((uFogFar - vDepth) / (uFogFar - uFogNear), 0.0, 1.0);
 
@@ -25,4 +26,6 @@ void main()
 
     vec3 color = mix(uBaseColor, stretchColor, 0.6);
     FragColor = vec4(color * fog, fog);
+
+    FragColor = vec4(1,1,1,1);
 }
