@@ -118,17 +118,72 @@ vec3 repulsion_all(uint idx, vec3 pos, float strength)
     return force;
 }
 
+vec3 repulsion_level4(uint idx, vec3 pos, float strength, float hopDecay)
+{
+    vec3 force = vec3(0.0);
+    uint start1 = neighboursStart[idx];
+    uint count1 = neighboursCount[idx];
+
+    // -------- depth 1 --------
+    for (uint i = 0; i < count1; i++)
+    {
+        uint n1 = neighbours[start1 + i];
+        vec3 d1 = pos - inNodes[n1].position.xyz;
+        force += repulsion_single(d1, strength);
+    
+        // -------- depth 2 --------
+        uint start2 = neighboursStart[n1];
+        uint count2 = neighboursCount[n1];
+
+        for (uint j = 0; j < count2; j++)
+        {
+            uint n2 = neighbours[start2 + j];
+            if (n2 == idx) continue;
+
+            vec3 d2 = pos - inNodes[n2].position.xyz;
+            force += repulsion_single(d2, strength * hopDecay);
+
+            // -------- depth 3 --------
+            uint start3 = neighboursStart[n2];
+            uint count3 = neighboursCount[n2];
+
+            for (uint k = 0; k < count3; k++)
+            {
+                uint n3 = neighbours[start3 + k];
+                if (n3 == idx) continue;
+
+                vec3 d3 = pos - inNodes[n3].position.xyz;
+                force += repulsion_single(d3, strength * hopDecay * hopDecay);
+
+                // -------- depth 4 --------
+                uint start4 = neighboursStart[n3];
+                uint count4 = neighboursCount[n3];
+
+                for (uint l = 0; l < count4; l++)
+                {
+                    uint n4 = neighbours[start4 + l];
+                    if (n4 == idx) continue;
+
+                    vec3 d4 = pos - inNodes[n4].position.xyz;
+                    force += repulsion_single(d4, strength * hopDecay * hopDecay * hopDecay);
+                }
+            }
+        }
+    }
+
+    return force;
+}
+
 
 void update_one(uint idx)
 {
-    float uSpringK = 4.0;
-    float uRepulsionK = 200;
+    float uSpringK = 40.0;
+    float uRepulsionK = 2000;
     float uDamping = 0.95;
     float uMaxStep = 3;
-    float epsilon = 0.1;
-    float maxSpringForce = 100.0;
+    float maxSpringForce = 500.0;
 
-    float uHopDecay = 0.25;
+    float uHopDecay = 1;
 
     Node p = inNodes[idx];
     
@@ -150,7 +205,8 @@ void update_one(uint idx)
     }
 
     // Repulsion
-    force += repulsion_all(idx, pos, uRepulsionK);
+    //force += repulsion_all(idx, pos, uRepulsionK);
+    force += repulsion_level4(idx, pos, uRepulsionK, uHopDecay);
 
     // Integrate
     vel += force * config.dt;
