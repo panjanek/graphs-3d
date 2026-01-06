@@ -42,7 +42,7 @@ namespace Graphs3D
             app = new AppContext();
             app.mainWindow = this;
             app.simulation = new Simulation();
-            app.simulation.StartSimulation(500, 100);
+            app.simulation.StartSimulation(100, 100);
             app.renderer = new OpenGlRenderer(placeholder, app);
             app.configWindow = new ConfigWindow(app);
             app.configWindow.Show();

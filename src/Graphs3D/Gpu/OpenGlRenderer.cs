@@ -146,18 +146,18 @@ namespace Graphs3D.Gpu
             lock (app.simulation)
             {
                 //DebugUtil.DebugSolver(true, app.simulation.config, solverProgram);
-                solverProgram.DownloadParticles(app.simulation.particles);
+                solverProgram.DownloadParticles(app.simulation.nodes);
                 int pixelRadius = 5;
                 int? selectedIdx = null;
                 float minDepth = app.simulation.config.fieldSize * 10;
                 var projectionMatrix = GetCombinedProjectionMatrix();
-                for (int idx = 0; idx < app.simulation.particles.Length; idx++)
+                for (int idx = 0; idx < app.simulation.nodes.Length; idx++)
                 {
                     for (int x = -1; x <= 1; x++)
                         for (int y = -1; y <= 1; y++)
                             for (int z = -1; z <= 1; z++)
                             {
-                                var particlePosition = app.simulation.particles[idx].position;
+                                var particlePosition = app.simulation.nodes[idx].position;
                                 particlePosition.X += x * app.simulation.config.fieldSize;
                                 particlePosition.Y += y * app.simulation.config.fieldSize;
                                 particlePosition.Z += z * app.simulation.config.fieldSize;
@@ -244,12 +244,12 @@ namespace Graphs3D.Gpu
         public void ResetOrigin()
         {
             StopTracking();
-            center = new Vector4(app.simulation.config.fieldSize / 2, app.simulation.config.fieldSize / 2, app.simulation.config.fieldSize / 2, 1.0f);
+            center = new Vector4(app.simulation.config.fieldSize / 2, app.simulation.config.fieldSize / 2, -1.5f*app.simulation.config.fieldSize, 1.0f);
             xzAngle = 0;
             yAngle = 0;
         }
 
-        public void UploadParticleData() => solverProgram.UploadParticles(app.simulation.particles, app.simulation.edges);
+        public void UploadParticleData() => solverProgram.UploadParticles(app.simulation.nodes, app.simulation.edges);
      
         public void StartTracking(int idx)
         {
