@@ -41,7 +41,7 @@ namespace Graphs3D.Models
         {
             config.speciesCount = 1;
             config.fieldSize = size;
-            config.particleCount = particlesCount;
+            config.nodesCount = particlesCount;
             InitializeParticles(particlesCount);
             InitializeRandomEdges();
             var rnd = new Random(seed);
@@ -50,12 +50,12 @@ namespace Graphs3D.Models
         private void InitializeRandomEdges()
         {
             var rnd = new Random(seed);
-            config.edgesCount = config.particleCount / 2;
+            config.edgesCount = config.nodesCount / 2;
             edges = new Edge[config.edgesCount];
             for(int i=0; i< config.edgesCount; i++)
             {
-                edges[i].a = (uint)rnd.Next(0, config.particleCount);
-                edges[i].b = (uint)rnd.Next(0, config.particleCount);
+                edges[i].a = (uint)rnd.Next(0, config.nodesCount);
+                edges[i].b = (uint)rnd.Next(0, config.nodesCount);
             }
         }
 

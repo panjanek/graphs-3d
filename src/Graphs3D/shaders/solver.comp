@@ -5,7 +5,7 @@
 layout(local_size_x = {LocalSizeX}) in;
 
 struct ShaderConfig {
-    int particleCount;
+    int nodesCount;
     float dt;
     float sigma2;
     uint edgesCount;
@@ -52,12 +52,12 @@ layout(std140, binding = 0) uniform ConfigBuffer {
 
 layout(std430, binding = 1) readonly buffer InputBuffer
 {
-    Node inParticles[];
+    Node inNodes[];
 };
 
 layout(std430, binding = 2) writeonly buffer OutputBuffer
 {
-    Node outParticles[];
+    Node outNodes[];
 };
 
 layout(std430, binding = 3) writeonly buffer EdgesBuffer
@@ -85,7 +85,7 @@ layout(std430, binding = 8) buffer ParticleIndices {
 
 void update_one(uint idx)
 {
-    Node p = inParticles[idx];
+    Node p = inNodes[idx];
     
     vec4 acc = vec4(0.0);
     vec4 vel = p.velocity;
@@ -94,7 +94,7 @@ void update_one(uint idx)
 
     pos += vel * config.dt;
 
-    //prepare updated particle struct
+    //prepare updated node struct
     p.position = pos;
     p.velocity = vel;
     p.flags = 0;
@@ -104,13 +104,13 @@ void update_one(uint idx)
         tracked = p;
     }
 
-    outParticles[idx] = p;
+    outNodes[idx] = p;
 }
 
 void main()
 {
     uint idx = gl_GlobalInvocationID.x;
-    if (idx >=0 && idx < config.particleCount) 
+    if (idx >=0 && idx < config.nodesCount) 
     {
         update_one(idx);
     }

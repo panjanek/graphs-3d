@@ -285,7 +285,7 @@ namespace Graphs3D.Gpu
             FollowTrackedParticle();
             var trackedPos = TrackedIdx.HasValue ? solverProgram.GetTrackedParticle().position : new Vector4(-1000000, 0, 0, 0);
             displayProgram.Run(GetProjectionMatrix(),
-                app.simulation.config.particleCount,
+                app.simulation.config.nodesCount,
                 app.simulation.particleSize,
                 new Vector2(glControl.Width, glControl.Height),
                 GetViewMatrix(),

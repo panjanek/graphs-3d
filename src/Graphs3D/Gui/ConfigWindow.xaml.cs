@@ -47,13 +47,13 @@ namespace Graphs3D.Gui
             backButton.Click += (s, e) => app.renderer.ResetOrigin();
             restartButton.Click += (s, e) => 
             { 
-                app.simulation.InitializeParticles(app.simulation.config.particleCount);
+                app.simulation.InitializeParticles(app.simulation.config.nodesCount);
                 app.renderer.UploadParticleData();
             };
 
             randomButton.Click += (s, e) =>
             {
-                app.simulation.InitializeParticles(app.simulation.config.particleCount);
+                app.simulation.InitializeParticles(app.simulation.config.nodesCount);
                 app.simulation.seed++;
                 app.renderer.UploadParticleData();
                 app.renderer.ResetOrigin();
@@ -123,7 +123,7 @@ namespace Graphs3D.Gui
                     var newParticleCount = int.Parse(newParticleCountStr);
                     var sizeSplit = newSizeStr.Split('x');
                     var newSize = int.Parse(sizeSplit[0]);
-                    if (newParticleCount != app.simulation.config.particleCount ||
+                    if (newParticleCount != app.simulation.config.nodesCount ||
                         newSize != app.simulation.config.fieldSize)
                     {
                         app.simulation.StartSimulation(newParticleCount, newSize);
@@ -167,7 +167,7 @@ namespace Graphs3D.Gui
         {
             updating = true;
             WpfUtil.SetComboStringSelection(fieldSize, $"{app.simulation.config.fieldSize}x{app.simulation.config.fieldSize}x{app.simulation.config.fieldSize}");
-            WpfUtil.SetComboStringSelection(particlesCount, app.simulation.config.particleCount.ToString());
+            WpfUtil.SetComboStringSelection(particlesCount, app.simulation.config.nodesCount.ToString());
             foreach (var slider in WpfUtil.FindVisualChildren<Slider>(this))
             {
                 var tag = WpfUtil.GetTagAsString(slider);

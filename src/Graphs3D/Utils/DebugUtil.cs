@@ -27,23 +27,23 @@ namespace Graphs3D.Utils
 
         public static void DebugSolver(bool bufferB, ShaderConfig config, SolverProgram solver)
         {
-            if (particles == null || particles.Length != config.particleCount)
+            if (particles == null || particles.Length != config.nodesCount)
             {
-                particles = new Node[config.particleCount];
-                particleIndices = new int[config.particleCount];
+                particles = new Node[config.nodesCount];
+                particleIndices = new int[config.nodesCount];
             }
 
             solver.DownloadParticles(particles, bufferB);
             var counts = solver.cellCounts;
             var offsets = solver.cellOffsets;
-            solver.DownloadIntBuffer(particleIndices, solver.particleIndicesBuffer, config.particleCount);
+            solver.DownloadIntBuffer(particleIndices, solver.particleIndicesBuffer, config.nodesCount);
 
             var cellSize = config.cellSize;
 
             List<int>[] expected = new List<int>[config.totalCellCount];
             for(int i=0; i<expected.Length; i++)
                 expected[i] = new List<int>();
-            for (int idx = 0; idx<config.particleCount; idx++)
+            for (int idx = 0; idx<config.nodesCount; idx++)
             {
                 var p = particles[idx];
                 var gridX = p.cellIndex % config.cellCount;

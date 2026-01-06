@@ -15,7 +15,7 @@ namespace Graphs3D.Models
 
         }
 
-        [FieldOffset(0)] public int particleCount = 0;
+        [FieldOffset(0)] public int nodesCount = 0;
 
         [FieldOffset(4)] public float dt = 0.05f;
 

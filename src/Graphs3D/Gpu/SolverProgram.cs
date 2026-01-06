@@ -74,7 +74,7 @@ namespace Graphs3D.Gpu
 
         public void Run(ref ShaderConfig config)
         {
-            PrepareBuffers(config.particleCount, config.totalCellCount, config.edgesCount);
+            PrepareBuffers(config.nodesCount, config.totalCellCount, config.edgesCount);
             int dispatchGroupsX = (currentParticlesCount + ShaderUtil.LocalSizeX - 1) / ShaderUtil.LocalSizeX;
             if (dispatchGroupsX > maxGroupsX)
                 dispatchGroupsX = maxGroupsX;           

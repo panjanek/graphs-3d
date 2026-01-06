@@ -5,7 +5,7 @@
 layout(local_size_x = {LocalSizeX}) in;
 
 struct ShaderConfig {
-    int particleCount;
+    int nodesCount;
     float dt;
     float sigma2;
     uint edgesCount;
@@ -23,7 +23,7 @@ struct ShaderConfig {
     ivec4 disabled[4];
 };
 
-struct Particle
+struct Node
 {
    vec4 position;
    vec4 velocity;
@@ -39,7 +39,7 @@ layout(std140, binding = 0) uniform ConfigBuffer {
 
 layout(std430, binding = 1) buffer InputBuffer
 {
-    Particle particles[];
+    Node particles[];
 };
 
 layout(std430, binding = 6) buffer CellCount {
@@ -66,7 +66,7 @@ int assign_cell(vec4 pos)
 void main()
 {
     uint idx = gl_GlobalInvocationID.x;
-    if (idx >=0 && idx < config.particleCount) 
+    if (idx >=0 && idx < config.nodesCount) 
     {
         int cellIndex = assign_cell(particles[idx].position);
         particles[idx].cellIndex = cellIndex;

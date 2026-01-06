@@ -21,7 +21,7 @@ namespace Graphs3D.Models
         {
             var str = File.ReadAllText(fn);
             var sim = JsonSerializer.Deserialize<Simulation>(str, serializerOptions);
-            sim.InitializeParticles(sim.config.particleCount);
+            sim.InitializeParticles(sim.config.nodesCount);
             return sim;
         }
     }
