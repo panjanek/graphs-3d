@@ -4,10 +4,11 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using OpenTK.Mathematics;
 
 namespace Graphs3D.Models
 {
-    [StructLayout(LayoutKind.Explicit, Size = 104)]
+    [StructLayout(LayoutKind.Explicit, Size = 96)]
     public unsafe struct ShaderConfig
     {
         public ShaderConfig()
@@ -47,6 +48,8 @@ namespace Graphs3D.Models
 
         [FieldOffset(60)] int _pad1;
 
-        [FieldOffset(64)] public fixed int disabled[Simulation.MaxSpeciesCount];
+        [FieldOffset(64)] public Vector4 minBound;
+
+        [FieldOffset(80)] public Vector4 maxBound;
     }
 }

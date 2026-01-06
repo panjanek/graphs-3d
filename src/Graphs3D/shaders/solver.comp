@@ -20,7 +20,8 @@ struct ShaderConfig {
     float amp;
     int cellCount;
     int totalCellCount;
-    ivec4 disabled[4];
+    vec4 minBounds;
+    vec4 maxBounds;
 };
 
 struct Node
@@ -75,7 +76,7 @@ layout(std430, binding = 7) buffer CellOffsets {
 };
 
 layout(std430, binding = 8) buffer ParticleIndices {
-    uint particleIndices[];
+    uint nodesIndices[];
 };
 
 layout(std430, binding = 10) buffer Neighbors {

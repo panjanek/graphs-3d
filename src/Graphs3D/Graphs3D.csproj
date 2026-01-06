@@ -19,6 +19,7 @@
     <EmbeddedResource Include="shaders\edges.vert" />
     <EmbeddedResource Include="shaders\nodes.frag" />
     <EmbeddedResource Include="shaders\nodes.vert" />
+    <EmbeddedResource Include="shaders\tiling_bounds.comp" />
     <EmbeddedResource Include="shaders\tiling_bin.comp" />
     <EmbeddedResource Include="shaders\tiling_count.comp" />
     <EmbeddedResource Include="shaders\solver.comp" />

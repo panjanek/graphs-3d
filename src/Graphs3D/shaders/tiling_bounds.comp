@@ -40,28 +40,24 @@ layout(std140, binding = 0) uniform ConfigBuffer {
 
 layout(std430, binding = 1) buffer InputBuffer
 {
-    Node particles[];
+    Node nodes[];
 };
 
-layout(std430, binding = 6) buffer CellCount {
-    uint cellCount[];
+layout(std430, binding = 4) buffer Bounds {
+    uvec4 minBound;
+    uvec4 maxBound;
 };
 
-
-int wrapCell(int c)
+uint floatToOrderedUint(float f)
 {
-    return (c % config.cellCount + config.cellCount) % config.cellCount;
+    uint u = floatBitsToUint(f);
+    return (u & 0x80000000u) != 0u ? ~u : (u | 0x80000000u);
 }
 
-int assign_cell(vec4 pos)
+float orderedUintToFloat(uint u)
 {
-    ivec4 cell = ivec4(pos / config.cellSize);
-    cell.x = wrapCell(cell.x);
-    cell.y = wrapCell(cell.y);
-    cell.z = wrapCell(cell.z);
-    return cell.x +
-           cell.y * config.cellCount +
-           cell.z * config.cellCount * config.cellCount;
+    u = (u & 0x80000000u) != 0u ? (u & 0x7FFFFFFFu) : ~u;
+    return uintBitsToFloat(u);
 }
 
 void main()
@@ -69,8 +65,16 @@ void main()
     uint idx = gl_GlobalInvocationID.x;
     if (idx >=0 && idx < config.nodesCount) 
     {
-        int cellIndex = assign_cell(particles[idx].position);
-        particles[idx].cellIndex = cellIndex;
-        atomicAdd(cellCount[cellIndex], 1);
+        uint ox = floatToOrderedUint(nodes[idx].position.x);
+        uint oy = floatToOrderedUint(nodes[idx].position.y);
+        uint oz = floatToOrderedUint(nodes[idx].position.z);
+
+        atomicMin(minBound.x, ox);
+        atomicMin(minBound.y, oy);
+        atomicMin(minBound.z, oz);
+
+        atomicMax(maxBound.x, ox);
+        atomicMax(maxBound.y, oy);
+        atomicMax(maxBound.z, oz);
     }
 }

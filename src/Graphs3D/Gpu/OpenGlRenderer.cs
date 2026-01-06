@@ -127,7 +127,7 @@ namespace Graphs3D.Gpu
                         var translation = p1 - p0;
                         solverProgram.DownloadNodes(app.simulation.nodes);
                         app.simulation.nodes[dragged.Value].position += new Vector4(translation, 0);
-                        solverProgram.UploadGraph(app.simulation.nodes, app.simulation.edges);
+                        solverProgram.UploadGraph(ref app.simulation.config, app.simulation.nodes, app.simulation.edges);
                     }
                     else
                     {
@@ -276,7 +276,7 @@ namespace Graphs3D.Gpu
             yAngle = 0;
         }
 
-        public void UploadGraph() => solverProgram.UploadGraph(app.simulation.nodes, app.simulation.edges);
+        public void UploadGraph() => solverProgram.UploadGraph(ref app.simulation.config, app.simulation.nodes, app.simulation.edges);
 
         public void DownloadNodes() => solverProgram.DownloadNodes(app.simulation.nodes);
 
@@ -337,7 +337,7 @@ namespace Graphs3D.Gpu
             if (!Paused)
             {
                 app.simulation.config.trackedIdx = TrackedIdx ?? -1;
-                solverProgram.Run(ref app.simulation.config);
+                solverProgram.Run(ref app.simulation.config, frameCounter%100 == 0);
             }
 
             glControl.Invalidate();

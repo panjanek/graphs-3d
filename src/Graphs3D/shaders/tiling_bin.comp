@@ -20,7 +20,8 @@ struct ShaderConfig {
     float amp;
     int cellCount;
     int totalCellCount;
-    ivec4 disabled[4];
+    vec4 minBounds;
+    vec4 maxBounds;
 };
 
 struct Node
