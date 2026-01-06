@@ -78,6 +78,22 @@ layout(std430, binding = 8) buffer ParticleIndices {
     uint particleIndices[];
 };
 
+layout(std430, binding = 10) buffer Neighbors {
+    uint neighbours[];
+};
+
+layout(std430, binding = 11) buffer NeighborsStart {
+    uint neighboursStart[];
+};
+
+layout(std430, binding = 12) buffer NeighborsCount {
+    uint neighboursCount[];
+};
+
+layout(std430, binding = 13) buffer RestLengths {
+    float restLengths[];
+};
+
 
 void update_one(uint idx)
 {

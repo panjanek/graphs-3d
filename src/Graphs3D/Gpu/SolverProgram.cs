@@ -38,9 +38,17 @@ namespace Graphs3D.Gpu
 
         public int cellOffsetBuffer2;
 
-        public int particleIndicesBuffer;
+        public int nodeIndicesBuffer;
 
-        private int currentParticlesCount;
+        public int neighboursBuffer;
+
+        public int neighboursStartBuffer;
+
+        public int neighboursCountBuffer;
+
+        public int restLengthsBuffer;
+
+        private int currentNodesCount;
 
         private int currentEdgesCount;
 
@@ -51,6 +59,14 @@ namespace Graphs3D.Gpu
         public int[] cellCounts;
 
         public int[] cellOffsets;
+
+        public int[] neighbors;
+
+        public int[] neighborsStart;
+
+        public int[] neighborsCount;
+
+        public int[] restLengths;
 
         private Node trackedParticle;
 
@@ -75,7 +91,7 @@ namespace Graphs3D.Gpu
         public void Run(ref ShaderConfig config)
         {
             PrepareBuffers(config.nodesCount, config.totalCellCount, config.edgesCount);
-            int dispatchGroupsX = (currentParticlesCount + ShaderUtil.LocalSizeX - 1) / ShaderUtil.LocalSizeX;
+            int dispatchGroupsX = (currentNodesCount + ShaderUtil.LocalSizeX - 1) / ShaderUtil.LocalSizeX;
             if (dispatchGroupsX > maxGroupsX)
                 dispatchGroupsX = maxGroupsX;           
 
@@ -134,9 +150,15 @@ namespace Graphs3D.Gpu
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 2, pointsBufferB);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 3, edgesBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 5, trackingBuffer);
+            //bins buffer
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 6, cellCountBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 7, cellOffsetBuffer2);
-            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 8, particleIndicesBuffer);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 8, nodeIndicesBuffer);
+            //neighbours buffers
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 10, neighboursBuffer);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 11, neighboursStartBuffer);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 12, neighboursCountBuffer);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 13, restLengthsBuffer);
 
             GL.UseProgram(solvingProgram);
             GL.DispatchCompute(dispatchGroupsX, 1, 1);
@@ -209,14 +231,17 @@ namespace Graphs3D.Gpu
             GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, size * Marshal.SizeOf<int>(), buffer);
         }
 
-        private void PrepareBuffers(int particlesCount, int totalCellsCount, int edgesCount)
+        private void PrepareBuffers(int nodesCount, int totalCellsCount, int edgesCount)
         {
-            if (currentParticlesCount != particlesCount)
+            if (currentNodesCount != nodesCount)
             {
-                currentParticlesCount = particlesCount;
-                CreateBuffer(ref pointsBufferA, currentParticlesCount, shaderPointStrideSize);
-                CreateBuffer(ref pointsBufferB, currentParticlesCount, shaderPointStrideSize);
-                CreateBuffer(ref particleIndicesBuffer, currentParticlesCount, Marshal.SizeOf<int>());
+                currentNodesCount = nodesCount;
+                CreateBuffer(ref pointsBufferA, currentNodesCount, shaderPointStrideSize);
+                CreateBuffer(ref pointsBufferB, currentNodesCount, shaderPointStrideSize);
+                CreateBuffer(ref nodeIndicesBuffer, currentNodesCount, Marshal.SizeOf<int>());
+                CreateBuffer(ref neighboursStartBuffer, currentNodesCount, Marshal.SizeOf<int>());
+                CreateBuffer(ref neighboursCountBuffer, currentNodesCount, Marshal.SizeOf<int>());
+
             }
 
             if (currentTotalCellsCount != totalCellsCount)
@@ -233,6 +258,9 @@ namespace Graphs3D.Gpu
             {
                 currentEdgesCount = edgesCount;
                 CreateBuffer(ref edgesBuffer, (int)edgesCount, Marshal.SizeOf<Edge>());
+                CreateBuffer(ref neighboursBuffer, (int)edgesCount * 2, Marshal.SizeOf<uint>());
+                CreateBuffer(ref restLengthsBuffer, (int)edgesCount * 2, Marshal.SizeOf<float>());
+  
             }
         }
 
