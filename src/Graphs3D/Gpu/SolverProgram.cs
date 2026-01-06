@@ -24,7 +24,7 @@ namespace Graphs3D.Gpu
 
         private int uboConfig;
 
-        private int forcesBuffer;
+        private int edgesBuffer;
 
         private int pointsBufferA;
 
@@ -35,11 +35,14 @@ namespace Graphs3D.Gpu
         public int cellCountBuffer;
 
         public int cellOffsetBuffer;
+
         public int cellOffsetBuffer2;
 
         public int particleIndicesBuffer;
 
         private int currentParticlesCount;
+
+        private int currentEdgesCount;
 
         private int currentTotalCellsCount;
 
@@ -60,7 +63,6 @@ namespace Graphs3D.Gpu
             GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, uboConfig);
 
             //constant-length buffers
-            CreateBuffer(ref forcesBuffer, Simulation.MaxSpeciesCount * Simulation.MaxSpeciesCount * Simulation.KeypointsCount, Marshal.SizeOf<Vector4>());
             CreateBuffer(ref trackingBuffer, 1, Marshal.SizeOf<Particle>());
 
             GL.GetInteger((OpenTK.Graphics.OpenGL.GetIndexedPName)All.MaxComputeWorkGroupCount, 0, out maxGroupsX);
@@ -70,18 +72,20 @@ namespace Graphs3D.Gpu
             tilingBinProgram = ShaderUtil.CompileAndLinkComputeShader("tiling_bin.comp");
         }
 
-        public void Run(ref ShaderConfig config, Vector4[] forces)
+        public void Run(ref ShaderConfig config)
         {
-            PrepareBuffers(config.particleCount, config.totalCellCount);
+            PrepareBuffers(config.particleCount, config.totalCellCount, config.edgesCount);
             int dispatchGroupsX = (currentParticlesCount + ShaderUtil.LocalSizeX - 1) / ShaderUtil.LocalSizeX;
             if (dispatchGroupsX > maxGroupsX)
                 dispatchGroupsX = maxGroupsX;           
 
+            /*
             config.cellCount = (int)Math.Floor(config.fieldSize / config.maxDist);
             config.cellSize = config.fieldSize / config.cellCount;
             config.totalCellCount = config.cellCount * config.cellCount * config.cellCount;
-            PrepareBuffers(config.particleCount, config.totalCellCount);
-
+            PrepareBuffers(config.particleCount, config.totalCellCount, config.edgesCount);
+            */
+            
             //upload config
             GL.BindBuffer(BufferTarget.UniformBuffer, uboConfig);
             GL.BufferData(BufferTarget.UniformBuffer, Marshal.SizeOf<ShaderConfig>(), ref config, BufferUsageHint.StaticDraw);
@@ -123,15 +127,11 @@ namespace Graphs3D.Gpu
             //DebugUtil.DebugSolver(false, config, this);
             */
             // ------------------------ run solver --------------------------
-            //upload forces
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, forcesBuffer);
-            GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, Marshal.SizeOf<Vector4>() * Simulation.MaxSpeciesCount * Simulation.MaxSpeciesCount * Simulation.KeypointsCount, forces);
 
             //bind ubo and buffers
             GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, uboConfig);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 1, pointsBufferA);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 2, pointsBufferB);
-            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 4, forcesBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 5, trackingBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 6, cellCountBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 7, cellOffsetBuffer2);
@@ -144,13 +144,15 @@ namespace Graphs3D.Gpu
             (pointsBufferA, pointsBufferB) = (pointsBufferB, pointsBufferA);
         }
 
-        public void UploadParticles(Particle[] particles)
+        public void UploadParticles(Particle[] particles, uint[] edges)
         {
-            PrepareBuffers(particles.Length, currentTotalCellsCount);
+            PrepareBuffers(particles.Length, currentTotalCellsCount, (uint)(edges.Length/2));
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, pointsBufferA);
             GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, particles.Length * shaderPointStrideSize, particles);
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, pointsBufferB);
             GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, particles.Length * shaderPointStrideSize, particles);
+            //GL.BindBuffer(BufferTarget.ShaderStorageBuffer, edgesBuffer);
+            //GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, edges.Length * Marshal.SizeOf<uint>(), edges);
         }
 
         public void DownloadParticles(Particle[] particles, bool bufferB = false)
@@ -202,7 +204,7 @@ namespace Graphs3D.Gpu
             GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, size * Marshal.SizeOf<int>(), buffer);
         }
 
-        private void PrepareBuffers(int particlesCount, int totalCellsCount)
+        private void PrepareBuffers(int particlesCount, int totalCellsCount, uint edgesCount)
         {
             if (currentParticlesCount != particlesCount)
             {
@@ -221,9 +223,15 @@ namespace Graphs3D.Gpu
                 cellCounts = new int[totalCellsCount];
                 cellOffsets = new int[totalCellsCount];
             }
+
+            if (currentEdgesCount != edgesCount)
+            {
+                CreateBuffer(ref edgesBuffer, (int)edgesCount, Marshal.SizeOf<uint>()*2, BufferTarget.ShaderStorageBuffer);
+                //CreateBuffer(ref edgesBuffer, (int)edgesCount, Marshal.SizeOf<uint>() * 2, BufferTarget.ElementArrayBuffer, BufferUsageHint.StaticDraw);
+            }
         }
 
-        private void CreateBuffer(ref int bufferId, int elementCount, int elementSize)
+        private void CreateBuffer(ref int bufferId, int elementCount, int elementSize, BufferTarget target = BufferTarget.ShaderStorageBuffer, BufferUsageHint hint = BufferUsageHint.DynamicDraw)
         {
             if (bufferId > 0)
             {
@@ -231,8 +239,8 @@ namespace Graphs3D.Gpu
                 bufferId = 0;
             }
             GL.GenBuffers(1, out bufferId);
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bufferId);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, elementCount * elementSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+            GL.BindBuffer(target, bufferId);
+            GL.BufferData(target, elementCount * elementSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
         }
     }
 }

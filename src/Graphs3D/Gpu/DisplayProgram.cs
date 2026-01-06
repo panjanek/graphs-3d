@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms.VisualStyles;
+using Graphs3D.Utils;
 using OpenTK.GLControl;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
-using Graphs3D.Utils;
 
 namespace Graphs3D.Gpu
 {
     public class DisplayProgram
     {
-        private int program;
+        private int nodesProgram;
 
-        private int projLocation;
+        private int projNodesLocation;
 
         private int viewportSizeLocation;
 
@@ -30,20 +31,29 @@ namespace Graphs3D.Gpu
 
         private int quadEbo;
 
+        private int edgesProgram;
+
+        private int projEdgesLocation;
+
 
         public DisplayProgram()
         {
-            program = ShaderUtil.CompileAndLinkRenderShader("display.vert", "display.frag");
-            projLocation = GL.GetUniformLocation(program, "projection");
-            if (projLocation == -1) throw new Exception("Uniform 'projection' not found. Shader optimized it out?");
-            particleSizeLocation = GL.GetUniformLocation(program, "paricleSize");
+            nodesProgram = ShaderUtil.CompileAndLinkRenderShader("nodes.vert", "nodes.frag");
+
+            projNodesLocation = GL.GetUniformLocation(nodesProgram, "projection");
+            if (projNodesLocation == -1) throw new Exception("Uniform 'projection' not found. Shader optimized it out?");
+            particleSizeLocation = GL.GetUniformLocation(nodesProgram, "paricleSize");
             if (particleSizeLocation == -1) throw new Exception("Uniform 'paricleSize' not found. Shader optimized it out?");
-            viewportSizeLocation = GL.GetUniformLocation(program, "viewportSize");
+            viewportSizeLocation = GL.GetUniformLocation(nodesProgram, "viewportSize");
             if (viewportSizeLocation == -1) throw new Exception("Uniform 'viewportSize' not found. Shader optimized it out?");
-            viewLocation = GL.GetUniformLocation(program, "view");
+            viewLocation = GL.GetUniformLocation(nodesProgram, "view");
             if (viewLocation == -1) throw new Exception("Uniform 'view' not found. Shader optimized it out?");
-            trackedPosLocation = GL.GetUniformLocation(program, "trackedPos");
+            trackedPosLocation = GL.GetUniformLocation(nodesProgram, "trackedPos");
             if (trackedPosLocation == -1) throw new Exception("Uniform 'trackedPos' not found. Shader optimized it out?");
+
+            edgesProgram = ShaderUtil.CompileAndLinkRenderShader("edges.vert", "edges.frag");
+            projEdgesLocation = GL.GetUniformLocation(edgesProgram, "projection");
+            if (projEdgesLocation == -1) throw new Exception("Uniform 'projection' not found. Shader optimized it out?");
 
             float[] quad =
                 {
@@ -85,17 +95,17 @@ namespace Graphs3D.Gpu
 
         }
 
-        public void Run(Matrix4 projectionMatrix, int particlesCount, float particleSize, Vector2 viewportSize, Matrix4 view, Vector4 trackedPos)
+        public void Run(Matrix4 projectionMatrix, int particlesCount, float particleSize, Vector2 viewportSize, Matrix4 view, Vector4 trackedPos, int edgesCount)
         {
             GL.Clear(
                 ClearBufferMask.ColorBufferBit |
                 ClearBufferMask.DepthBufferBit
             );
 
-            GL.UseProgram(program);
+            GL.UseProgram(nodesProgram);
             GL.BindVertexArray(quadVao);
 
-            GL.UniformMatrix4(projLocation, false, ref projectionMatrix);
+            GL.UniformMatrix4(projNodesLocation, false, ref projectionMatrix);
             GL.Uniform1(particleSizeLocation, particleSize);
             GL.Uniform2(viewportSizeLocation, viewportSize);
             GL.UniformMatrix4(viewLocation, false, ref view);
@@ -108,6 +118,18 @@ namespace Graphs3D.Gpu
                 IntPtr.Zero,
                 particlesCount * 1
             );
+
+            GL.UseProgram(edgesProgram);
+            GL.UniformMatrix4(projEdgesLocation, false, ref projectionMatrix);
+            GL.LineWidth(1.5f);
+            GL.DrawElements(
+                PrimitiveType.Lines,
+                edgesCount,
+                DrawElementsType.UnsignedInt,
+                0
+            );
+
+
 
         }
     }

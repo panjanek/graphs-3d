@@ -21,7 +21,7 @@ namespace Graphs3D.Models
 
         [FieldOffset(8)] public float sigma2 = 0f;
 
-        [FieldOffset(12)] public float clampVel = 0;
+        [FieldOffset(12)] public uint edgesCount = 0;
 
         [FieldOffset(16)] public float clampAcc = 0;
 

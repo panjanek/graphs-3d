@@ -249,13 +249,13 @@ namespace Graphs3D.Gpu
             yAngle = 0;
         }
 
-        public void UploadParticleData() => solverProgram.UploadParticles(app.simulation.particles);
+        public void UploadParticleData() => solverProgram.UploadParticles(app.simulation.particles, app.simulation.edges);
      
         public void StartTracking(int idx)
         {
             TrackedIdx = idx;
             app.simulation.config.trackedIdx = TrackedIdx ?? -1;
-            solverProgram.Run(ref app.simulation.config, app.simulation.forces);
+            solverProgram.Run(ref app.simulation.config);
         }
 
         public void StopTracking()
@@ -264,7 +264,7 @@ namespace Graphs3D.Gpu
             {
                 TrackedIdx = null;
                 app.simulation.config.trackedIdx = TrackedIdx ?? -1;
-                solverProgram.Run(ref app.simulation.config, app.simulation.forces);
+                solverProgram.Run(ref app.simulation.config);
             }
         }
 
@@ -289,7 +289,8 @@ namespace Graphs3D.Gpu
                 app.simulation.particleSize,
                 new Vector2(glControl.Width, glControl.Height),
                 GetViewMatrix(),
-                trackedPos);
+                trackedPos,
+                (int)app.simulation.config.edgesCount);
             glControl.SwapBuffers();
             frameCounter++;
             Capture();
@@ -304,7 +305,7 @@ namespace Graphs3D.Gpu
             if (!Paused)
             {
                 app.simulation.config.trackedIdx = TrackedIdx ?? -1;
-                solverProgram.Run(ref app.simulation.config, app.simulation.forces);
+                solverProgram.Run(ref app.simulation.config);
             }
 
             glControl.Invalidate();

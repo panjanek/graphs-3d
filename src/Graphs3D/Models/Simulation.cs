@@ -26,34 +26,15 @@ namespace Graphs3D.Models
         [JsonIgnore]
         public Particle[] particles;
 
-        [JsonIgnore]
-        public Vector4[] forces;
+        public uint[] edges;
 
         public int seed = 11;
 
         public float followDistance = 150; 
 
-        //this is for json serialization
-        public float[][] F
-        {
-            get
-            {
-                var res = new float[forces.Length][];
-                for (int i = 0; i < forces.Length; i++)
-                    res[i] = [forces[i].X, forces[i].Y];
-                return res;
-            }
-            set
-            {
-                for (int i = 0; i < forces.Length; i++)
-                    forces[i] = new Vector4(value[i][0], value[i][1], 0, 0);
-            }
-        }
-
         public Simulation()
         {
             config = new ShaderConfig();
-            forces = new Vector4[MaxSpeciesCount * MaxSpeciesCount * KeypointsCount];
         }
 
         public void StartSimulation(int particlesCount, float size)
@@ -62,7 +43,20 @@ namespace Graphs3D.Models
             config.fieldSize = size;
             config.particleCount = particlesCount;
             InitializeParticles(particlesCount);
+            InitializeRandomEdges();
             var rnd = new Random(seed);
+        }
+
+        private void InitializeRandomEdges()
+        {
+            var rnd = new Random(seed);
+            config.edgesCount = (uint)(config.particleCount / 2);
+            edges = new uint[config.edgesCount*2];
+            for(int i=0; i< config.edgesCount/2; i++)
+            {
+                edges[2 * i] = (uint)rnd.Next(0, config.particleCount);
+                edges[2*i+1] = (uint)rnd.Next(0, config.particleCount);
+            }
         }
 
         public void InitializeParticles(int count)

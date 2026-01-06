@@ -8,7 +8,7 @@ struct ShaderConfig {
     int particleCount;
     float dt;
     float sigma2;
-    float clampVel;
+    uint edgesCount;
     float clampAcc;
     float fieldSize;
     float cellSize;

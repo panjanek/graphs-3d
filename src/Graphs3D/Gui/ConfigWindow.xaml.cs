@@ -94,25 +94,6 @@ namespace Graphs3D.Gui
             KeyDown += (s, e) => app.mainWindow.MainWindow_KeyDown(s, e);
         }
 
-        private void Invert(int offset)
-        {
-            for (int i = 1; i < Simulation.KeypointsCount; i++)
-                app.simulation.forces[offset + i].Y *= -1;
-            UpdateActiveControls();
-            UpdatePassiveControls();
-        }
-
-        private void CopyTo(int fromOffset, int toOffset)
-        {
-            if (fromOffset != toOffset)
-            {
-                for (int i = 0; i < Simulation.KeypointsCount; i++)
-                    app.simulation.forces[toOffset+i] = app.simulation.forces[fromOffset+i];
-                UpdateActiveControls();
-                UpdatePassiveControls();
-            }
-        }
-
         private void Record_Click(object sender, RoutedEventArgs e)
         {
             if (recordButton.IsChecked == true)
