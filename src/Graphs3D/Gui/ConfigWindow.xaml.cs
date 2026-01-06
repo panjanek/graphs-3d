@@ -38,12 +38,6 @@ namespace Graphs3D.Gui
             minimizeButton.Click += (s, e) => WindowState = WindowState.Minimized;
             Closing += (s, e) => { e.Cancel = true; WindowState = WindowState.Minimized; };
             ContentRendered += (s, e) => { UpdateActiveControls(); UpdatePassiveControls(); };
-            forceMatrix.SelectionChanged = () =>
-            {
-                UpdateGraph();
-                for (int i = 0; i < Simulation.MaxSpeciesCount; i++)
-                    app.simulation.config.disabled[i] = forceMatrix.Disabled[i];
-            };
             randomButton.PreviewKeyDown += (s, e) => e.Handled=true;
             restartButton.PreviewKeyDown += (s, e) => e.Handled = true;
             saveButton.PreviewKeyDown += (s, e) => e.Handled = true;
@@ -55,17 +49,14 @@ namespace Graphs3D.Gui
             { 
                 app.simulation.InitializeParticles(app.simulation.config.particleCount);
                 app.renderer.UploadParticleData();
-                ResetMatrix();
             };
 
             randomButton.Click += (s, e) =>
             {
                 app.simulation.InitializeParticles(app.simulation.config.particleCount);
                 app.simulation.seed++;
-                app.simulation.InitializeRandomForces();
                 app.renderer.UploadParticleData();
                 app.renderer.ResetOrigin();
-                ResetMatrix();
             };
 
             saveButton.Click += (s, e) =>
@@ -88,7 +79,6 @@ namespace Graphs3D.Gui
                     var newSim = SimFactory.LoadFromFile(dialog.FileName);
                     app.simulation = newSim;
                     app.renderer.UploadParticleData();
-                    ResetMatrix();
                     UpdateActiveControls();
                     UpdatePassiveControls();
                     PopupMessage.Show(app.mainWindow, $"Config loaded from {dialog.FileName}");
@@ -99,40 +89,6 @@ namespace Graphs3D.Gui
                         app.renderer.Paused = true;
                     }
                 }
-            };
-
-            forceGraph.Changed = () =>
-            {
-                var offset = Simulation.GetForceOffset(forceMatrix.SelectedX, forceMatrix.SelectedY);
-                for (int i = 0; i < Simulation.KeypointsCount; i++)
-                    app.simulation.forces[offset + i] = forceGraph.Forces[i];
-                if (symetricCheckbox.IsChecked == true && forceMatrix.SelectedX != forceMatrix.SelectedY)
-                {
-                    var offset2 = Simulation.GetForceOffset(forceMatrix.SelectedY, forceMatrix.SelectedX);
-                    for (int i = 0; i < Simulation.KeypointsCount; i++)
-                        app.simulation.forces[offset2 + i] = forceGraph.Forces[i];
-                }
-
-                forceMatrix.UpdateCells(app.simulation.forces, app.simulation.config.speciesCount, app.simulation.config.maxForce);
-            };
-
-            invertButton.Click += (s, e) => Invert(Simulation.GetForceOffset(forceMatrix.SelectedX, forceMatrix.SelectedY));
-            symetricButton.Click += (s, e) => CopyTo(Simulation.GetForceOffset(forceMatrix.SelectedX, forceMatrix.SelectedY), Simulation.GetForceOffset(forceMatrix.SelectedY, forceMatrix.SelectedX));
-            asymetricButton.Click += (s, e) => 
-            {
-                if (forceMatrix.SelectedX != forceMatrix.SelectedY)
-                {
-                    CopyTo(Simulation.GetForceOffset(forceMatrix.SelectedX, forceMatrix.SelectedY), Simulation.GetForceOffset(forceMatrix.SelectedY, forceMatrix.SelectedX));
-                    Invert(Simulation.GetForceOffset(forceMatrix.SelectedY, forceMatrix.SelectedX));
-                }
-            };
-
-            everythingSymetricButton.Click += (s, e) =>
-            {
-                for (int i = 0; i < app.simulation.config.speciesCount; i++)
-                    for(int j=0; j<i; j++)
-                        CopyTo(Simulation.GetForceOffset(i,j), Simulation.GetForceOffset(j,i));
-
             };
 
             KeyDown += (s, e) => app.mainWindow.MainWindow_KeyDown(s, e);
@@ -175,46 +131,22 @@ namespace Graphs3D.Gui
             e.Handled = true;
         }
 
-        private void ResetMatrix()
-        {
-            if (forceMatrix.SelectedX >= app.simulation.config.speciesCount || forceMatrix.SelectedY >= app.simulation.config.speciesCount)
-            {
-                forceMatrix.SelectedX = 0;
-                forceMatrix.SelectedY = 0;
-            }
-
-            forceMatrix.UpdateCells(app.simulation.forces, app.simulation.config.speciesCount, app.simulation.config.maxForce);
-            forceMatrix.UpdateSelection();
-            UpdateGraph();
-        }
-
-        private void UpdateGraph()
-        {
-            var offset = Simulation.GetForceOffset(forceMatrix.SelectedX, forceMatrix.SelectedY);
-            var forces = app.simulation.forces.Skip(offset).Take(Simulation.KeypointsCount).ToArray();
-            forceGraph.UpdateGraph(forces, app.simulation.config.maxDist, app.simulation.config.maxForce);
-        }
-
         private void global_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (fieldSize != null && particlesCount != null && speciesCount!=null && !updating)
+            if (fieldSize != null && particlesCount != null && !updating)
             {
                 var newParticleCountStr = WpfUtil.GetComboSelectionAsString(particlesCount);
-                var newSpeciesCountStr = WpfUtil.GetComboSelectionAsString(speciesCount);
                 var newSizeStr = WpfUtil.GetComboSelectionAsString(fieldSize);
-                if (!string.IsNullOrWhiteSpace(newParticleCountStr) && !string.IsNullOrWhiteSpace(newSpeciesCountStr) && !string.IsNullOrWhiteSpace(newSizeStr))
+                if (!string.IsNullOrWhiteSpace(newParticleCountStr) && !string.IsNullOrWhiteSpace(newSizeStr))
                 {
                     var newParticleCount = int.Parse(newParticleCountStr);
-                    var newSpeciesCount = int.Parse(newSpeciesCountStr);
                     var sizeSplit = newSizeStr.Split('x');
                     var newSize = int.Parse(sizeSplit[0]);
                     if (newParticleCount != app.simulation.config.particleCount ||
-                        newSpeciesCount != app.simulation.config.speciesCount ||
                         newSize != app.simulation.config.fieldSize)
                     {
-                        app.simulation.StartSimulation(newParticleCount, newSpeciesCount, newSize);
+                        app.simulation.StartSimulation(newParticleCount, newSize);
                         app.renderer.UploadParticleData();
-                        ResetMatrix();
                         UpdateActiveControls();
                         UpdatePassiveControls();
                         if (app.renderer.Paused)
@@ -255,7 +187,6 @@ namespace Graphs3D.Gui
             updating = true;
             WpfUtil.SetComboStringSelection(fieldSize, $"{app.simulation.config.fieldSize}x{app.simulation.config.fieldSize}x{app.simulation.config.fieldSize}");
             WpfUtil.SetComboStringSelection(particlesCount, app.simulation.config.particleCount.ToString());
-            WpfUtil.SetComboStringSelection(speciesCount, app.simulation.config.speciesCount.ToString());
             foreach (var slider in WpfUtil.FindVisualChildren<Slider>(this))
             {
                 var tag = WpfUtil.GetTagAsString(slider);
@@ -264,7 +195,6 @@ namespace Graphs3D.Gui
                     slider.Value = ReflectionUtil.GetObjectValue<float>(app.simulation, tag);
                 }
             }
-            UpdateGraph();
             updating = false;
         }
 
@@ -272,9 +202,6 @@ namespace Graphs3D.Gui
         {
             foreach (var text in WpfUtil.FindVisualChildren<TextBlock>(this))
                     WpfUtil.UpdateTextBlockForSlider(this, text, app.simulation);
-            forceMatrix.UpdateCells(app.simulation.forces, app.simulation.config.speciesCount, app.simulation.config.maxForce);
-            UpdateGraph();
-            forceMatrix.UpdateDots();
         }
     }
 }

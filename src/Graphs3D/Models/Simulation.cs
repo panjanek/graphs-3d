@@ -56,62 +56,13 @@ namespace Graphs3D.Models
             forces = new Vector4[MaxSpeciesCount * MaxSpeciesCount * KeypointsCount];
         }
 
-        public void StartSimulation(int particlesCount, int speciesCount, float size)
+        public void StartSimulation(int particlesCount, float size)
         {
-            var previousSpeciesCount = config.speciesCount;
-            config.speciesCount = speciesCount;
+            config.speciesCount = 1;
             config.fieldSize = size;
             config.particleCount = particlesCount;
             InitializeParticles(particlesCount);
             var rnd = new Random(seed);
-            if (speciesCount > previousSpeciesCount)
-            {
-                for(int i = previousSpeciesCount; i< speciesCount; i++)
-                {
-                    for (int j = 0; j < speciesCount; j++)
-                    {
-                        InitialOneForceAtRandom(i, j, rnd);
-                    }
-                }
-            }
-        }
-
-        public static int GetForceOffset(int specMe, int specOther)
-        {
-            int offset = (specMe * MaxSpeciesCount + specOther) * KeypointsCount;
-            return offset;
-
-        }
-
-        private void SetForce(int specMe, int specOther, float val0, float val1, float val2)
-        {
-            int offset = GetForceOffset(specMe, specOther);
-            var d = config.maxDist / 6;
-            forces[offset + 0] = new Vector4(0, val0, 0, 0);
-            forces[offset + 1] = new Vector4(d, 0, 0, 0);
-            forces[offset + 2] = new Vector4(2*d, val1, 0, 0);
-            forces[offset + 3] = new Vector4(3*d, 0, 0, 0);
-            forces[offset + 4] = new Vector4(4*d, val2, 0, 0);
-            forces[offset + 5] = new Vector4(5*d, 0, 0, 0);
-        }
-
-        public void InitializeRandomForces()
-        {
-            var rnd = new Random(seed); //4
-            for (int i = 0; i < config.speciesCount; i++)
-            {
-                for (int j = 0; j < config.speciesCount; j++)
-                {
-                    InitialOneForceAtRandom(i, j, rnd);
-                }
-            }
-        }
-
-        public void InitialOneForceAtRandom(int i, int j, Random rnd)
-        {
-            float v1 = (float)(1.7 * config.maxForce * (rnd.NextDouble() - 0.5));
-            float v2 = (float)(1 * config.maxForce * (rnd.NextDouble() - 0.5));
-            SetForce(i, j, -config.maxForce * 0.5f, v1, v2);
         }
 
         public void InitializeParticles(int count)
