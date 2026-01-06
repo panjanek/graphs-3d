@@ -149,7 +149,7 @@ namespace Graphs3D.Gpu
             (pointsBufferA, pointsBufferB) = (pointsBufferB, pointsBufferA);
         }
 
-        public void UploadParticles(Node[] particles, Edge[] edges)
+        public void UploadGraph(Node[] particles, Edge[] edges)
         {
             PrepareBuffers(particles.Length, currentTotalCellsCount, edges.Length);
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, pointsBufferA);
@@ -160,15 +160,15 @@ namespace Graphs3D.Gpu
             GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, edges.Length * Marshal.SizeOf<Edge>(), edges);
         }
 
-        public void DownloadParticles(Node[] particles, bool bufferB = false)
+        public void DownloadNodes(Node[] nodes, bool bufferB = false)
         {
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bufferB ? pointsBufferB : pointsBufferA);
 
             GL.GetBufferSubData(
                 BufferTarget.ShaderStorageBuffer,
                 IntPtr.Zero,
-                particles.Length * Marshal.SizeOf<Node>(),
-                particles
+                nodes.Length * Marshal.SizeOf<Node>(),
+                nodes
             );
 
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);

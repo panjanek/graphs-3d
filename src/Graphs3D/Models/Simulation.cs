@@ -22,7 +22,7 @@ namespace Graphs3D.Models
 
         public float cameraFollowSpeed = 1f;
 
-        public float particleSize = 0.7f;
+        public float particleSize = 0.3f;
 
         [JsonIgnore]
         public Node[] nodes;
@@ -47,8 +47,10 @@ namespace Graphs3D.Models
             config.edgesCount = 0;
             edges = new Edge[config.edgesCount];
             nodes[0].position = new Vector4(config.fieldSize / 2, config.fieldSize / 2, config.fieldSize / 2, 1.0f);
+            
+            
             for (int i = 0; i < 5; i++)
-                AddRandomNodes(particlesCount/5);
+              AddRandomNodes(particlesCount/5);
             //InitializeParticles(particlesCount);
             //InitializeRandomEdges();
         }
@@ -83,7 +85,7 @@ namespace Graphs3D.Models
                 if (radius > 1)
                 {
                     var radiusRatio = newRadius / radius;
-                    newPos = connectToPos * radiusRatio;
+                    newPos = connectToPos;
                     newPos += new Vector3((float)rnd.NextDouble() - 0.5f, (float)rnd.NextDouble() - 0.5f, (float)rnd.NextDouble() - 0.5f) * newRadius;
                 }
 
@@ -95,8 +97,8 @@ namespace Graphs3D.Models
                 edges[oldEdges.Length + i].restLength = 10;
             }
 
-            config.nodesCount += addNodesCount;
-            config.edgesCount += addNodesCount;
+            config.nodesCount = nodes.Length;
+            config.edgesCount = edges.Length;
         }
 
         private void InitializeRandomEdges(int edgeCount)

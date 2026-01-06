@@ -33,7 +33,7 @@ namespace Graphs3D.Utils
                 particleIndices = new int[config.nodesCount];
             }
 
-            solver.DownloadParticles(particles, bufferB);
+            solver.DownloadNodes(particles, bufferB);
             var counts = solver.cellCounts;
             var offsets = solver.cellOffsets;
             solver.DownloadIntBuffer(particleIndices, solver.particleIndicesBuffer, config.nodesCount);

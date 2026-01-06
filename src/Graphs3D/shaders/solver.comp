@@ -81,25 +81,52 @@ layout(std430, binding = 8) buffer ParticleIndices {
 
 void update_one(uint idx)
 {
+    float uSpringK = 4.0;
+    float uRepulsionK = 1;
+    float uDamping = 0.95;
+    float uMaxStep = 3;
+
     Node p = inNodes[idx];
     
-    vec4 acc = vec4(0.0);
-    vec4 vel = p.velocity;
-    vec4 pos = p.position;
+    vec3 pos = p.position.xyz;
+    vec3 vel = p.velocity.xyz;
+    vec3 force = vec3(0.0);
 
+    for (uint i = 0; i < config.edgesCount; i++)
+    {
+        Edge e = edges[i];
+        if (e.a != idx && e.b != idx) continue;
+
+        uint other = (e.a == idx) ? e.b : e.a;
+        vec3 dir = inNodes[other].position.xyz - pos;
+        float dist = length(dir) + 0.1;
+
+        float delta = dist - e.restLength;
+        vec3 f = (dir / dist) * (uSpringK * delta);
+        force += f;
+    }
+
+    // Repulsion
+    for (uint j = 0; j < config.nodesCount; j++)
+    {
+        if (j == idx) continue;
+        vec3 d = pos - inNodes[j].position.xyz;
+        float r2 = dot(d, d) + 0.1;
+        force += normalize(d) * (uRepulsionK / r2);
+    }
+
+    // Integrate
+    vel += force * config.dt;
+    vel *= uDamping;
+
+    float stepLen = length(vel);
+    if (stepLen > uMaxStep)
+        vel *= uMaxStep / stepLen;
 
     pos += vel * config.dt;
 
-    //prepare updated node struct
-    p.position = pos;
-    p.velocity = vel;
-    p.flags = 0;
-    if (config.trackedIdx > -1 && config.trackedIdx == idx)
-    {
-        p.flags = 1;
-        tracked = p;
-    }
-
+    p.velocity = vec4(vel, 0);
+    p.position = vec4(pos, 1.0);
     outNodes[idx] = p;
 }
 

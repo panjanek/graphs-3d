@@ -132,7 +132,7 @@ namespace Graphs3D.Gpu
             GL.UniformMatrix4(projEdgesLocation, false, ref projection);
             GL.Enable(EnableCap.LineSmooth);
             GL.Hint(HintTarget.LineSmoothHint, HintMode.Nicest);
-            GL.LineWidth(1.2f);
+            GL.LineWidth(3f);
             GL.DrawArrays(PrimitiveType.Lines, 0, edgesCount * 2);
         }
     }

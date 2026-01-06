@@ -5,17 +5,13 @@ in float vStretch;
 
 out vec4 FragColor;
 
-//uniform float uFogNear;
-//uniform float uFogFar;
-//uniform vec3 uBaseColor;
+
 
 void main()
 {
-    float uFogNear = 5.0;
-    float uFogFar = 1000;
-    vec3 uBaseColor = vec3(1,1,1);
+    vec3 baseColor = vec3(1,1,1);
 
-    float fog = clamp((uFogFar - vDepth) / (uFogFar - uFogNear), 0.0, 1.0);
+    //float fog = clamp((uFogFar - vDepth) / (uFogFar - uFogNear), 0.0, 1.0);
 
     // Stretch visualization
     vec3 stretchColor = mix(
@@ -24,8 +20,12 @@ void main()
         clamp(vStretch * 5.0 + 0.5, 0.0, 1.0)
     );
 
-    vec3 color = mix(uBaseColor, stretchColor, 0.6);
-    FragColor = vec4(color * fog, fog);
+    vec3 color = mix(baseColor, stretchColor, 0.6);
+    
+    float fogDensity = 0.0005;
+    float fog = exp(fogDensity * vDepth);
+    fog = clamp(fog, 0.0, 1.0);
 
-    FragColor = vec4(1,1,1,1);
+
+    FragColor = vec4(color * fog, fog);
 }

@@ -48,14 +48,14 @@ namespace Graphs3D.Gui
             restartButton.Click += (s, e) => 
             { 
                 app.simulation.InitializeParticles(app.simulation.config.nodesCount);
-                app.renderer.UploadParticleData();
+                app.renderer.UploadGraph();
             };
 
             randomButton.Click += (s, e) =>
             {
                 app.simulation.InitializeParticles(app.simulation.config.nodesCount);
                 app.simulation.seed++;
-                app.renderer.UploadParticleData();
+                app.renderer.UploadGraph();
                 app.renderer.ResetOrigin();
             };
 
@@ -78,7 +78,7 @@ namespace Graphs3D.Gui
                 {
                     var newSim = SimFactory.LoadFromFile(dialog.FileName);
                     app.simulation = newSim;
-                    app.renderer.UploadParticleData();
+                    app.renderer.UploadGraph();
                     UpdateActiveControls();
                     UpdatePassiveControls();
                     PopupMessage.Show(app.mainWindow, $"Config loaded from {dialog.FileName}");
@@ -127,7 +127,7 @@ namespace Graphs3D.Gui
                         newSize != app.simulation.config.fieldSize)
                     {
                         app.simulation.StartSimulation(newParticleCount, newSize);
-                        app.renderer.UploadParticleData();
+                        app.renderer.UploadGraph();
                         UpdateActiveControls();
                         UpdatePassiveControls();
                         if (app.renderer.Paused)

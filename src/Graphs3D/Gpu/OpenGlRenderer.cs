@@ -88,7 +88,7 @@ namespace Graphs3D.Gpu
 
             solverProgram = new SolverProgram();
             displayProgram = new DisplayProgram();
-            UploadParticleData();
+            UploadGraph();
             ResetOrigin();
 
             var dragging = new DraggingHandler(glControl, (mousePos, btn) => true, (prev, curr, btn) =>
@@ -146,7 +146,7 @@ namespace Graphs3D.Gpu
             lock (app.simulation)
             {
                 //DebugUtil.DebugSolver(true, app.simulation.config, solverProgram);
-                solverProgram.DownloadParticles(app.simulation.nodes);
+                solverProgram.DownloadNodes(app.simulation.nodes);
                 int pixelRadius = 5;
                 int? selectedIdx = null;
                 float minDepth = app.simulation.config.fieldSize * 10;
@@ -249,8 +249,10 @@ namespace Graphs3D.Gpu
             yAngle = 0;
         }
 
-        public void UploadParticleData() => solverProgram.UploadParticles(app.simulation.nodes, app.simulation.edges);
-     
+        public void UploadGraph() => solverProgram.UploadGraph(app.simulation.nodes, app.simulation.edges);
+
+        public void DownloadNodes() => solverProgram.DownloadNodes(app.simulation.nodes);
+
         public void StartTracking(int idx)
         {
             TrackedIdx = idx;
