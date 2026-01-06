@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ParticleLife3D.Utils
+namespace Graphs3D.Utils
 {
     public static class ReflectionUtil
     {

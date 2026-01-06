@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Mathematics;
 
-namespace ParticleLife3D.Utils
+namespace Graphs3D.Utils
 {
     public static class MathUtil
     {

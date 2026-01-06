@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Mathematics;
 
-namespace ParticleLife3D.Gpu
+namespace Graphs3D.Gpu
 {
     public static class GpuUtil
     {

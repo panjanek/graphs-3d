@@ -12,16 +12,16 @@ using OpenTK.GLControl;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
-using ParticleLife3D.Models;
-using ParticleLife3D.Utils;
+using Graphs3D.Models;
+using Graphs3D.Utils;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-using AppContext = ParticleLife3D.Models.AppContext;
+using AppContext = Graphs3D.Models.AppContext;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using Panel = System.Windows.Controls.Panel;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
-namespace ParticleLife3D.Gpu
+namespace Graphs3D.Gpu
 {
     public class OpenGlRenderer
     {

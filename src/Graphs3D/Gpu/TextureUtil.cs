@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
-namespace ParticleLife3D.Gpu
+namespace Graphs3D.Gpu
 {
     public static class TextureUtil
     {

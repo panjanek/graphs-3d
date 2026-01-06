@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using OpenTK.GLControl;
 using OpenTK.Mathematics;
 
-namespace ParticleLife3D.Utils
+namespace Graphs3D.Utils
 {
     public class DraggingHandler
     {

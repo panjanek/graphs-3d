@@ -10,13 +10,13 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
-using ParticleLife3D.Models;
+using Graphs3D.Models;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
 using Point = System.Windows.Point;
 using Rectangle = System.Windows.Shapes.Rectangle;
 
-namespace ParticleLife3D.Gui
+namespace Graphs3D.Gui
 {
     public class ForceGraph : Canvas
     {

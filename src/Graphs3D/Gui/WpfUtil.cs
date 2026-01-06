@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using ParticleLife3D.Utils;
+using Graphs3D.Utils;
 using Brushes = System.Windows.Media.Brushes;
 using ComboBox = System.Windows.Controls.ComboBox;
 
-namespace ParticleLife3D.Gui
+namespace Graphs3D.Gui
 {
     public static class WpfUtil
     {

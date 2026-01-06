@@ -8,13 +8,13 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using OpenTK.Mathematics;
-using ParticleLife3D.Models;
+using Graphs3D.Models;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 using Rectangle = System.Windows.Shapes.Rectangle;
 
-namespace ParticleLife3D.Gui
+namespace Graphs3D.Gui
 {
     public class ForceMatrix : Canvas
     {
@@ -172,8 +172,8 @@ namespace ParticleLife3D.Gui
                             val += forces[offset + i].Y;
                         }
 
-                        var r = ParticleLife3D.Utils.MathUtil.Amplify((val > 0) ? val / maxForce : 0, 4);
-                        var b = ParticleLife3D.Utils.MathUtil.Amplify((val < 0) ? -val / maxForce : 0, 4);
+                        var r = Graphs3D.Utils.MathUtil.Amplify((val > 0) ? val / maxForce : 0, 4);
+                        var b = Graphs3D.Utils.MathUtil.Amplify((val < 0) ? -val / maxForce : 0, 4);
                         var g = Math.Max(r, b) / 6;
                         var rect = rectangles[x, y];
                         rect.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(255, ClampColor(r), ClampColor(g), ClampColor(b)));

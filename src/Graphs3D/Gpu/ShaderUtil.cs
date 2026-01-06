@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualBasic.Logging;
 using OpenTK.Graphics.OpenGL;
-using ParticleLife3D.Utils;
+using Graphs3D.Utils;
 
-namespace ParticleLife3D.Gpu
+namespace Graphs3D.Gpu
 {
     public static class ShaderUtil
     {

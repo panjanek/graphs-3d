@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace ParticleLife3D.Models
+namespace Graphs3D.Models
 {
     public static class SimFactory
     {

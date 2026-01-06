@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ParticleLife3D.Models
+namespace Graphs3D.Models
 {
     [StructLayout(LayoutKind.Explicit, Size = 104)]
     public unsafe struct ShaderConfig

@@ -9,7 +9,7 @@ using System.Threading.Tasks.Sources;
 using OpenTK.Audio.OpenAL;
 using OpenTK.Mathematics;
 
-namespace ParticleLife3D.Models
+namespace Graphs3D.Models
 {
     public class Simulation
     {

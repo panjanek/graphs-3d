@@ -10,7 +10,7 @@ using System.Windows.Media.Animation;
 using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
 
-namespace ParticleLife3D.Gui
+namespace Graphs3D.Gui
 {
     public static class PopupMessage
     {

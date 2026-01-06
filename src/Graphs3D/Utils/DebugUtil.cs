@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
-using ParticleLife3D.Gpu;
-using ParticleLife3D.Models;
+using Graphs3D.Gpu;
+using Graphs3D.Models;
 
-namespace ParticleLife3D.Utils
+namespace Graphs3D.Utils
 {
     public class DebugUtil
     {

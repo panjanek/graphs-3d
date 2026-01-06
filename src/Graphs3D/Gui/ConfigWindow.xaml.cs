@@ -14,11 +14,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Microsoft.WindowsAPICodePack.Dialogs;
-using ParticleLife3D.Models;
-using ParticleLife3D.Utils;
-using AppContext = ParticleLife3D.Models.AppContext;
+using Graphs3D.Models;
+using Graphs3D.Utils;
+using AppContext = Graphs3D.Models.AppContext;
 
-namespace ParticleLife3D.Gui
+namespace Graphs3D.Gui
 {
     /// <summary>
     /// Interaction logic for ConfigWindow.xaml

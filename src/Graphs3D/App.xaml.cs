@@ -3,7 +3,7 @@ using System.Data;
 using System.Windows;
 using Application = System.Windows.Application;
 
-namespace ParticleLife3D
+namespace Graphs3D
 {
     /// <summary>
     /// Interaction logic for App.xaml

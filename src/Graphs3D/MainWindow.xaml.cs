@@ -9,14 +9,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
-using ParticleLife3D.Gpu;
-using ParticleLife3D.Gui;
-using ParticleLife3D.Models;
-using ParticleLife3D.Utils;
-using AppContext = ParticleLife3D.Models.AppContext;
+using Graphs3D.Gpu;
+using Graphs3D.Gui;
+using Graphs3D.Models;
+using Graphs3D.Utils;
+using AppContext = Graphs3D.Models.AppContext;
 using Application = System.Windows.Application;
 
-namespace ParticleLife3D
+namespace Graphs3D
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

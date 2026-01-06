@@ -7,10 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
-using ParticleLife3D.Models;
-using ParticleLife3D.Utils;
+using Graphs3D.Models;
+using Graphs3D.Utils;
 
-namespace ParticleLife3D.Gpu
+namespace Graphs3D.Gpu
 {
     public class SolverProgram
     {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Mathematics;
 
-namespace ParticleLife3D.Models
+namespace Graphs3D.Models
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct Particle
