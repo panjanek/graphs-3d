@@ -110,18 +110,17 @@ void update_one(uint idx)
     vec3 vel = p.velocity.xyz;
     vec3 force = vec3(0.0);
 
-    for (uint i = 0; i < config.edgesCount; i++)
+    uint neighStart = neighboursStart[idx];
+    uint neighCount = neighboursCount[idx];
+    for (uint i = 0; i < neighCount; i++)
     {
-        Edge e = edges[i];
-        if (e.a != idx && e.b != idx) continue;
+        uint neighIdx = neighStart + i;
+        uint otherIdx = neighbours[neighIdx];
 
-        uint other = (e.a == idx) ? e.b : e.a;
-        vec3 dir = inNodes[other].position.xyz - pos;
-        float dist = length(dir) + epsilon;
-
-        float delta = dist - e.restLength;
-        float fmag = clamp(uSpringK * delta, -maxSpringForce, maxSpringForce);
-        force += (dir / dist) * fmag;
+        vec3 d = inNodes[otherIdx].position.xyz - pos;
+        float dist = length(d) + 1e-6;
+        float delta = dist - restLengths[neighIdx];
+        force += (d / dist) * (uSpringK * delta);
     }
 
     // Repulsion
