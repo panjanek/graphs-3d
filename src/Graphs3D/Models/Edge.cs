@@ -4,18 +4,16 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using OpenTK.Mathematics;
 
 namespace Graphs3D.Models
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct Particle
+    public struct Edge
     {
-        public Vector4 position; // xyz = position
-        public Vector4 velocity; // xyz = velocity
-        public int species;
+        public uint a;
+        public uint b;
+        public float restLength;
+        public int player;
         public int flags;
-        public int cellIndex;
-        private int _pad1;
     }
 }

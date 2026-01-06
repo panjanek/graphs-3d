@@ -16,7 +16,7 @@ namespace Graphs3D.Utils
 
         public static string LogFile = "log.txt";
 
-        private static Particle[] particles;
+        private static Node[] particles;
 
         private static int[] particleIndices;
 
@@ -29,7 +29,7 @@ namespace Graphs3D.Utils
         {
             if (particles == null || particles.Length != config.particleCount)
             {
-                particles = new Particle[config.particleCount];
+                particles = new Node[config.particleCount];
                 particleIndices = new int[config.particleCount];
             }
 

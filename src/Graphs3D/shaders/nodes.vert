@@ -1,6 +1,6 @@
 ﻿#version 430
 
-struct Particle
+struct Node
 {
    vec4 position;
    vec4 velocity;
@@ -11,7 +11,7 @@ struct Particle
 };
 
 layout(std430, binding = 2) buffer OutputBuffer {
-    Particle points[];
+    Node points[];
 };
 
 uniform mat4 view;
@@ -40,7 +40,7 @@ void main()
 {
     float sphereRadius = 2 * paricleSize + (viewportSize.x/1920);
     uint id = gl_InstanceID;
-    Particle p = points[id];
+    Node p = points[id];
 
     //if tracking enabled - make everything around tracked particle fade away
     vFadingAlpha = 1.0;

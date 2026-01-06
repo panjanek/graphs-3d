@@ -24,9 +24,9 @@ namespace Graphs3D.Models
         public float particleSize = 0.7f;
 
         [JsonIgnore]
-        public Particle[] particles;
+        public Node[] particles;
 
-        public uint[] edges;
+        public Edge[] edges;
 
         public int seed = 11;
 
@@ -50,19 +50,19 @@ namespace Graphs3D.Models
         private void InitializeRandomEdges()
         {
             var rnd = new Random(seed);
-            config.edgesCount = (uint)(config.particleCount / 2);
-            edges = new uint[config.edgesCount*2];
-            for(int i=0; i< config.edgesCount/2; i++)
+            config.edgesCount = config.particleCount / 2;
+            edges = new Edge[config.edgesCount];
+            for(int i=0; i< config.edgesCount; i++)
             {
-                edges[2 * i] = (uint)rnd.Next(0, config.particleCount);
-                edges[2*i+1] = (uint)rnd.Next(0, config.particleCount);
+                edges[i].a = (uint)rnd.Next(0, config.particleCount);
+                edges[i].b = (uint)rnd.Next(0, config.particleCount);
             }
         }
 
         public void InitializeParticles(int count)
         {
             if (particles == null || particles.Length != count)
-                particles = new Particle[count];
+                particles = new Node[count];
 
             var rnd = new Random(1);
             for(int i=0; i< count; i++)
