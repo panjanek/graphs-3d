@@ -22,8 +22,6 @@ namespace Graphs3D.Gpu
 
         private int viewLocation;
 
-        private int torusOffsetLocation;
-
         private int trackedPosLocation;
 
         private int quadVao;
@@ -44,8 +42,6 @@ namespace Graphs3D.Gpu
             if (viewportSizeLocation == -1) throw new Exception("Uniform 'viewportSize' not found. Shader optimized it out?");
             viewLocation = GL.GetUniformLocation(program, "view");
             if (viewLocation == -1) throw new Exception("Uniform 'view' not found. Shader optimized it out?");
-            torusOffsetLocation = GL.GetUniformLocation(program, "torusOffset");
-            if (torusOffsetLocation == -1) throw new Exception("Uniform 'torusOffset' not found. Shader optimized it out?");
             trackedPosLocation = GL.GetUniformLocation(program, "trackedPos");
             if (trackedPosLocation == -1) throw new Exception("Uniform 'trackedPos' not found. Shader optimized it out?");
 
@@ -89,33 +85,30 @@ namespace Graphs3D.Gpu
 
         }
 
-        public void Run(Matrix4 projectionMatrix, int particlesCount, float particleSize, Vector2 viewportSize, Matrix4 view, List<Vector4> torusOffsets, Vector4 trackedPos)
+        public void Run(Matrix4 projectionMatrix, int particlesCount, float particleSize, Vector2 viewportSize, Matrix4 view, Vector4 trackedPos)
         {
             GL.Clear(
                 ClearBufferMask.ColorBufferBit |
                 ClearBufferMask.DepthBufferBit
             );
-            foreach (var torusOffset in torusOffsets)
-            {
-                GL.UseProgram(program);
-                GL.BindVertexArray(quadVao);
 
-                GL.UniformMatrix4(projLocation, false, ref projectionMatrix);
-                GL.Uniform1(particleSizeLocation, particleSize);
-                GL.Uniform2(viewportSizeLocation, viewportSize);
-                GL.UniformMatrix4(viewLocation, false, ref view);
-                var offset = torusOffset;
-                GL.Uniform4(torusOffsetLocation, ref offset);
-                GL.Uniform4(trackedPosLocation, ref trackedPos);
+            GL.UseProgram(program);
+            GL.BindVertexArray(quadVao);
 
-                GL.DrawElementsInstanced(
-                    PrimitiveType.Triangles,
-                    6,
-                    DrawElementsType.UnsignedInt,
-                    IntPtr.Zero,
-                    particlesCount * 1
-                );
-            }
+            GL.UniformMatrix4(projLocation, false, ref projectionMatrix);
+            GL.Uniform1(particleSizeLocation, particleSize);
+            GL.Uniform2(viewportSizeLocation, viewportSize);
+            GL.UniformMatrix4(viewLocation, false, ref view);
+            GL.Uniform4(trackedPosLocation, ref trackedPos);
+
+            GL.DrawElementsInstanced(
+                PrimitiveType.Triangles,
+                6,
+                DrawElementsType.UnsignedInt,
+                IntPtr.Zero,
+                particlesCount * 1
+            );
+
         }
     }
 }

@@ -18,7 +18,6 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform float paricleSize;
 uniform vec2 viewportSize;
-uniform vec4 torusOffset;
 uniform vec4 trackedPos;
 
 layout(location = 0) out vec3 vColor;
@@ -42,7 +41,6 @@ void main()
     float sphereRadius = 2 * paricleSize + (viewportSize.x/1920);
     uint id = gl_InstanceID;
     Particle p = points[id];
-    p.position += torusOffset;
 
     //if tracking enabled - make everything around tracked particle fade away
     vFadingAlpha = 1.0;

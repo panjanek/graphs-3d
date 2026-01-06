@@ -29,7 +29,6 @@ namespace Graphs3D.Gpu
 
         public const float DirectionChangeSpeed = 0.003f;
 
-        public const int TorusRepeats = 2;
         public int FrameCounter => frameCounter;
 
         public bool Paused { get; set; }
@@ -284,44 +283,16 @@ namespace Graphs3D.Gpu
         private void GlControl_Paint(object? sender, PaintEventArgs e)
         {
             FollowTrackedParticle();
-            var torusOffsets = GetVisibleTorusOffsets();
             var trackedPos = TrackedIdx.HasValue ? solverProgram.GetTrackedParticle().position : new Vector4(-1000000, 0, 0, 0);
             displayProgram.Run(GetProjectionMatrix(),
                 app.simulation.config.particleCount,
                 app.simulation.particleSize,
                 new Vector2(glControl.Width, glControl.Height),
                 GetViewMatrix(),
-                torusOffsets,
                 trackedPos);
             glControl.SwapBuffers();
             frameCounter++;
             Capture();
-        }
-
-        private List<Vector4> GetVisibleTorusOffsets()
-        {
-            float S = app.simulation.config.fieldSize;
-            float radius = 0.5f * MathF.Sqrt(3 * S * S);
-            Vector3 localCenter = new Vector3(S, S, S) * 0.5f;
-            Vector3 camPos = center.Xyz;
-            Vector3 camDir = GetCameraDirection().Xyz;
-
-            List<Vector4> torusOffsets = new List<Vector4>();
-            for (int tx = -TorusRepeats; tx <= TorusRepeats; tx++)
-                for (int ty = -TorusRepeats; ty <= TorusRepeats; ty++)
-                    for (int tz = -TorusRepeats; tz <= TorusRepeats; tz++)
-                    {
-                        var torusOffset = new Vector4(tx * S, ty * S, tz * S, 0);
-                        Vector3 repeatCenter = localCenter + torusOffset.Xyz;
-                        Vector3 toRepeat = repeatCenter - camPos;
-                        float forward = Vector3.Dot(toRepeat, camDir);
-                        if (forward < -radius)
-                            continue;
-
-                        torusOffsets.Add(torusOffset);
-                    }
-
-            return torusOffsets;
         }
 
         public void Step()
