@@ -74,6 +74,12 @@ namespace Graphs3D
                     app.renderer.UploadGraph();
                     e.Handled = true;
                     break;
+                case Key.C:
+                    app.renderer.DownloadNodes();
+                    app.simulation.AddRandomNodesWithTwoEdges(1);
+                    app.renderer.UploadGraph();
+                    e.Handled = true;
+                    break;
             }
         }
 

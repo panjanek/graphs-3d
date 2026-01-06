@@ -31,7 +31,7 @@ namespace Graphs3D.Models
 
         public int seed = 11;
 
-        public float followDistance = 150;
+        public float followDistance = 50;
 
         public static Random globalRandom = new Random(1);
 
@@ -45,16 +45,80 @@ namespace Graphs3D.Models
             config.speciesCount = 1;
             config.fieldSize = size;
             config.nodesCount = 1;
+
             nodes = new Node[config.nodesCount];
             config.edgesCount = 0;
             edges = new Edge[config.edgesCount];
             nodes[0].position = new Vector4(config.fieldSize / 2, config.fieldSize / 2, config.fieldSize / 2, 1.0f);
-            
-            
-            for (int i = 0; i < 5; i++)
-              AddRandomNodes(particlesCount/5);
-            //InitializeParticles(particlesCount);
-            //InitializeRandomEdges();
+
+            //Create2DGrid((uint)particlesCount, (uint)particlesCount*2, true, true);
+            Create3DGrid(2, 2, 2);
+
+            //for (int i = 0; i < 5; i++)
+            //  AddRandomNodes(particlesCount/5);
+        }
+
+        private void Create2DGrid(uint rowSizeX, uint rowSizeY, bool wrapHoriz, bool wrapVert)
+        {
+            nodes = new Node[rowSizeX * rowSizeY];
+            for(int i=0; i<nodes.Length; i++)
+            {
+                nodes[i].position = new Vector4((float)globalRandom.NextDouble() * config.fieldSize, (float)globalRandom.NextDouble() * config.fieldSize, (float)globalRandom.NextDouble() * config.fieldSize, 1.0f);
+            }
+
+            List<Edge> list = new List<Edge>();
+            for(uint x=0; x< rowSizeX; x++)
+                for(uint y=0; y< rowSizeY; y++)
+                {
+                    if (x > 0)
+                        list.Add(new Edge() { a = y* rowSizeX + (x-1), b = y* rowSizeX + x });
+                    if (y > 0)
+                        list.Add(new Edge() { a = (y-1) * rowSizeX + x, b = y * rowSizeX + x });
+
+                    if (y == 0 && wrapHoriz)
+                        list.Add(new Edge() { a = (0) * rowSizeX + x, b = (rowSizeY - 1) * rowSizeX + x });
+
+                    if (x == 0 && wrapVert)
+                        list.Add(new Edge() { a = y * rowSizeX + 0, b = y * rowSizeX + rowSizeX - 1 });
+                }
+
+            edges = list.ToArray();
+            config.nodesCount = nodes.Length;
+            config.edgesCount = edges.Length;
+        }
+
+        private void Create3DGrid(uint rowSizeX, uint rowSizeY, uint rowSizeZ)
+        {
+            nodes = new Node[rowSizeX * rowSizeY * rowSizeZ];
+            for (int i = 0; i < nodes.Length; i++)
+            {
+                nodes[i].position = new Vector4((float)globalRandom.NextDouble() * config.fieldSize, (float)globalRandom.NextDouble() * config.fieldSize, (float)globalRandom.NextDouble() * config.fieldSize, 1.0f);
+            }
+
+            List<Edge> list = new List<Edge>();
+            for (uint x = 0; x < rowSizeX; x++)
+                for (uint y = 0; y < rowSizeY; y++)
+                    for (uint z = 0; z < rowSizeZ; z++)
+                    {
+                        if (x > 0)
+                            list.Add(new Edge() { a = (z * rowSizeX * rowSizeY)     + y * rowSizeX + (x - 1), 
+                                                  b = (z * rowSizeX * rowSizeY)     + y * rowSizeX + x });
+                        if (y > 0)
+                            list.Add(new Edge() { a = (z * rowSizeX * rowSizeY)     + (y - 1) * rowSizeX + x, 
+                                                  b = (z * rowSizeX * rowSizeY)     + y * rowSizeX + x });
+
+                        if (z > 0)
+                            list.Add(new Edge()
+                            {
+                                a = ((z-1) * rowSizeX * rowSizeY) + (y) * rowSizeX + x,
+                                b = (z * rowSizeX * rowSizeY) + y * rowSizeX + x
+                            });
+
+                    }
+
+            edges = list.ToArray();
+            config.nodesCount = nodes.Length;
+            config.edgesCount = edges.Length;
         }
 
         public void AddRandomNodes(int addNodesCount)
@@ -65,33 +129,48 @@ namespace Graphs3D.Models
             var oldEdges = edges;
             edges = new Edge[oldEdges.Length + addNodesCount];
             Array.Copy(oldEdges, edges, oldEdges.Length);
-            for (int i=0; i< addNodesCount; i++)
+            for (int i = 0; i < addNodesCount; i++)
             {
-                int connectToIdx = globalRandom.Next(oldNodes.Length);
+                int connectToIdx = oldNodes.Length / 2 + globalRandom.Next(oldNodes.Length / 2);
                 var connectToPos = oldNodes[connectToIdx].position.Xyz;
                 var newPos = connectToPos + new Vector3((float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f) * 1;
                 nodes[oldNodes.Length + i].position = new Vector4(newPos, 1.0f);
                 nodes[oldNodes.Length + i].velocity = new Vector4();
+
                 edges[oldEdges.Length + i].a = (uint)connectToIdx;
                 edges[oldEdges.Length + i].b = (uint)(oldNodes.Length + i);
-                edges[oldEdges.Length + i].restLength = 10;
             }
 
             config.nodesCount = nodes.Length;
             config.edgesCount = edges.Length;
         }
 
-        private void InitializeRandomEdges(int edgeCount)
+        public void AddRandomNodesWithTwoEdges(int addNodesCount)
         {
-            var rnd = new Random(seed);
-            config.edgesCount = config.nodesCount / 2;
-            edges = new Edge[config.edgesCount];
-            for(int i=0; i< config.edgesCount; i++)
+            var oldNodes = nodes;
+            nodes = new Node[oldNodes.Length + addNodesCount];
+            Array.Copy(oldNodes, nodes, oldNodes.Length);
+            var oldEdges = edges;
+            edges = new Edge[oldEdges.Length + addNodesCount*2];
+            Array.Copy(oldEdges, edges, oldEdges.Length);
+            for (int i=0; i< addNodesCount; i++)
             {
-                edges[i].a = (uint)rnd.Next(0, config.nodesCount);
-                edges[i].b = (uint)rnd.Next(0, config.nodesCount);
-                edges[i].restLength = 10;
+                int connectToIdx = oldNodes.Length / 2 + globalRandom.Next(oldNodes.Length/2);
+                var connectToPos = oldNodes[connectToIdx].position.Xyz;
+                var newPos = connectToPos + new Vector3((float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f) * 1;
+                nodes[oldNodes.Length + i].position = new Vector4(newPos, 1.0f);
+                nodes[oldNodes.Length + i].velocity = new Vector4();
+                
+                edges[oldEdges.Length + i].a = (uint)connectToIdx;
+                edges[oldEdges.Length + i].b = (uint)(oldNodes.Length + i);
+
+                int secondConnectToIdx = oldNodes.Length / 2 + globalRandom.Next(oldNodes.Length / 2);
+                edges[oldEdges.Length + addNodesCount + i].a = (uint)secondConnectToIdx;
+                edges[oldEdges.Length + addNodesCount + i].b = (uint)(oldNodes.Length + i);
             }
+
+            config.nodesCount = nodes.Length;
+            config.edgesCount = edges.Length;
         }
 
         public void InitializeParticles(int count)

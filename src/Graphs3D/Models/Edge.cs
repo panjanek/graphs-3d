@@ -10,9 +10,10 @@ namespace Graphs3D.Models
     [StructLayout(LayoutKind.Sequential)]
     public struct Edge
     {
+        public Edge() { }
         public uint a;
         public uint b;
-        public float restLength;
+        public float restLength = 10;
         public int player;
         public int flags;
     }

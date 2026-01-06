@@ -131,6 +131,12 @@ void update_one(uint idx)
     p.velocity = vec4(vel, 0);
     p.position = vec4(pos, 1.0);
     outNodes[idx] = p;
+
+    if (config.trackedIdx > -1 && config.trackedIdx == idx)
+    {
+        p.flags = 1;
+        tracked = p;
+    }
 }
 
 void main()
@@ -139,5 +145,7 @@ void main()
     if (idx >=0 && idx < config.nodesCount) 
     {
         update_one(idx);
+
+
     }
 }

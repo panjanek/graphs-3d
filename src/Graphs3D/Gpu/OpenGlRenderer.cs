@@ -35,6 +35,8 @@ namespace Graphs3D.Gpu
 
         public int? TrackedIdx { get; set; }
 
+        public int? DraggedIdx { get; set; }
+
         private Panel placeholder;
 
         private System.Windows.Forms.Integration.WindowsFormsHost host;
@@ -91,7 +93,13 @@ namespace Graphs3D.Gpu
             UploadGraph();
             ResetOrigin();
 
-            var dragging = new DraggingHandler(glControl, (mousePos, btn) => true, (prev, curr, btn) =>
+            var dragging = new DraggingHandler(glControl, (mousePos, btn) =>
+            {
+                var selectedIdx = GetClickedNodeIndex((int)mousePos.X, (int)mousePos.Y);
+                if (selectedIdx.HasValue && !TrackedIdx.HasValue)
+                    DraggedIdx = selectedIdx;
+                return true;
+            }, (prev, curr, btn) =>
             {
                 var delta = (curr - prev);
                 if (btn == MouseButtons.Right)
@@ -103,17 +111,27 @@ namespace Graphs3D.Gpu
                 }
                 else
                 {
-                    // translating camera in a plane perpendicular to the current cammera direction
                     StopTracking();
                     var forward = GetCameraDirection();
                     forward.Normalize();
                     Vector3 right = Vector3.Normalize(Vector3.Cross(forward.Xyz, Vector3.UnitY));
                     Vector3 up = Vector3.Cross(right, forward.Xyz);
-                    var trranslation = -right * delta.X + up * delta.Y;
-                    center += new Vector4(trranslation.X, trranslation.Y, trranslation.Z, 0);
+                    var translation = -right * delta.X + up * delta.Y;
+                    var dragged = DraggedIdx;
+                    if (dragged.HasValue)
+                    {
+                        solverProgram.DownloadNodes(app.simulation.nodes);
+                        app.simulation.nodes[dragged.Value].position -= 0.1f*new Vector4(translation.X, translation.Y, translation.Z, 0); //TODO scale
+                        solverProgram.UploadGraph(app.simulation.nodes, app.simulation.edges);
+                    }
+                    else
+                    {
+                        // translating camera in a plane perpendicular to the current cammera direction
+                        center += new Vector4(translation.X, translation.Y, translation.Z, 0);
+                    }
                 }
 
-            }, () => { });
+            }, () => { DraggedIdx = null; });
 
             glControl.MouseWheel += (s, e) =>
             {
@@ -146,39 +164,7 @@ namespace Graphs3D.Gpu
             lock (app.simulation)
             {
                 //DebugUtil.DebugSolver(true, app.simulation.config, solverProgram);
-                solverProgram.DownloadNodes(app.simulation.nodes);
-                int pixelRadius = 5;
-                int? selectedIdx = null;
-                float minDepth = app.simulation.config.fieldSize * 10;
-                var projectionMatrix = GetCombinedProjectionMatrix();
-                for (int idx = 0; idx < app.simulation.nodes.Length; idx++)
-                {
-                    for (int x = -1; x <= 1; x++)
-                        for (int y = -1; y <= 1; y++)
-                            for (int z = -1; z <= 1; z++)
-                            {
-                                var particlePosition = app.simulation.nodes[idx].position;
-                                particlePosition.X += x * app.simulation.config.fieldSize;
-                                particlePosition.Y += y * app.simulation.config.fieldSize;
-                                particlePosition.Z += z * app.simulation.config.fieldSize;
-
-                                var screenAndDepth = GpuUtil.World3DToScreenWithDepth(particlePosition.Xyz, projectionMatrix, glControl.Width, glControl.Height);
-                                if (screenAndDepth.HasValue)
-                                {
-                                    var screen = screenAndDepth.Value.screen;
-                                    var depth = screenAndDepth.Value.depth;
-                                    var distance = Math.Sqrt((screen.X - e.X) * (screen.X - e.X) +
-                                                             (screen.Y - e.Y) * (screen.Y - e.Y));
-                                    if (distance < pixelRadius && depth < minDepth)
-                                    {
-                                        selectedIdx = idx;
-                                        minDepth = depth;
-                                    }
-                                   
-                                }
-                            }
-                }
-
+                var selectedIdx = GetClickedNodeIndex(e.X, e.Y);
                 if (selectedIdx.HasValue)
                 {
                     if (TrackedIdx == selectedIdx.Value)
@@ -187,6 +173,35 @@ namespace Graphs3D.Gpu
                         StartTracking(selectedIdx.Value);
                 }
             }
+        }
+
+        private int? GetClickedNodeIndex(int mouseX, int mouseY)
+        {
+            solverProgram.DownloadNodes(app.simulation.nodes);
+            int pixelRadius = 5;
+            int? selectedIdx = null;
+            float minDepth = app.simulation.config.fieldSize * 10;
+            var projectionMatrix = GetCombinedProjectionMatrix();
+            for (int idx = 0; idx < app.simulation.nodes.Length; idx++)
+            {
+                var particlePosition = app.simulation.nodes[idx].position;
+                var screenAndDepth = GpuUtil.World3DToScreenWithDepth(particlePosition.Xyz, projectionMatrix, glControl.Width, glControl.Height);
+                if (screenAndDepth.HasValue)
+                {
+                    var screen = screenAndDepth.Value.screen;
+                    var depth = screenAndDepth.Value.depth;
+                    var distance = Math.Sqrt((screen.X - mouseX) * (screen.X - mouseX) +
+                                                (screen.Y - mouseY) * (screen.Y - mouseY));
+                    if (distance < pixelRadius && depth < minDepth)
+                    {
+                        selectedIdx = idx;
+                        minDepth = depth;
+                    }
+
+                }
+            }
+
+            return selectedIdx;
         }
 
         private Vector4 GetCameraDirection()
@@ -237,6 +252,8 @@ namespace Graphs3D.Gpu
                 var delta = cameraPosition - center;
                 var translate = delta * app.simulation.cameraFollowSpeed;
                 center += translate;
+
+                center = cameraPosition;
                 //do not correct torus then tracking not to interfere with fade. tracked.position will be torus corrected anyway
             }
         }
