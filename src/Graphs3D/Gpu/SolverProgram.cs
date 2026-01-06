@@ -87,6 +87,7 @@ namespace Graphs3D.Gpu
             GL.BufferData(BufferTarget.UniformBuffer, Marshal.SizeOf<ShaderConfig>(), ref config, BufferUsageHint.StaticDraw);
 
             // ------------------------ run tiling ---------------------------
+            /*
             //count
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, cellCountBuffer);
             GL.ClearBufferData(BufferTarget.ShaderStorageBuffer, PixelInternalFormat.R32ui, PixelFormat.RedInteger, PixelType.UnsignedInt, IntPtr.Zero);
@@ -120,6 +121,7 @@ namespace Graphs3D.Gpu
 
 
             //DebugUtil.DebugSolver(false, config, this);
+            */
             // ------------------------ run solver --------------------------
             //upload forces
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, forcesBuffer);
