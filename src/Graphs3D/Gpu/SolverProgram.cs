@@ -173,23 +173,26 @@ namespace Graphs3D.Gpu
 
         public void UploadGraph(Node[] nodes, Edge[] edges)
         {
-            PrepareBuffers(nodes.Length, currentTotalCellsCount, edges.Length);
-            ComputeNeighbours(nodes, edges);
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, pointsBufferA);
-            GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, nodes.Length * shaderPointStrideSize, nodes);
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, pointsBufferB);
-            GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, nodes.Length * shaderPointStrideSize, nodes);
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, edgesBuffer);
-            GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, edges.Length * Marshal.SizeOf<Edge>(), edges);
+            lock (this)
+            {
+                PrepareBuffers(nodes.Length, currentTotalCellsCount, edges.Length);
+                ComputeNeighbours(nodes, edges);
+                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, pointsBufferA);
+                GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, nodes.Length * shaderPointStrideSize, nodes);
+                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, pointsBufferB);
+                GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, nodes.Length * shaderPointStrideSize, nodes);
+                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, edgesBuffer);
+                GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, edges.Length * Marshal.SizeOf<Edge>(), edges);
 
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, neighboursBuffer);
-            GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, neighbours.Length * Marshal.SizeOf<uint>(), neighbours);
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, neighboursStartBuffer);
-            GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, neighboursStart.Length * Marshal.SizeOf<uint>(), neighboursStart);
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, neighboursCountBuffer);
-            GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, neighboursCount.Length * Marshal.SizeOf<uint>(), neighboursCount);
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, restLengthsBuffer);
-            GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, restLengths.Length * Marshal.SizeOf<float>(), restLengths);
+                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, neighboursBuffer);
+                GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, neighbours.Length * Marshal.SizeOf<uint>(), neighbours);
+                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, neighboursStartBuffer);
+                GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, neighboursStart.Length * Marshal.SizeOf<uint>(), neighboursStart);
+                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, neighboursCountBuffer);
+                GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, neighboursCount.Length * Marshal.SizeOf<uint>(), neighboursCount);
+                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, restLengthsBuffer);
+                GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, restLengths.Length * Marshal.SizeOf<float>(), restLengths);
+            }
         }
 
         public void DownloadNodes(Node[] nodes, bool bufferB = false)
@@ -243,6 +246,7 @@ namespace Graphs3D.Gpu
 
         public void ComputeNeighbours(Node[] nodes, Edge[] edges)
         {
+            Array.Clear(neighboursCount);
             for(int e=0; e<edges.Length; e++)
             {
                 var edge = edges[e];
