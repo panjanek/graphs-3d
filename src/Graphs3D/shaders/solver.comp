@@ -42,10 +42,6 @@ struct Edge
     int flags;
 };
 
-#define MAX_SPECIES_COUNT     10
-#define KEYPOINTS_COUNT       6
-#define FORCE_COUNT           (MAX_SPECIES_COUNT * MAX_SPECIES_COUNT * KEYPOINTS_COUNT)
-
 layout(std140, binding = 0) uniform ConfigBuffer {
     ShaderConfig config;
 };
