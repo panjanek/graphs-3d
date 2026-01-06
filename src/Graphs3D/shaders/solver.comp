@@ -82,9 +82,11 @@ layout(std430, binding = 8) buffer ParticleIndices {
 void update_one(uint idx)
 {
     float uSpringK = 4.0;
-    float uRepulsionK = 1;
+    float uRepulsionK = 200;
     float uDamping = 0.95;
     float uMaxStep = 3;
+    float epsilon = 0.1;
+    float maxSpringForce = 100.0;
 
     Node p = inNodes[idx];
     
@@ -99,11 +101,11 @@ void update_one(uint idx)
 
         uint other = (e.a == idx) ? e.b : e.a;
         vec3 dir = inNodes[other].position.xyz - pos;
-        float dist = length(dir) + 0.1;
+        float dist = length(dir) + epsilon;
 
         float delta = dist - e.restLength;
-        vec3 f = (dir / dist) * (uSpringK * delta);
-        force += f;
+        float fmag = clamp(uSpringK * delta, -maxSpringForce, maxSpringForce);
+        force += (dir / dist) * fmag;
     }
 
     // Repulsion
@@ -112,7 +114,8 @@ void update_one(uint idx)
         if (j == idx) continue;
         vec3 d = pos - inNodes[j].position.xyz;
         float r2 = dot(d, d) + 0.1;
-        force += normalize(d) * (uRepulsionK / r2);
+        if (r2 > epsilon)
+            force += d * (uRepulsionK / (r2 * sqrt(r2)));
     }
 
     // Integrate

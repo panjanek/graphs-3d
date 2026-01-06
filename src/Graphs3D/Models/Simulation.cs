@@ -31,7 +31,9 @@ namespace Graphs3D.Models
 
         public int seed = 11;
 
-        public float followDistance = 150; 
+        public float followDistance = 150;
+
+        public static Random globalRandom = new Random(1);
 
         public Simulation()
         {
@@ -57,19 +59,6 @@ namespace Graphs3D.Models
 
         public void AddRandomNodes(int addNodesCount)
         {
-            var rnd = new Random(1);
-            var center = new Vector3(0, 0, 0);
-            for (int i = 0; i < nodes.Length; i++)
-                center += nodes[i].position.Xyz;
-            center /= nodes.Length;
-            float radius = 0;
-            for(int i=0; i< nodes.Length;i++)
-            {
-                float r = Vector3.Distance(nodes[i].position.Xyz, center);
-                if (r > radius)
-                    radius = r;
-            }
-
             var oldNodes = nodes;
             nodes = new Node[oldNodes.Length + addNodesCount];
             Array.Copy(oldNodes, nodes, oldNodes.Length);
@@ -78,18 +67,9 @@ namespace Graphs3D.Models
             Array.Copy(oldEdges, edges, oldEdges.Length);
             for (int i=0; i< addNodesCount; i++)
             {
-                int connectToIdx = rnd.Next(oldNodes.Length);
+                int connectToIdx = globalRandom.Next(oldNodes.Length);
                 var connectToPos = oldNodes[connectToIdx].position.Xyz;
-                var newRadius = radius + 5;
-                var newPos = center + new Vector3((float)rnd.NextDouble() - 0.5f, (float)rnd.NextDouble() - 0.5f, (float)rnd.NextDouble() - 0.5f) * newRadius;
-                if (radius > 1)
-                {
-                    var radiusRatio = newRadius / radius;
-                    newPos = connectToPos;
-                    newPos += new Vector3((float)rnd.NextDouble() - 0.5f, (float)rnd.NextDouble() - 0.5f, (float)rnd.NextDouble() - 0.5f) * newRadius;
-                }
-
-
+                var newPos = connectToPos + new Vector3((float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f) * 1;
                 nodes[oldNodes.Length + i].position = new Vector4(newPos, 1.0f);
                 nodes[oldNodes.Length + i].velocity = new Vector4();
                 edges[oldEdges.Length + i].a = (uint)connectToIdx;
