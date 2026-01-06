@@ -72,168 +72,17 @@ layout(std430, binding = 8) buffer ParticleIndices {
     uint particleIndices[];
 };
 
-void torus_pos(inout vec4 pos)
-{
-    if (pos.x >= config.fieldSize)
-        pos.x -= config.fieldSize;
-    else if (pos.x < 0)
-        pos.x += config.fieldSize;
-
-    if (pos.y >= config.fieldSize)
-        pos.y -= config.fieldSize;
-    else if (pos.y < 0)
-        pos.y += config.fieldSize;
-
-    if (pos.z >= config.fieldSize)
-        pos.z -= config.fieldSize;
-    else if (pos.z < 0)
-        pos.z += config.fieldSize;
-}
-
-void torus_dist(inout vec4 d)
-{
-    if (abs(d.x) > config.fieldSize / 2)
-        d.x -= config.fieldSize*sign(d.x);
-
-    if (abs(d.y) > config.fieldSize / 2)
-        d.y -= config.fieldSize*sign(d.y);
-
-    if (abs(d.z) > config.fieldSize / 2)
-        d.z -= config.fieldSize*sign(d.z);
-}
-
-float evaluateForceForOffset(uint offset, float dist)
-{
-    // Clamp distance to valid range
-    dist = clamp(dist, forces[offset].x, forces[offset+5].x);
-
-    // Find the segment [i, i+1] that contains dist
-    for (int i = 0; i < KEYPOINTS_COUNT-1; ++i)
-    {
-        float x0 = forces[offset+i].x;
-        float x1 = forces[offset+i + 1].x;
-
-        if (dist <= x1)
-        {
-            float t = (dist - x0) / (x1 - x0);
-            return mix(forces[offset+i].y, forces[offset+i + 1].y, t);
-        }
-    }
-
-    // Safety fallback (should never happen)
-    return 0.0;
-}
-
-vec4 compute_single_acceleration(Particle p, Particle other)
-{
-    vec4 d = other.position - p.position;
-    torus_dist(d);
-    vec4 single_acc = vec4(0,0,0,0);
-    if (abs(d.x) <= config.maxDist && abs(d.y) <= config.maxDist && abs(d.z) <= config.maxDist)
-    {
-        float r2 = dot(d, d) + config.sigma2;
-        float r = sqrt(r2);
-        uint forceOffset = (p.species * MAX_SPECIES_COUNT + other.species) * KEYPOINTS_COUNT;
-        float f = evaluateForceForOffset(forceOffset, r);
-        single_acc = config.amp * f * d / r;
-    }
-
-    return single_acc;
-}
-
-
-vec4 compute_total_acceleration0(uint idx, Particle p)
-{
-    vec4 acc = vec4(0.0);
-    for(uint otherIdx = 0; otherIdx < config.particleCount; otherIdx++)
-    {
-        if (idx != otherIdx)
-        {
-             Particle other = inParticles[otherIdx];
-             acc += compute_single_acceleration(p, other);
-        }
-    }
-
-    return acc;
-}
-
-int wrapCell(int c)
-{
-    return (c % config.cellCount + config.cellCount) % config.cellCount;
-}
-
-vec4 compute_total_acceleration(uint idx, Particle p)
-{
-    int cellCount2 = config.cellCount * config.cellCount;
-    int gridX = p.cellIndex % config.cellCount;
-    int gridY = (p.cellIndex / config.cellCount) % config.cellCount;
-    int gridZ = p.cellIndex / (cellCount2);
-    ivec3 main = ivec3(gridX, gridY, gridZ);
-
-    vec4 acc = vec4(0.0);
-    for (int dz = -1; dz <= 1; dz++)
-    for (int dy = -1; dy <= 1; dy++)
-    for (int dx = -1; dx <= 1; dx++)
-    {
-        ivec3 cell = main + ivec3(dx, dy, dz);
-        cell.x = wrapCell(cell.x);
-        cell.y = wrapCell(cell.y);
-        cell.z = wrapCell(cell.z);
-        uint cellIdx = cell.x +
-                       cell.y * config.cellCount +
-                       cell.z * cellCount2;
-        uint offset = cellOffsets[cellIdx];
-        uint count = cellCounts[cellIdx];
-        for(uint indiceIdx = offset; indiceIdx<offset + count; indiceIdx++)
-        {
-            uint otherIdx = particleIndices[indiceIdx];
-            if (idx != otherIdx)
-            {
-                 Particle other = inParticles[otherIdx];
-                 acc += compute_single_acceleration(p, other);
-            }
-        }
-    }
-
-    return acc;
-}
 
 void update_one(uint idx)
 {
     Particle p = inParticles[idx];
     
-    vec4 acc = compute_total_acceleration(idx, p);
+    vec4 acc = vec4(0.0);
     vec4 vel = p.velocity;
     vec4 pos = p.position;
 
-    //clamp acceleration
-    if (config.clampAcc > 0.0)
-    {
-        float acc2 = dot(acc, acc);
-        float maxAcc2 = config.clampAcc * config.clampAcc;
-        acc *= inversesqrt(max(acc2, maxAcc2)) * config.clampAcc;
-    }
 
-    //integrate velocity
-    vel += acc * config.dt;
-    
-    //clamp velocity
-    if (config.clampVel > 0)
-    {
-        float vel2 = dot(vel, vel);
-        float maxVel2 = config.clampVel * config.clampVel;
-        vel *= inversesqrt(max(vel2, maxVel2)) * config.clampVel;
-    }
-
-    //exp drag
-    float speed = length(vel);
-    float drag = exp(-config.damping * speed * config.dt);
-    vel *= drag;
-
-    //integrate position
     pos += vel * config.dt;
-
-    torus_pos(pos);
 
     //prepare updated particle struct
     p.position = pos;
@@ -244,10 +93,6 @@ void update_one(uint idx)
         p.flags = 1;
         tracked = p;
     }
-
-    bool isDisabled = config.disabled[p.species / 4][p.species % 4] != 0;
-    if (isDisabled)
-        p.flags = 2;
 
     outParticles[idx] = p;
 }
