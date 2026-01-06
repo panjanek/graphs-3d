@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenTK.GLControl;
 using OpenTK.Mathematics;
 
 namespace Graphs3D.Gpu
@@ -121,6 +122,44 @@ namespace Graphs3D.Gpu
             float depth01 = ndc.Z * 0.5f + 0.5f;
 
             return (new Vector2(x, y), depth01);
+        }
+
+        public static Vector3 ScreenToWorldRay(
+            Vector2 mouse,
+            Matrix4 view,
+            Matrix4 proj,
+            int width,
+            int height)
+        {
+            // NDC
+            float x = (2.0f * mouse.X) / width - 1.0f;
+            float y = -(2.0f * mouse.Y) / height + 1.0f;
+            float z = -1.0f; // near plane
+
+            Vector4 rayClip = new Vector4(x, y, z, 1.0f);
+
+            Matrix4 invProj = Matrix4.Invert(proj);
+            Vector4 rayEye = Multiply(invProj, rayClip);
+            rayEye = new Vector4(rayEye.X, rayEye.Y, -1.0f, 0.0f);
+
+            Matrix4 invView = Matrix4.Invert(view);
+            Vector4 rayWorld4 = Multiply(invView, rayEye);
+
+            return Vector3.Normalize(rayWorld4.Xyz);
+        }
+
+        public static Vector3 IntersectRayPlane(
+            Vector3 rayOrigin,
+            Vector3 rayDir,
+            Vector3 planePoint,
+            Vector3 planeNormal)
+        {
+            float denom = Vector3.Dot(rayDir, planeNormal);
+            if (Math.Abs(denom) < 1e-6f)
+                return rayOrigin;
+
+            float t = Vector3.Dot(planePoint - rayOrigin, planeNormal) / denom;
+            return rayOrigin + rayDir * t;
         }
     }
 }

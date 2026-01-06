@@ -112,21 +112,31 @@ namespace Graphs3D.Gpu
                 else
                 {
                     StopTracking();
-                    var forward = GetCameraDirection();
-                    forward.Normalize();
-                    Vector3 right = Vector3.Normalize(Vector3.Cross(forward.Xyz, Vector3.UnitY));
-                    Vector3 up = Vector3.Cross(right, forward.Xyz);
-                    var translation = -right * delta.X + up * delta.Y;
                     var dragged = DraggedIdx;
                     if (dragged.HasValue)
                     {
+                        //translate dragged node by world coorditanes translation
+                        Vector3 planeNormal = GetCameraDirection().Xyz;
+                        planeNormal.Normalize();;
+                        Vector3 camPos = center.Xyz;
+                        Vector3 planePoint = app.simulation.nodes[dragged.Value].position.Xyz;
+                        Vector3 ray0 = GpuUtil.ScreenToWorldRay(new Vector2(prev.X, prev.Y), GetViewMatrix(), GetProjectionMatrix(), glControl.Width, glControl.Height);
+                        Vector3 ray1 = GpuUtil.ScreenToWorldRay(new Vector2(curr.X, curr.Y), GetViewMatrix(), GetProjectionMatrix(), glControl.Width, glControl.Height);
+                        Vector3 p0 = GpuUtil.IntersectRayPlane(camPos, ray0, planePoint, planeNormal);
+                        Vector3 p1 = GpuUtil.IntersectRayPlane(camPos, ray1, planePoint, planeNormal);
+                        var translation = p1 - p0;
                         solverProgram.DownloadNodes(app.simulation.nodes);
-                        app.simulation.nodes[dragged.Value].position -= 0.1f*new Vector4(translation.X, translation.Y, translation.Z, 0); //TODO scale
+                        app.simulation.nodes[dragged.Value].position += new Vector4(translation, 0);
                         solverProgram.UploadGraph(app.simulation.nodes, app.simulation.edges);
                     }
                     else
                     {
                         // translating camera in a plane perpendicular to the current cammera direction
+                        var forward = GetCameraDirection();
+                        forward.Normalize();
+                        Vector3 right = Vector3.Normalize(Vector3.Cross(forward.Xyz, Vector3.UnitY));
+                        Vector3 up = Vector3.Cross(right, forward.Xyz);
+                        var translation = -right * delta.X + up * delta.Y;
                         center += new Vector4(translation.X, translation.Y, translation.Z, 0);
                     }
                 }
