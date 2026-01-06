@@ -1,0 +1,62 @@
+﻿#version 430
+
+#pragma optimize(on)
+
+layout(local_size_x = {LocalSizeX}) in;
+
+struct ShaderConfig {
+    int particleCount;
+    float dt;
+    float sigma2;
+    float clampVel;
+    float clampAcc;
+    float fieldSize;
+    float cellSize;
+    float maxDist;
+    int speciesCount;
+    float damping;
+    int trackedIdx;
+    float maxForce;
+    float amp;
+    int cellCount;
+    int totalCellCount;
+    ivec4 disabled[4];
+};
+
+struct Particle
+{
+   vec4 position;
+   vec4 velocity;
+   int species;
+   int flags;
+   int  cellIndex;
+   int  _pad1;
+};
+
+layout(std140, binding = 0) uniform ConfigBuffer {
+    ShaderConfig config;
+};
+
+layout(std430, binding = 1) buffer InputBuffer
+{
+    Particle particles[];
+};
+
+layout(std430, binding = 7) buffer CellOffsets {
+    uint cellOffsets[];
+};
+
+layout(std430, binding = 8) buffer ParticleIndices {
+    uint particleIndices[];
+};
+
+void main()
+{
+    uint idx = gl_GlobalInvocationID.x;
+    if (idx >=0 && idx < config.particleCount) 
+    {
+        int cellIndex = particles[idx].cellIndex;
+        uint offset = atomicAdd(cellOffsets[cellIndex], 1);
+        particleIndices[offset] = idx;    
+    }
+}
