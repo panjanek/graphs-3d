@@ -20,7 +20,7 @@ namespace Graphs3D.Models
 
         public ShaderConfig config;
 
-        public float cameraFollowSpeed = 1f;
+        public float cameraFollowSpeed = 0.02f;
 
         public float particleSize = 0.3f;
 
@@ -31,7 +31,7 @@ namespace Graphs3D.Models
 
         public int seed = 11;
 
-        public float followDistance = 50;
+        public float followDistance = 10;
 
         public static Random globalRandom = new Random(1);
 

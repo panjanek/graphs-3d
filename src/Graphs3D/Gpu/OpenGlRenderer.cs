@@ -214,44 +214,14 @@ namespace Graphs3D.Gpu
             return selectedIdx;
         }
 
-        private Vector4 GetCameraDirection()
-        {
-            float dirX = (float)(Math.Cos(yAngle) * Math.Sin(xzAngle));
-            float dirY = (float)(Math.Sin(yAngle));
-            float dirZ = (float)(Math.Cos(yAngle) * Math.Cos(xzAngle));
-            return new Vector4(dirX, dirY, dirZ, 0);
-        }
+        private Vector4 GetCameraDirection() => new Vector4((float)(Math.Cos(yAngle) * Math.Sin(xzAngle)), (float)(Math.Sin(yAngle)), (float)(Math.Cos(yAngle) * Math.Cos(xzAngle)), 0);
+        
 
-        private Matrix4 GetViewMatrix()
-        {
-            Matrix4 view = Matrix4.LookAt(
-                center.Xyz,
-                (center + GetCameraDirection()).Xyz,
-                Vector3.UnitY
-            );
+        private Matrix4 GetViewMatrix() => Matrix4.LookAt(center.Xyz, (center + GetCameraDirection()).Xyz, Vector3.UnitY);
 
-            return view;
-        }
+        private Matrix4 GetProjectionMatrix() => Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(60f), glControl.Width / (float)glControl.Height, 0.1f, 5000f);
 
-        private Matrix4 GetProjectionMatrix()
-        {
-            Matrix4 proj = Matrix4.CreatePerspectiveFieldOfView(
-                MathHelper.DegreesToRadians(60f),
-                glControl.Width / (float)glControl.Height,
-                0.1f,
-                5000f
-            );
-
-            return proj;
-        }
-
-        private Matrix4 GetCombinedProjectionMatrix()
-        {
-            var view = GetViewMatrix();
-            var proj = GetProjectionMatrix();
-            Matrix4 matrix = view * proj;
-            return matrix;
-        }
+        private Matrix4 GetCombinedProjectionMatrix() => GetViewMatrix() * GetProjectionMatrix();
 
         private void FollowTrackedParticle()
         {
@@ -262,9 +232,6 @@ namespace Graphs3D.Gpu
                 var delta = cameraPosition - center;
                 var translate = delta * app.simulation.cameraFollowSpeed;
                 center += translate;
-
-                center = cameraPosition;
-                //do not correct torus then tracking not to interfere with fade. tracked.position will be torus corrected anyway
             }
         }
 
