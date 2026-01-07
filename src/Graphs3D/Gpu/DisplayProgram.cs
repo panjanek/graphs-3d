@@ -24,7 +24,9 @@ namespace Graphs3D.Gpu
 
         private int particleSizeLocation;
 
-        private int viewLocation;
+        private int viewNodesLocation;
+
+        private int viewEdgesLocation;
 
         private int trackedPosLocation;
 
@@ -51,8 +53,8 @@ namespace Graphs3D.Gpu
             if (particleSizeLocation == -1) throw new Exception("Uniform 'paricleSize' not found. Shader optimized it out?");
             viewportSizeNodesLocation = GL.GetUniformLocation(nodesProgram, "viewportSize");
             if (viewportSizeNodesLocation == -1) throw new Exception("Uniform 'viewportSize' not found. Shader optimized it out?");
-            viewLocation = GL.GetUniformLocation(nodesProgram, "view");
-            if (viewLocation == -1) throw new Exception("Uniform 'view' not found. Shader optimized it out?");
+            viewNodesLocation = GL.GetUniformLocation(nodesProgram, "view");
+            if (viewNodesLocation == -1) throw new Exception("Uniform 'view' not found. Shader optimized it out?");
             trackedPosLocation = GL.GetUniformLocation(nodesProgram, "trackedPos");
             if (trackedPosLocation == -1) throw new Exception("Uniform 'trackedPos' not found. Shader optimized it out?");
 
@@ -61,6 +63,9 @@ namespace Graphs3D.Gpu
             if (projEdgesLocation == -1) throw new Exception("Uniform 'projection' not found. Shader optimized it out?");
             viewportSizeEdgesLocation = GL.GetUniformLocation(edgesProgram, "viewportSize");
             if (viewportSizeEdgesLocation == -1) throw new Exception("Uniform 'viewportSize' not found. Shader optimized it out?");
+            viewEdgesLocation = GL.GetUniformLocation(edgesProgram, "view");
+            if (viewEdgesLocation == -1) throw new Exception("Uniform 'view' not found. Shader optimized it out?");
+
 
             float[] quad =
                 {
@@ -117,7 +122,7 @@ namespace Graphs3D.Gpu
             GL.UniformMatrix4(projNodesLocation, false, ref projectionMatrix);
             GL.Uniform1(particleSizeLocation, particleSize);
             GL.Uniform2(viewportSizeNodesLocation, viewportSize);
-            GL.UniformMatrix4(viewLocation, false, ref view);
+            GL.UniformMatrix4(viewNodesLocation, false, ref view);
             GL.Uniform4(trackedPosLocation, ref trackedPos);
 
             GL.DrawElementsInstanced(
@@ -150,6 +155,7 @@ namespace Graphs3D.Gpu
 
             var projection = view * projectionMatrix;
             GL.UniformMatrix4(projEdgesLocation, false, ref projection);
+            GL.UniformMatrix4(viewEdgesLocation, false, ref view);
             GL.Uniform2(viewportSizeEdgesLocation, ref viewportSize);
 
 

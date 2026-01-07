@@ -55,7 +55,7 @@ namespace Graphs3D.Models
             config.edgesCount = edges.Length;
             nodes[0].position = new Vector4(config.fieldSize / 2, config.fieldSize / 2, config.fieldSize / 2, 1.0f);
 
-            //Create2DGrid((uint)30, (uint)30, true, false);
+            Create2DGrid((uint)30, (uint)30, true, false);
         }
 
         public void StartNewGraph(IGraph graph)

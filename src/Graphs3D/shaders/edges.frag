@@ -20,8 +20,8 @@ void main()
         abs(vEdgeDist)
     );
 
-    // ----- fog -----
-    float fogDensity = 0.0005;
+    // ---- fog (correct) ----
+    float fogDensity = 0.002;
     float fog = exp(-fogDensity * vDepth);
     fog = clamp(fog, 0.0, 1.0);
 
