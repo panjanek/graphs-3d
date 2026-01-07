@@ -29,10 +29,10 @@ struct Node
    vec4 position;
    vec4 velocity;
    vec4 prevForce;
-   int species;
+   int player;
    int flags;
    int  cellIndex;
-   float _pad1;
+   int level;
 };
 
 struct Edge

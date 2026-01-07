@@ -5,10 +5,10 @@ struct Node
    vec4 position;
    vec4 velocity;
    vec4 prevForce;
-   int species;
+   int player;
    int flags;
    int  cellIndex;
-   float _pad1;
+   int level;
 };
 
 layout(std430, binding = 2) buffer OutputBuffer {
@@ -78,7 +78,7 @@ void main()
         vec3(0.5, 0.5, 0.5)  // gray
     );
 
-    vColor = colors[p.species % 8];
+    vColor = colors[p.player % 8];
 
     if (p.flags == 1)
         vColor = vColor*2;
