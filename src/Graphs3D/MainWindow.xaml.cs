@@ -116,9 +116,11 @@ namespace Graphs3D
             if (timespan.TotalSeconds >= 0.0001)
             {
                 double fps = frames / timespan.TotalSeconds;
-                Title = $"ParticleLife3D. " +
+                Title = $"Graphs3D. " +
                         $"fps:{fps.ToString("0.0")} "+
-                        $"seed:{app.simulation.seed.ToString()} ";
+                        $"nodes:{app.simulation.config.nodesCount} "+
+                        $"edges:{app.simulation.config.edgesCount} "+
+                        $"cells:{app.simulation.config.useCells} ";
 
                 if (!string.IsNullOrWhiteSpace(app.configWindow.recordDir))
                 {

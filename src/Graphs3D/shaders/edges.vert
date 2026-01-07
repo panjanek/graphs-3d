@@ -31,7 +31,7 @@ layout(std430, binding = 3) buffer EdgesBuffer {
 uniform mat4 projection;
 
 out float vDepth;
-out float vStretch;
+out vec3 vColor;
 
 void main()
 {
@@ -47,9 +47,16 @@ void main()
     gl_Position = clip;
     vDepth = -clip.z;
 
-    // Optional: visualize edge stretch
-    vec3 pa = nodes[e.a].position.xyz;
-    vec3 pb = nodes[e.b].position.xyz;
-    float len = length(pb - pa);
-    vStretch = (len - e.restLength) / e.restLength;
+    const vec3 colors[] = vec3[](
+        vec3(1.0, 1.0, 0.0), // yellow
+        vec3(1.0, 0.0, 1.0), // magenta
+        vec3(0.0, 1.0, 1.0), // cyan
+        vec3(1.0, 0.0, 0.0), // red
+        vec3(0.0, 1.0, 0.0), // green
+        vec3(0.0, 0.0, 1.0), // blue
+        vec3(1.0, 1.0, 1.0), // white
+        vec3(0.5, 0.5, 0.5)  // gray
+    );
+
+    vColor = colors[e.player % 8];
 }

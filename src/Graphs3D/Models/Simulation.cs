@@ -72,15 +72,15 @@ namespace Graphs3D.Models
                 for(uint y=0; y< rowSizeY; y++)
                 {
                     if (x > 0)
-                        list.Add(new Edge() { a = y* rowSizeX + (x-1), b = y* rowSizeX + x });
+                        list.Add(new Edge() { a = y* rowSizeX + (x-1), b = y* rowSizeX + x, player = 1+(x+y)%2 });
                     if (y > 0)
-                        list.Add(new Edge() { a = (y-1) * rowSizeX + x, b = y * rowSizeX + x });
+                        list.Add(new Edge() { a = (y-1) * rowSizeX + x, b = y * rowSizeX + x, player = 1+(x + y) % 2 });
 
                     if (y == 0 && wrapHoriz)
-                        list.Add(new Edge() { a = (0) * rowSizeX + x, b = (rowSizeY - 1) * rowSizeX + x });
+                        list.Add(new Edge() { a = (0) * rowSizeX + x, b = (rowSizeY - 1) * rowSizeX + x, player = 1+(x + y) % 2 });
 
                     if (x == 0 && wrapVert)
-                        list.Add(new Edge() { a = y * rowSizeX + 0, b = y * rowSizeX + rowSizeX - 1 });
+                        list.Add(new Edge() { a = y * rowSizeX + 0, b = y * rowSizeX + rowSizeX - 1, player = 1+(x + y) % 2 });
                 }
 
             edges = list.ToArray();
