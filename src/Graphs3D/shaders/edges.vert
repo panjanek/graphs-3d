@@ -29,12 +29,15 @@ layout(std430, binding = 3) buffer EdgesBuffer {
 };
 
 uniform mat4 projection;
+uniform vec2 viewportSize;
 
 out float vDepth;
 out vec3 vColor;
+out float vEdgeDist;
 
 void main()
 {
+/*
     uint edgeIndex = uint(gl_VertexID) >> 1;
     bool isSecond = (gl_VertexID & 1) == 1;
 
@@ -59,4 +62,64 @@ void main()
     );
 
     vColor = colors[e.player % 8];
+    */
+
+
+
+
+
+    float baseLineWidth = 500.5;
+
+    const vec3 colors[] = vec3[](
+        vec3(1.0, 1.0, 0.0), // yellow
+        vec3(1.0, 0.0, 1.0), // magenta
+        vec3(0.0, 1.0, 1.0), // cyan
+        vec3(1.0, 0.0, 0.0), // red
+        vec3(0.0, 1.0, 0.0), // green
+        vec3(0.0, 0.0, 1.0), // blue
+        vec3(1.0, 1.0, 1.0), // white
+        vec3(0.5, 0.5, 0.5)  // gray
+    );
+
+    uint edgeIndex = uint(gl_VertexID) / 6u;
+    uint corner    = uint(gl_VertexID) % 6u;
+
+    const uint quadCorner[6] = uint[6](0u,1u,2u, 2u,1u,3u);
+    uint qc = quadCorner[corner];
+
+    Edge e = edges[edgeIndex];
+
+    vec3 p0 = nodes[e.a].position.xyz;
+    vec3 p1 = nodes[e.b].position.xyz;
+
+    vec4 clip0 = projection * vec4(p0, 1.0);
+    vec4 clip1 = projection * vec4(p1, 1.0);
+
+    vec2 ndc0 = clip0.xy / clip0.w;
+    vec2 ndc1 = clip1.xy / clip1.w;
+
+    vec2 dir = normalize(ndc1 - ndc0);
+    vec2 normal = vec2(-dir.y, dir.x);
+
+    bool isSecondPoint = (qc & 1u) != 0u;
+    bool isTop         = (qc & 2u) != 0u;
+
+    float depth = isSecondPoint ? -clip1.z : -clip0.z;
+    float width = baseLineWidth / (depth + 1.0);
+
+    vec2 offset = normal * (isTop ? width : -width) / viewportSize;
+
+    vec4 clip = isSecondPoint ? clip1 : clip0;
+    clip.xy += offset * clip.w;
+
+    gl_Position = clip;
+    vDepth = depth;
+
+    float side = (isTop ? 1.0 : -1.0);
+    vEdgeDist = side * width;
+
+    vDepth = depth;
+    vColor = colors[e.player % 8];
+
+
 }
