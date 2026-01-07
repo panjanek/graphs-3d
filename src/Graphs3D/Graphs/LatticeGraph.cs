@@ -12,8 +12,6 @@ namespace Graphs3D.Graphs
 {
     public class LatticeGraph : GraphBase, IGraph
     {
-        private LatticeState root;
-
         private int sizeX;
 
         private int sizeY;
@@ -32,24 +30,21 @@ namespace Graphs3D.Graphs
             this.sizeY = sizeY;
             this.wrapVertical = wrapVertical;
             this.wrapHorizontal = wrapHorizontal;
-            this.root = new LatticeState();
-            AddNode(this.root);
+            var root = new LatticeState();
+            AddNode(root);
         }
-        public int? ExpandNode(int? idx)
+        public int Expand()
         {
-            int parentIdx = 0;
-            if (!idx.HasValue)
-            {
-                var l = lattice.Where(n => !n.expanded).OrderBy(n => n.level).FirstOrDefault();
-                if (l == null)
-                    return null;
-                parentIdx = (int)l.idx;
-            }
-            else
-            {
-                parentIdx = idx.Value;
-            }
+            var parent = lattice.Where(n => !n.expanded).OrderBy(n => n.level).FirstOrDefault();
+            if (parent == null)
+                return 0;
 
+            ExpandNode(parent.idx);
+            return parent.idx;
+        }
+
+        public void ExpandNode(int parentIdx)
+        {
             if (parentIdx < Nodes.Count)
             {
                 var parent = lattice[parentIdx];
@@ -62,8 +57,6 @@ namespace Graphs3D.Graphs
                     parent.expanded = true;
                 }
             }
-
-            return parentIdx;
         }
 
         private void TryAdd(LatticeState parent, int dx, int dy)
@@ -90,15 +83,10 @@ namespace Graphs3D.Graphs
             }
         }
 
-        public Node GetRoot()
-        {
-            return root.ToNode();
-        }
-
         private void AddNode(LatticeState node)
         {
             var count = Nodes.Count;
-            node.idx = (uint)count;
+            node.idx = count;
             keyedNodes[node.key] = node;
             AddResultNode(node.ToNode());
             lattice.Add(node);
@@ -109,7 +97,7 @@ namespace Graphs3D.Graphs
 
     public class LatticeState
     {
-        public uint idx;
+        public int idx;
         public int posX;
         public int posY;
         public int level;

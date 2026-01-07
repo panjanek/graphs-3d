@@ -22,13 +22,13 @@ namespace Graphs3D.Graphs
 
         protected void AddResultNode(Node n) => nodes.Add(n);
 
-        protected void AddResultEdge(uint parentIdx, uint childIdx, int player = 0)
+        protected void AddResultEdge(int parentIdx, int childIdx, int player = 0)
         {
             edges.Add(new Edge() { a = (uint)parentIdx, b = (uint)childIdx, player = (uint)player });
             existingEdges.Add($"{parentIdx}-{childIdx}");
         }
 
-        protected bool EdgeExists(uint a, uint b) => existingEdges.Contains($"{a}-{b}");
+        protected bool EdgeExists(int a, int b) => existingEdges.Contains($"{a}-{b}");
 
     }
 }

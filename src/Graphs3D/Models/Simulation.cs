@@ -69,7 +69,7 @@ namespace Graphs3D.Models
 
         public void Expand()
         {
-            var parentIdx = graph.ExpandNode(null);
+            var parentIdx = graph.Expand();
             var newNodes = graph.Nodes.ToArray();
             var newEdges = graph.Edges.ToArray();
             if (newNodes.Length > nodes.Length)
@@ -80,7 +80,7 @@ namespace Graphs3D.Models
                 
                 for (int i = nodes.Length; i < newNodes.Length; i++)
                 {
-                    tmp[i].position = tmp[parentIdx??0].position + new Vector4((float)globalRandom.NextDouble()-0.5f, (float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f,1);
+                    tmp[i].position = tmp[parentIdx].position + new Vector4((float)globalRandom.NextDouble()-0.5f, (float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f,1);
                 }
 
                 nodes = tmp;
