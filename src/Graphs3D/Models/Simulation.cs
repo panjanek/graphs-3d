@@ -50,7 +50,7 @@ namespace Graphs3D.Models
             edges = new Edge[config.edgesCount];
             nodes[0].position = new Vector4(config.fieldSize / 2, config.fieldSize / 2, config.fieldSize / 2, 1.0f);
 
-            Create2DGrid((uint)particlesCount, (uint)particlesCount*2, true, true);
+            Create2DGrid((uint)particlesCount, (uint)particlesCount, true, false);
             //Create3DGrid(2, 2, 2);
 
             //for (int i = 0; i < 5; i++)

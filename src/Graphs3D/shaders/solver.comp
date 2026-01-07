@@ -223,10 +223,33 @@ vec3 repulsion_cells(uint idx, vec3 pos, float strength)
     return force;
 }
 
+vec3 flatten_force(uint idx, vec3 pos, float strength)
+{
+    uint start = neighboursStart[idx];
+    uint count = neighboursCount[idx];
+
+    if (count < 2)
+        return vec3(0.0);
+
+    vec3 avg = vec3(0.0);
+
+    for (uint i = 0; i < count; i++)
+    {
+        uint n = neighbours[start + i];
+        avg += inNodes[n].position.xyz;
+    }
+
+    avg /= float(count);
+
+    // Laplacian force
+    return strength * (avg - pos);
+}
+
 void update_one(uint idx)
 {
     float uSpringK = 40.0;
     float uRepulsionK = 2000;
+    float uFlatteningK = 1.0;
     float uDamping = 0.95;
     float uMaxStep = 3;
     float maxSpringForce = 500.0;
@@ -253,16 +276,14 @@ void update_one(uint idx)
     }
 
     // Repulsion
-    //force += repulsion_all(idx, pos, uRepulsionK);
-    //force += repulsion_level4(idx, pos, uRepulsionK, uHopDecay);
-
     if (config.useCells == 0)
         force += repulsion_level4(idx, pos, uRepulsionK, uHopDecay);
     else
         force += repulsion_cells(idx, pos, uRepulsionK);
 
-    //if (config.totalCellCount >= 64)
-    //    force = mix(p.prevForce.xyz, force, 0.1);
+
+    //flattening
+    force += flatten_force(idx, pos, uFlatteningK);
 
     // Integrate
     vel += force * config.dt;
