@@ -11,18 +11,5 @@ namespace Graphs3D.Models
     public static class SimFactory
     {
         private static readonly JsonSerializerOptions serializerOptions = new JsonSerializerOptions() { IncludeFields = true, WriteIndented = true };
-        public static void SaveToFile(Simulation recipe, string fn)
-        {
-            var str = JsonSerializer.Serialize(recipe, serializerOptions);
-            File.WriteAllText(fn, str);
-        }
-
-        public static Simulation LoadFromFile(string fn)
-        {
-            var str = File.ReadAllText(fn);
-            var sim = JsonSerializer.Deserialize<Simulation>(str, serializerOptions);
-            sim.InitializeParticles(sim.config.nodesCount);
-            return sim;
-        }
     }
 }

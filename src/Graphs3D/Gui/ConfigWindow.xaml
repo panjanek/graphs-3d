@@ -91,9 +91,6 @@
                     </Grid.RowDefinitions>
 
                     <Button Grid.Row="0" Grid.Column="0" Name="restartButton">Restart</Button>
-                    <Button Grid.Row="0" Grid.Column="1" Name="randomButton">Random</Button>
-                    <Button Grid.Row="0" Grid.Column="2" Name="saveButton">Save</Button>
-                    <Button Grid.Row="0" Grid.Column="3" Name="loadButton">Load</Button>
                     <ToggleButton Name="recordButton" Grid.Row="0" Grid.Column="4" ToolTip="Record frames as PNG files to given folder" Click="Record_Click">
                         <ToggleButton.Style>
                             <Style TargetType="ToggleButton">

@@ -38,57 +38,13 @@ namespace Graphs3D.Gui
             minimizeButton.Click += (s, e) => WindowState = WindowState.Minimized;
             Closing += (s, e) => { e.Cancel = true; WindowState = WindowState.Minimized; };
             ContentRendered += (s, e) => { UpdateActiveControls(); UpdatePassiveControls(); };
-            randomButton.PreviewKeyDown += (s, e) => e.Handled=true;
             restartButton.PreviewKeyDown += (s, e) => e.Handled = true;
-            saveButton.PreviewKeyDown += (s, e) => e.Handled = true;
-            loadButton.PreviewKeyDown += (s, e) => e.Handled = true;
             recordButton.PreviewKeyDown += (s, e) => e.Handled = true;
             backButton.PreviewKeyDown += (s, e) => e.Handled = true;
             backButton.Click += (s, e) => app.renderer.ResetOrigin();
             restartButton.Click += (s, e) => 
             { 
-                app.simulation.InitializeParticles(app.simulation.config.nodesCount);
-                app.renderer.UploadGraph();
-            };
 
-            randomButton.Click += (s, e) =>
-            {
-                app.simulation.InitializeParticles(app.simulation.config.nodesCount);
-                app.simulation.seed++;
-                app.renderer.UploadGraph();
-                app.renderer.ResetOrigin();
-            };
-
-            saveButton.Click += (s, e) =>
-            {
-                var dialog = new CommonSaveFileDialog { Title = "Save configuration json file", DefaultExtension = "json" };
-                dialog.Filters.Add(new CommonFileDialogFilter("JSON files", "*.json"));
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    SimFactory.SaveToFile(app.simulation, dialog.FileName);
-                    PopupMessage.Show(app.mainWindow, $"Config saved to {dialog.FileName}");
-                }
-            };
-
-            loadButton.Click += (s, e) =>
-            {
-                var dialog = new CommonOpenFileDialog { Title = "Open configuration json file", DefaultExtension = "json" };
-                dialog.Filters.Add(new CommonFileDialogFilter("JSON files", "*.json"));
-                if (dialog.ShowDialog() == CommonFileDialogResult.Ok)
-                {
-                    var newSim = SimFactory.LoadFromFile(dialog.FileName);
-                    app.simulation = newSim;
-                    app.renderer.UploadGraph();
-                    UpdateActiveControls();
-                    UpdatePassiveControls();
-                    PopupMessage.Show(app.mainWindow, $"Config loaded from {dialog.FileName}");
-                    if (app.renderer.Paused)
-                    {
-                        app.renderer.Paused = false;
-                        app.renderer.Step();
-                        app.renderer.Paused = true;
-                    }
-                }
             };
 
             KeyDown += (s, e) => app.mainWindow.MainWindow_KeyDown(s, e);
