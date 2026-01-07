@@ -38,7 +38,7 @@ out float vEdgeDist;
 
 void main()
 {
-    float baseLineWidth = 500.5;
+    float baseLineWidth = 750;
 
     const vec3 colors[] = vec3[](
         vec3(1.0, 1.0, 0.0), // yellow

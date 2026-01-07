@@ -115,6 +115,7 @@ namespace Graphs3D.Gpu
                 ClearBufferMask.DepthBufferBit
             );
 
+            //nodes as points
             GL.UseProgram(nodesProgram);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 2, nodesBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 3, edgesBuffer);
@@ -133,32 +134,16 @@ namespace Graphs3D.Gpu
                 particlesCount * 1
             );
 
-            /*
-            GL.UseProgram(edgesProgram);
-            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 2, nodesBuffer);
-            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 3, edgesBuffer);
-            GL.BindVertexArray(edgesVAO);
-            var projection = view * projectionMatrix;
-            GL.UniformMatrix4(projEdgesLocation, false, ref projection);
-            GL.Uniform2(viewportSizeEdgesLocation, ref viewportSize);
-            GL.Enable(EnableCap.LineSmooth);
-            GL.Hint(HintTarget.LineSmoothHint, HintMode.Nicest);
-            GL.LineWidth(3f);
-            GL.DrawArrays(PrimitiveType.Lines, 0, edgesCount * 2);*/
-
+            // edges as quads (x6)
             GL.UseProgram(edgesProgram);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            //GL.BindVertexArray(edgesVAO);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 2, nodesBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 3, edgesBuffer);
-
             var projection = view * projectionMatrix;
             GL.UniformMatrix4(projEdgesLocation, false, ref projection);
             GL.UniformMatrix4(viewEdgesLocation, false, ref view);
             GL.Uniform2(viewportSizeEdgesLocation, ref viewportSize);
-
-
             GL.DrawArrays(PrimitiveType.Triangles, 0, edgesCount * 6);
         }
     }
