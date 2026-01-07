@@ -24,13 +24,13 @@ namespace Graphs3D.Models
 
         [FieldOffset(12)] public int edgesCount = 0;
 
-        [FieldOffset(16)] public float clampAcc = 0;
+        [FieldOffset(16)] public int useCells = 0;
 
         [FieldOffset(20)] public float fieldSize = 800;
 
         [FieldOffset(24)] public float cellSize = 0;
 
-        [FieldOffset(28)] public float maxDist = 30;
+        [FieldOffset(28)] public float maxDist = 100;
 
         [FieldOffset(32)] public float gridSize = 0;
 

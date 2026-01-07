@@ -9,7 +9,7 @@ struct ShaderConfig {
     float dt;
     float sigma2;
     uint edgesCount;
-    float clampAcc;
+    int useCells;
     float fieldSize;
     float cellSize;
     float maxDist;

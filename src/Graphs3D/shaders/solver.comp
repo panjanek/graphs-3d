@@ -9,7 +9,7 @@ struct ShaderConfig {
     float dt;
     float sigma2;
     uint edgesCount;
-    float clampAcc;
+    int useCells;
     float fieldSize;
     float cellSize;
     float maxDist;
@@ -245,7 +245,11 @@ void update_one(uint idx)
     // Repulsion
     //force += repulsion_all(idx, pos, uRepulsionK);
     //force += repulsion_level4(idx, pos, uRepulsionK, uHopDecay);
-    force += repulsion_cells(idx, pos, uRepulsionK);
+
+    if (config.cellCount < 10)
+        force += repulsion_level4(idx, pos, uRepulsionK, uHopDecay);
+    else
+        force += repulsion_cells(idx, pos, uRepulsionK);
 
     // Integrate
     vel += force * config.dt;
