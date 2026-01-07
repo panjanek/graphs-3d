@@ -13,7 +13,7 @@ struct ShaderConfig {
     float fieldSize;
     float cellSize;
     float maxDist;
-    int speciesCount;
+    float gridSize;
     float damping;
     int trackedIdx;
     float maxForce;
@@ -174,6 +174,44 @@ vec3 repulsion_level4(uint idx, vec3 pos, float strength, float hopDecay)
     return force;
 }
 
+vec3 repulsion_cells(uint idx, vec3 pos, float strength)
+{
+    Node node = inNodes[idx];
+    int cellCount2 = config.cellCount * config.cellCount;
+    int gridX = node.cellIndex % config.cellCount;
+    int gridY = (node.cellIndex / config.cellCount) % config.cellCount;
+    int gridZ = node.cellIndex / (cellCount2);
+    ivec3 main = ivec3(gridX, gridY, gridZ);
+
+    vec3 force = vec3(0.0);
+    for (int dz = -1; dz <= 1; dz++)
+    for (int dy = -1; dy <= 1; dy++)
+    for (int dx = -1; dx <= 1; dx++)
+    {
+        ivec3 cell = main + ivec3(dx, dy, dz);
+        if (cell.x<0 || cell.x >= config.cellCount) continue;
+        if (cell.y<0 || cell.y >= config.cellCount) continue;
+        if (cell.z<0 || cell.z >= config.cellCount) continue;
+
+        uint cellIdx = cell.x +
+             cell.y * config.cellCount +
+             cell.z * cellCount2;
+
+        uint offset = cellOffsets[cellIdx];
+        uint count = cellCounts[cellIdx];
+        for(uint indiceIdx = offset; indiceIdx<offset + count; indiceIdx++)
+        {
+            uint otherIdx = nodesIndices[indiceIdx];
+            if (idx != otherIdx)
+            {
+                vec3 d = pos - inNodes[otherIdx].position.xyz;
+                force += repulsion_single(d, strength);
+            }
+        }
+    }
+
+    return force;
+}
 
 void update_one(uint idx)
 {
@@ -206,7 +244,8 @@ void update_one(uint idx)
 
     // Repulsion
     //force += repulsion_all(idx, pos, uRepulsionK);
-    force += repulsion_level4(idx, pos, uRepulsionK, uHopDecay);
+    //force += repulsion_level4(idx, pos, uRepulsionK, uHopDecay);
+    force += repulsion_cells(idx, pos, uRepulsionK);
 
     // Integrate
     vel += force * config.dt;

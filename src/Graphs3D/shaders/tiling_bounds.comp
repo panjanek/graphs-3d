@@ -13,7 +13,7 @@ struct ShaderConfig {
     float fieldSize;
     float cellSize;
     float maxDist;
-    int speciesCount;
+    float gridSize;
     float damping;
     int trackedIdx;
     float maxForce;

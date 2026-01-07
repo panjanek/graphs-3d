@@ -104,59 +104,13 @@ namespace Graphs3D.Gpu
             if (dispatchGroupsX > maxGroupsX)
                 dispatchGroupsX = maxGroupsX;           
 
-            /*
-            config.cellCount = (int)Math.Floor(config.fieldSize / config.maxDist);
-            config.cellSize = config.fieldSize / config.cellCount;
-            config.totalCellCount = config.cellCount * config.cellCount * config.cellCount;
-            PrepareBuffers(config.particleCount, config.totalCellCount, config.edgesCount);
-            */
-            
             //upload config
             GL.BindBuffer(BufferTarget.UniformBuffer, uboConfig);
             GL.BufferData(BufferTarget.UniformBuffer, Marshal.SizeOf<ShaderConfig>(), ref config, BufferUsageHint.StaticDraw);
 
-            if (recomputeBounds)
-                RefreshBounds(ref config);
+            RunTiling(ref config);
 
-            // ------------------------ run tiling ---------------------------
-                /*
-                //count
-                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, cellCountBuffer);
-                GL.ClearBufferData(BufferTarget.ShaderStorageBuffer, PixelInternalFormat.R32ui, PixelFormat.RedInteger, PixelType.UnsignedInt, IntPtr.Zero);
-                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, uboConfig);
-                GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 1, pointsBufferA);
-                GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 6, cellCountBuffer);
-                GL.UseProgram(tilingCountProgram);
-                GL.DispatchCompute(dispatchGroupsX, 1, 1);
-                GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
-
-                //offset
-                DownloadIntBuffer(cellCounts, cellCountBuffer, currentTotalCellsCount);
-                int sum = 0;
-                for(int c=0; c<currentTotalCellsCount; c++)
-                {
-                    cellOffsets[c] = sum;
-                    sum += cellCounts[c];
-                }
-
-                //fill
-                UploadIntBuffer(cellOffsets, cellOffsetBuffer, currentTotalCellsCount);
-                GL.CopyNamedBufferSubData(cellOffsetBuffer, cellOffsetBuffer2, IntPtr.Zero, IntPtr.Zero, currentTotalCellsCount * sizeof(uint));
-                GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, uboConfig);
-                GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 1, pointsBufferA);
-                GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 7, cellOffsetBuffer);
-                GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 8, particleIndicesBuffer);
-
-                GL.UseProgram(tilingBinProgram);
-                GL.DispatchCompute(dispatchGroupsX, 1, 1);
-                GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
-
-
-                //DebugUtil.DebugSolver(false, config, this);
-                */
-                // ------------------------ run solver --------------------------
-
-                //bind ubo and buffers
+            //bind ubo and buffers
             GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, uboConfig);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 1, pointsBufferA);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 2, pointsBufferB);
@@ -179,7 +133,7 @@ namespace Graphs3D.Gpu
             (pointsBufferA, pointsBufferB) = (pointsBufferB, pointsBufferA);
         }
 
-        private void RefreshBounds(ref ShaderConfig config)
+        private void RunTiling(ref ShaderConfig config)
         {
             int dispatchGroupsX = (currentNodesCount + ShaderUtil.LocalSizeX - 1) / ShaderUtil.LocalSizeX;
             if (dispatchGroupsX > maxGroupsX)
@@ -192,7 +146,7 @@ namespace Graphs3D.Gpu
             GL.BindBuffer(BufferTarget.UniformBuffer, boundsBuffer);
             GL.BufferData(BufferTarget.UniformBuffer, Marshal.SizeOf<BoundsBuffer>(), ref bounds, BufferUsageHint.StaticDraw);
 
-            //buffers
+            //------------------- compute bounding cube --------------------------------
             GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, uboConfig);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 1, pointsBufferA);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 4, boundsBuffer);
@@ -205,8 +159,49 @@ namespace Graphs3D.Gpu
             GL.GetBufferSubData(BufferTarget.ShaderStorageBuffer, IntPtr.Zero, Marshal.SizeOf<BoundsBuffer>(), ref bounds);
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
 
-            config.minBound = bounds.GetMin();
+            config.minBound = bounds.GetMin() - new Vector4(-0.1f, -0.1f, -0.1f, 0);
             config.maxBound = bounds.GetMax();
+            var d = config.maxBound - config.minBound;
+            config.gridSize = Math.Max(d.X, Math.Max(d.Y, d.Z)) + 0.1f;
+            config.cellCount = (int)Math.Floor(config.gridSize / config.maxDist);
+            if (config.cellCount == 0)
+                config.cellCount = 1;
+            config.cellSize = config.gridSize / config.cellCount;
+            config.totalCellCount = config.cellCount * config.cellCount * config.cellCount;
+            PrepareBuffers(config.nodesCount, config.totalCellCount, config.edgesCount);
+            GL.BindBuffer(BufferTarget.UniformBuffer, uboConfig);
+            GL.BufferData(BufferTarget.UniformBuffer, Marshal.SizeOf<ShaderConfig>(), ref config, BufferUsageHint.StaticDraw);
+
+            //----------------------- count node per cell -----------------------------
+            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, cellCountBuffer);
+            GL.ClearBufferData(BufferTarget.ShaderStorageBuffer, PixelInternalFormat.R32ui, PixelFormat.RedInteger, PixelType.UnsignedInt, IntPtr.Zero);
+            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, uboConfig);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 1, pointsBufferA);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 6, cellCountBuffer);
+            GL.UseProgram(tilingCountProgram);
+            GL.DispatchCompute(dispatchGroupsX, 1, 1);
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+            // ---------------------- prefix sum ----------------------------------------
+            DownloadIntBuffer(cellCounts, cellCountBuffer, currentTotalCellsCount);
+            int sum = 0;
+            for (int c = 0; c < currentTotalCellsCount; c++)
+            {
+                cellOffsets[c] = sum;
+                sum += cellCounts[c];
+            }
+
+            //----------------------------- fill -----------------------------------
+            UploadIntBuffer(cellOffsets, cellOffsetBuffer, currentTotalCellsCount);
+            GL.CopyNamedBufferSubData(cellOffsetBuffer, cellOffsetBuffer2, IntPtr.Zero, IntPtr.Zero, currentTotalCellsCount * sizeof(uint));
+            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, uboConfig);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 1, pointsBufferA);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 7, cellOffsetBuffer);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 8, nodeIndicesBuffer);
+            GL.UseProgram(tilingBinProgram);
+            GL.DispatchCompute(dispatchGroupsX, 1, 1);
+            GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+
+            //DebugUtil.DebugSolver(false, config, this);
         }
 
         public void UploadGraph(ref ShaderConfig config, Node[] nodes, Edge[] edges)
@@ -230,7 +225,7 @@ namespace Graphs3D.Gpu
                 GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, neighboursCount.Length * Marshal.SizeOf<uint>(), neighboursCount);
                 GL.BindBuffer(BufferTarget.ShaderStorageBuffer, restLengthsBuffer);
                 GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, restLengths.Length * Marshal.SizeOf<float>(), restLengths);
-                RefreshBounds(ref config);
+                RunTiling(ref config);
             }
         }
 

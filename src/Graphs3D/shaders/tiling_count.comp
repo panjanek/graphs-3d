@@ -13,7 +13,7 @@ struct ShaderConfig {
     float fieldSize;
     float cellSize;
     float maxDist;
-    int speciesCount;
+    float gridSize;
     float damping;
     int trackedIdx;
     float maxForce;
@@ -40,25 +40,25 @@ layout(std140, binding = 0) uniform ConfigBuffer {
 
 layout(std430, binding = 1) buffer InputBuffer
 {
-    Node particles[];
+    Node nodes[];
 };
 
 layout(std430, binding = 6) buffer CellCount {
     uint cellCount[];
 };
 
-
-int wrapCell(int c)
-{
-    return (c % config.cellCount + config.cellCount) % config.cellCount;
-}
-
 int assign_cell(vec4 pos)
 {
-    ivec4 cell = ivec4(pos / config.cellSize);
-    cell.x = wrapCell(cell.x);
-    cell.y = wrapCell(cell.y);
-    cell.z = wrapCell(cell.z);
+    vec3 local = pos.xyz - config.minBounds.xyz;
+
+    // Convert to cell coordinates
+    ivec3 cell = ivec3(floor(local / config.cellSize));
+
+    // Clamp indices (not positions)
+    cell = clamp(cell,
+                 ivec3(0),
+                 ivec3(config.cellCount - 1));
+
     return cell.x +
            cell.y * config.cellCount +
            cell.z * config.cellCount * config.cellCount;
@@ -69,8 +69,8 @@ void main()
     uint idx = gl_GlobalInvocationID.x;
     if (idx >=0 && idx < config.nodesCount) 
     {
-        int cellIndex = assign_cell(particles[idx].position);
-        particles[idx].cellIndex = cellIndex;
+        int cellIndex = assign_cell(nodes[idx].position);
+        nodes[idx].cellIndex = cellIndex;
         atomicAdd(cellCount[cellIndex], 1);
     }
 }

@@ -13,7 +13,7 @@ struct ShaderConfig {
     float fieldSize;
     float cellSize;
     float maxDist;
-    int speciesCount;
+    float gridSize;
     float damping;
     int trackedIdx;
     float maxForce;
@@ -40,15 +40,15 @@ layout(std140, binding = 0) uniform ConfigBuffer {
 
 layout(std430, binding = 1) buffer InputBuffer
 {
-    Node particles[];
+    Node nodes[];
 };
 
 layout(std430, binding = 7) buffer CellOffsets {
     uint cellOffsets[];
 };
 
-layout(std430, binding = 8) buffer ParticleIndices {
-    uint particleIndices[];
+layout(std430, binding = 8) buffer NodeIndices {
+    uint nodeIndices[];
 };
 
 void main()
@@ -56,8 +56,8 @@ void main()
     uint idx = gl_GlobalInvocationID.x;
     if (idx >=0 && idx < config.nodesCount) 
     {
-        int cellIndex = particles[idx].cellIndex;
+        int cellIndex = nodes[idx].cellIndex;
         uint offset = atomicAdd(cellOffsets[cellIndex], 1);
-        particleIndices[offset] = idx;    
+        nodeIndices[offset] = idx;    
     }
 }

@@ -42,7 +42,6 @@ namespace Graphs3D.Models
 
         public void StartSimulation(int particlesCount, float size)
         {
-            config.speciesCount = 1;
             config.fieldSize = size;
             config.nodesCount = 1;
 
@@ -61,9 +60,11 @@ namespace Graphs3D.Models
         private void Create2DGrid(uint rowSizeX, uint rowSizeY, bool wrapHoriz, bool wrapVert)
         {
             nodes = new Node[rowSizeX * rowSizeY];
-            for(int i=0; i<nodes.Length; i++)
+            var radius = 1.1f * config.fieldSize;
+            var center = new Vector4(config.fieldSize / 2, config.fieldSize / 2, config.fieldSize / 2, 0);
+            for (int i=0; i<nodes.Length; i++)
             {
-                nodes[i].position = new Vector4((float)globalRandom.NextDouble() * config.fieldSize, (float)globalRandom.NextDouble() * config.fieldSize, (float)globalRandom.NextDouble() * config.fieldSize, 1.0f);
+                nodes[i].position = center + radius * new Vector4((float)globalRandom.NextDouble()-0.5f, (float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f, 0);
             }
 
             List<Edge> list = new List<Edge>();
@@ -189,7 +190,6 @@ namespace Graphs3D.Models
                                                     (float)(100 * config.dt * (rnd.NextDouble()-0.5)),
                                                     (float)(100 * config.dt * (rnd.NextDouble() - 0.5)),
                                                     0);
-                nodes[i].species = rnd.Next(config.speciesCount);
             }
         }
     }
