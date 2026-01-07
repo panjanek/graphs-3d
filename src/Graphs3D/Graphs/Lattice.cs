@@ -45,20 +45,35 @@ namespace Graphs3D.Graphs
             this.root = new LatticeNode();
             AddNode(this.root);
         }
-        public void ExpandNode(int idx)
+        public int? ExpandNode(int? idx)
         {
-            if (idx < nodes.Count)
+            int parentIdx = 0;
+            if (!idx.HasValue)
             {
-                var parent = lattice[idx];
+                var l = lattice.Where(n => !n.expanded).OrderBy(n => n.level).FirstOrDefault();
+                if (l == null)
+                    return null;
+                parentIdx = (int)l.idx;
+            }
+            else
+            {
+                parentIdx = idx.Value;
+            }
+
+            if (parentIdx < nodes.Count)
+            {
+                var parent = lattice[parentIdx];
                 if (!parent.expanded)
                 {
-                    TryAdd(parent, -1, -1);
-                    TryAdd(parent, 1, -1);
-                    TryAdd(parent, -1, 1);
-                    TryAdd(parent, 1, 1);
+                    TryAdd(parent, -1, 0);
+                    TryAdd(parent, 1, 0);
+                    TryAdd(parent, 0, -1);
+                    TryAdd(parent, 0, 1);
                     parent.expanded = true;
                 }
             }
+
+            return parentIdx;
         }
 
         private void TryAdd(LatticeNode parent, int dx, int dy)
@@ -70,7 +85,7 @@ namespace Graphs3D.Graphs
             if (nx < 0) return;
             if (nx >= sizeX) return;
             if (ny < 0) return;
-            if (ny >= sizeX) return;
+            if (ny >= sizeY) return;
             var newKey = LatticeNode.GetNodeKey(nx, ny);
             if (keyedNodes.TryGetValue(newKey, out var existing))
             {
@@ -97,6 +112,8 @@ namespace Graphs3D.Graphs
             keyedNodes[node.key] = node;
             nodes.Add(node.ToNode());
             lattice.Add(node);
+            if (node.parent != null)
+                node.parent.children.Add(node);
         }
 
         private void AddEdge(LatticeNode from, LatticeNode to)

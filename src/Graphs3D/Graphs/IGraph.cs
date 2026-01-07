@@ -9,7 +9,7 @@ namespace Graphs3D.Graphs
 {
     public interface IGraph
     {
-        void ExpandNode(int idx);
+        int? ExpandNode(int? idx);
 
         List<Node> Nodes { get; }
 

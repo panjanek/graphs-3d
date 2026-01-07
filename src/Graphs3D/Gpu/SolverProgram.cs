@@ -51,11 +51,11 @@ namespace Graphs3D.Gpu
 
         public int restLengthsBuffer;
 
-        private int currentNodesCount;
+        private int currentNodesCount = -1;
 
-        private int currentEdgesCount;
+        private int currentEdgesCount = -1;
 
-        private int currentTotalCellsCount;
+        private int currentTotalCellsCount = -1;
 
         private int boundsBuffer;
 

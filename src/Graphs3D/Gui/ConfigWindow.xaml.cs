@@ -82,7 +82,7 @@ namespace Graphs3D.Gui
                     if (newParticleCount != app.simulation.config.nodesCount ||
                         newSize != app.simulation.config.fieldSize)
                     {
-                        app.simulation.StartSimulation(newParticleCount, newSize);
+                        app.simulation.StartSimulation();
                         app.renderer.UploadGraph();
                         UpdateActiveControls();
                         UpdatePassiveControls();

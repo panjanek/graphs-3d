@@ -42,7 +42,7 @@ namespace Graphs3D
             app = new AppContext();
             app.mainWindow = this;
             app.simulation = new Simulation();
-            app.simulation.StartSimulation(80, 100);
+            app.simulation.StartSimulation();
             app.renderer = new OpenGlRenderer(placeholder, app);
             app.configWindow = new ConfigWindow(app);
             app.configWindow.Show();
@@ -66,6 +66,13 @@ namespace Graphs3D
                     break;
                 case Key.Escape:
                     app.renderer.StopTracking();
+                    e.Handled = true;
+                    break;
+                case Key.Z:
+                    app.renderer.DownloadNodes();
+                    for(int i=0; i<5; i++)
+                        app.simulation.Expand();
+                    app.renderer.UploadGraph();
                     e.Handled = true;
                     break;
             }

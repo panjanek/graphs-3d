@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
+using Graphs3D.Graphs;
 using OpenTK.Audio.OpenAL;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -35,26 +36,65 @@ namespace Graphs3D.Models
 
         public static Random globalRandom = new Random(1);
 
+        private IGraph graph;
+
         public Simulation()
         {
             config = new ShaderConfig();
         }
 
-        public void StartSimulation(int particlesCount, float size)
+        public void StartSimulation()
         {
-            config.fieldSize = size;
-            config.nodesCount = 1;
+            var graph = new Lattice(10, 20, true, true);
+            config.fieldSize = 100;
 
-            nodes = new Node[config.nodesCount];
-            config.edgesCount = 0;
-            edges = new Edge[config.edgesCount];
+            this.graph = graph;
+            nodes = graph.Nodes.ToArray();
+            edges = graph.Edges.ToArray();
+            config.nodesCount = nodes.Length;
+            config.edgesCount = edges.Length;
             nodes[0].position = new Vector4(config.fieldSize / 2, config.fieldSize / 2, config.fieldSize / 2, 1.0f);
 
-            Create2DGrid((uint)particlesCount, (uint)particlesCount, true, false);
-            //Create3DGrid(2, 2, 2);
+            //Create2DGrid((uint)30, (uint)30, true, false);
+        }
 
-            //for (int i = 0; i < 5; i++)
-            //  AddRandomNodes(particlesCount/5);
+        public void StartNewGraph(IGraph graph)
+        {
+            this.graph = graph;
+            nodes = nodes.ToArray();
+            edges = edges.ToArray();
+            config.nodesCount = nodes.Length;
+            config.edgesCount = edges.Length;
+        }
+
+        public void Expand()
+        {
+            var parentIdx = graph.ExpandNode(null);
+            var newNodes = graph.Nodes.ToArray();
+            var newEdges = graph.Edges.ToArray();
+            if (newNodes.Length > nodes.Length)
+            {
+                var tmp = new Node[newNodes.Length];
+                Array.Copy(nodes, tmp, nodes.Length);
+                Array.Copy(newNodes, nodes.Length, tmp, nodes.Length, newNodes.Length - nodes.Length);
+                
+                for (int i = nodes.Length; i < newNodes.Length; i++)
+                {
+                    tmp[i].position = tmp[parentIdx??0].position + new Vector4((float)globalRandom.NextDouble()-0.5f, (float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f,1);
+                }
+
+                nodes = tmp;
+                config.nodesCount = nodes.Length;
+            }
+
+            if (newEdges.Length > edges.Length)
+            {
+                var tmp = new Edge[newEdges.Length];
+                Array.Copy(edges, tmp, edges.Length);
+                Array.Copy(newEdges, edges.Length, tmp, edges.Length, newEdges.Length - edges.Length);
+                edges = tmp;
+                config.edgesCount = edges.Length;
+            }
         }
 
         private void Create2DGrid(uint rowSizeX, uint rowSizeY, bool wrapHoriz, bool wrapVert)
