@@ -10,9 +10,9 @@ using Graphs3D.Models;
 
 namespace Graphs3D.Graphs
 {
-    public class Lattice : IGraph
+    public class LatticeGraph : GraphBase, IGraph
     {
-        private LatticeNode root;
+        private LatticeState root;
 
         private int sizeX;
 
@@ -22,27 +22,17 @@ namespace Graphs3D.Graphs
 
         private bool wrapVertical;
 
-        private Dictionary<string, LatticeNode> keyedNodes = new Dictionary<string, LatticeNode>();
+        private Dictionary<string, LatticeState> keyedNodes = new Dictionary<string, LatticeState>();
 
-        private HashSet<string> existingEdges = new HashSet<string>();
+        private List<LatticeState> lattice = new List<LatticeState>();
 
-        private List<LatticeNode> lattice = new List<LatticeNode>();
-
-        private List<Node> nodes = new List<Node>();
-
-        private List<Edge> edges = new List<Edge>();
-
-        public List<Node> Nodes => nodes;
-
-        public List<Edge> Edges => edges;
-
-        public Lattice(int sizeX, int sizeY, bool wrapHorizontal, bool wrapVertical)
+        public LatticeGraph(int sizeX, int sizeY, bool wrapHorizontal, bool wrapVertical)
         {
             this.sizeX = sizeX;
             this.sizeY = sizeY;
             this.wrapVertical = wrapVertical;
             this.wrapHorizontal = wrapHorizontal;
-            this.root = new LatticeNode();
+            this.root = new LatticeState();
             AddNode(this.root);
         }
         public int? ExpandNode(int? idx)
@@ -60,7 +50,7 @@ namespace Graphs3D.Graphs
                 parentIdx = idx.Value;
             }
 
-            if (parentIdx < nodes.Count)
+            if (parentIdx < Nodes.Count)
             {
                 var parent = lattice[parentIdx];
                 if (!parent.expanded)
@@ -76,7 +66,7 @@ namespace Graphs3D.Graphs
             return parentIdx;
         }
 
-        private void TryAdd(LatticeNode parent, int dx, int dy)
+        private void TryAdd(LatticeState parent, int dx, int dy)
         {
             int nx = parent.posX + dx;
             int ny = parent.posY + dy;
@@ -86,17 +76,17 @@ namespace Graphs3D.Graphs
             if (nx >= sizeX) return;
             if (ny < 0) return;
             if (ny >= sizeY) return;
-            var newKey = LatticeNode.GetNodeKey(nx, ny);
+            var newKey = LatticeState.GetNodeKey(nx, ny);
             if (keyedNodes.TryGetValue(newKey, out var existing))
             {
                 if (!EdgeExists(parent.idx, existing.idx))
-                    AddEdge(parent, existing);
+                    AddResultEdge(parent.idx, existing.idx);
             }
             else
             {
-                var newNode = new LatticeNode() { posX = nx, posY = ny, level = parent.level + 1, parent = parent };
+                var newNode = new LatticeState() { posX = nx, posY = ny, level = parent.level + 1, parent = parent };
                 AddNode(newNode);
-                AddEdge(parent, newNode);
+                AddResultEdge(parent.idx, newNode.idx);
             }
         }
 
@@ -105,36 +95,27 @@ namespace Graphs3D.Graphs
             return root.ToNode();
         }
 
-        private void AddNode(LatticeNode node)
+        private void AddNode(LatticeState node)
         {
-            var count = nodes.Count;
+            var count = Nodes.Count;
             node.idx = (uint)count;
             keyedNodes[node.key] = node;
-            nodes.Add(node.ToNode());
+            AddResultNode(node.ToNode());
             lattice.Add(node);
             if (node.parent != null)
                 node.parent.children.Add(node);
         }
-
-        private void AddEdge(LatticeNode from, LatticeNode to)
-        {
-            var edge = new Edge() { a = from.idx, b = to.idx };
-            edges.Add(edge);
-            existingEdges.Add($"{edge.a}-{edge.b}");
-        }
-
-        private bool EdgeExists(uint a, uint b) => existingEdges.Contains($"{a}-{b}");
     }
 
-    public class LatticeNode
+    public class LatticeState
     {
         public uint idx;
         public int posX;
         public int posY;
         public int level;
         public bool expanded;
-        public LatticeNode parent;
-        public List<LatticeNode> children = new List<LatticeNode>();
+        public LatticeState parent;
+        public List<LatticeState> children = new List<LatticeState>();
         public string key => GetNodeKey(posX, posY);
 
         public static string GetNodeKey(int x, int y) => $"{x},{y}";

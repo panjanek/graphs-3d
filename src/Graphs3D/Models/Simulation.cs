@@ -45,7 +45,7 @@ namespace Graphs3D.Models
 
         public void StartSimulation()
         {
-            var graph = new Lattice(10, 20, true, true);
+            var graph = new LatticeGraph(10, 20, true, true);
             config.fieldSize = 100;
 
             this.graph = graph;
