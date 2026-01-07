@@ -5,30 +5,96 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms.VisualStyles;
 using Graphs3D.Models;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Graphs3D.Graphs
 {
-    public abstract class GraphBase
+    public abstract class GraphBase<TNode>
+        where TNode : GraphNodeBase
     {
-        public List<Node> Nodes => nodes;
+        public List<Node> Nodes => internalNodes;
 
-        public List<Edge> Edges => edges;
+        public List<Edge> Edges => internalEdges;
 
-        private List<Node> nodes = new List<Node>();
+        private List<Node> internalNodes = new List<Node>();
 
-        private List<Edge> edges = new List<Edge>();
+        private List<Edge> internalEdges = new List<Edge>();
 
         private HashSet<string> existingEdges = new HashSet<string>();
 
-        protected void AddResultNode(Node n) => nodes.Add(n);
+        protected Dictionary<string, TNode> keyedNodes = new Dictionary<string, TNode>();
 
-        protected void AddResultEdge(int parentIdx, int childIdx, int player = 0)
+        protected List<TNode> graphNodes = new List<TNode>();
+
+        public int Expand()
         {
-            edges.Add(new Edge() { a = (uint)parentIdx, b = (uint)childIdx, player = (uint)player });
-            existingEdges.Add($"{parentIdx}-{childIdx}");
+            var parent = graphNodes.Where(n => !n.expanded).OrderBy(n => n.level).FirstOrDefault();
+            if (parent == null)
+                return 0;
+
+            ExpandNode(parent.idx);
+            return parent.idx;
+        }
+
+        public void ExpandNode(int parentIdx)
+        {
+            if (parentIdx < Nodes.Count)
+            {
+                var parent = graphNodes[parentIdx];
+                if (!parent.expanded)
+                {
+                    InternalExpandNode(parent);
+                    parent.expanded = true;
+                }
+            }
+        }
+
+        protected abstract void InternalExpandNode(TNode parent);
+
+        protected void AddEdge(int parentIdx, int childIdx, int player = 0)
+        {
+            if (!EdgeExists(parentIdx, childIdx))
+            {
+                internalEdges.Add(new Edge() { a = (uint)parentIdx, b = (uint)childIdx, player = (uint)player });
+                existingEdges.Add($"{parentIdx}-{childIdx}");
+            }
+        }
+
+        protected void AddNode(TNode node)
+        {
+            if (keyedNodes.TryGetValue(node.Key, out var existing))
+            {
+                if (node.parentIdx.HasValue)
+                    AddEdge(node.parentIdx.Value, existing.idx, graphNodes[node.parentIdx.Value].player);
+            }
+            else
+            {
+                var count = Nodes.Count;
+                node.idx = count;
+                node.level = node.parentIdx.HasValue ? graphNodes[node.parentIdx.Value].level + 1 : 0;
+                keyedNodes[node.Key] = node;
+                internalNodes.Add(node.ToInternalNode());
+                graphNodes.Add(node);
+                if (node.parentIdx.HasValue)
+                    AddEdge(node.parentIdx.Value, node.idx, graphNodes[node.parentIdx.Value].player);
+            }
         }
 
         protected bool EdgeExists(int a, int b) => existingEdges.Contains($"{a}-{b}");
+    }
 
+    public abstract class GraphNodeBase
+    {
+        public int idx;
+        public int? parentIdx;
+        public int level;
+        public int player;
+        public bool expanded;
+        public abstract string Key { get; }
+
+        public Node ToInternalNode()
+        {
+            return new Node() { level = level, player = player };
+        }
     }
 }
