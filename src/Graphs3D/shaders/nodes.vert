@@ -4,10 +4,11 @@ struct Node
 {
    vec4 position;
    vec4 velocity;
+   vec4 prevForce;
    int species;
    int flags;
    int  cellIndex;
-   int  _pad1;
+   float _pad1;
 };
 
 layout(std430, binding = 2) buffer OutputBuffer {

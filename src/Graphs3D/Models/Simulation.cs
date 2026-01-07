@@ -50,7 +50,7 @@ namespace Graphs3D.Models
             edges = new Edge[config.edgesCount];
             nodes[0].position = new Vector4(config.fieldSize / 2, config.fieldSize / 2, config.fieldSize / 2, 1.0f);
 
-            Create2DGrid((uint)particlesCount, (uint)particlesCount, true, false);
+            Create2DGrid((uint)particlesCount, (uint)particlesCount*2, true, true);
             //Create3DGrid(2, 2, 2);
 
             //for (int i = 0; i < 5; i++)
@@ -60,7 +60,7 @@ namespace Graphs3D.Models
         private void Create2DGrid(uint rowSizeX, uint rowSizeY, bool wrapHoriz, bool wrapVert)
         {
             nodes = new Node[rowSizeX * rowSizeY];
-            var radius = 1.1f * config.fieldSize;
+            var radius = 0.1f * config.fieldSize;
             var center = new Vector4(config.fieldSize / 2, config.fieldSize / 2, config.fieldSize / 2, 0);
             for (int i=0; i<nodes.Length; i++)
             {

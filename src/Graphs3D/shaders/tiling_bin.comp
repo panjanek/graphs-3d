@@ -28,10 +28,11 @@ struct Node
 {
    vec4 position;
    vec4 velocity;
+   vec4 prevForce;
    int species;
    int flags;
    int  cellIndex;
-   int  _pad1;
+   float _pad1;
 };
 
 layout(std140, binding = 0) uniform ConfigBuffer {

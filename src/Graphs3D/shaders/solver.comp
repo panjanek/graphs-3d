@@ -28,10 +28,11 @@ struct Node
 {
    vec4 position;
    vec4 velocity;
+   vec4 prevForce;
    int species;
    int flags;
    int  cellIndex;
-   int  _pad1;
+   float _pad1;
 };
 
 struct Edge
@@ -184,6 +185,7 @@ vec3 repulsion_cells(uint idx, vec3 pos, float strength)
     ivec3 main = ivec3(gridX, gridY, gridZ);
 
     vec3 force = vec3(0.0);
+    uint localCount = 0;
     for (int dz = -1; dz <= 1; dz++)
     for (int dy = -1; dy <= 1; dy++)
     for (int dx = -1; dx <= 1; dx++)
@@ -204,11 +206,19 @@ vec3 repulsion_cells(uint idx, vec3 pos, float strength)
             uint otherIdx = nodesIndices[indiceIdx];
             if (idx != otherIdx)
             {
+                localCount++;
                 vec3 d = pos - inNodes[otherIdx].position.xyz;
                 force += repulsion_single(d, strength);
+
+                //float r = length(d);
+                //float cutoff = config.cellSize * 1.5;
+                //float w = smoothstep(cutoff, 0.0, r);
+                //force += repulsion_single(d, strength * w);
             }
         }
     }
+
+    //force *= inversesqrt(float(localCount) + 1.0);
 
     return force;
 }
@@ -246,10 +256,13 @@ void update_one(uint idx)
     //force += repulsion_all(idx, pos, uRepulsionK);
     //force += repulsion_level4(idx, pos, uRepulsionK, uHopDecay);
 
-    if (config.cellCount < 10)
+    if (config.useCells == 0)
         force += repulsion_level4(idx, pos, uRepulsionK, uHopDecay);
     else
         force += repulsion_cells(idx, pos, uRepulsionK);
+
+    //if (config.totalCellCount >= 64)
+    //    force = mix(p.prevForce.xyz, force, 0.1);
 
     // Integrate
     vel += force * config.dt;
@@ -263,6 +276,7 @@ void update_one(uint idx)
 
     p.velocity = vec4(vel, 0);
     p.position = vec4(pos, 1.0);
+    p.prevForce = vec4(force, 0);
     outNodes[idx] = p;
 
     if (config.trackedIdx > -1 && config.trackedIdx == idx)
