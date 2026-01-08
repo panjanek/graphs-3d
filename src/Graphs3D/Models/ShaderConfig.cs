@@ -5,10 +5,11 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Mathematics;
+using static OpenTK.Graphics.OpenGL.GL;
 
 namespace Graphs3D.Models
 {
-    [StructLayout(LayoutKind.Explicit, Size = 96)]
+    [StructLayout(LayoutKind.Explicit, Size = 108)]
     public unsafe struct ShaderConfig
     {
         public ShaderConfig()
@@ -51,5 +52,11 @@ namespace Graphs3D.Models
         [FieldOffset(64)] public Vector4 minBound;
 
         [FieldOffset(80)] public Vector4 maxBound;
+
+        [FieldOffset(96)] public int marker1 = -1;
+
+        [FieldOffset(100)]  public int marker2;
+
+        [FieldOffset(104)]  public int markerT;
     }
 }

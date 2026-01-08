@@ -104,8 +104,6 @@ namespace Graphs3D.Gpu
                 BlendingFactor.SrcAlpha,
                 BlendingFactor.OneMinusSrcAlpha
             );
-
-
         }
 
         public void Run(int nodesBuffer, int edgesBuffer, Matrix4 projectionMatrix, int particlesCount, float particleSize, Vector2 viewportSize, Matrix4 view, Vector4 trackedPos, int edgesCount)
@@ -131,7 +129,7 @@ namespace Graphs3D.Gpu
                 6,
                 DrawElementsType.UnsignedInt,
                 IntPtr.Zero,
-                particlesCount * 1
+                particlesCount + 1
             );
 
             // edges as quads (x6)

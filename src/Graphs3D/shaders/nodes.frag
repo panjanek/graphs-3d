@@ -6,6 +6,7 @@ layout(location = 2) in float vFadingAlpha;
 layout(location = 3) in vec3 vCenterView;
 layout(location = 4) in vec2 vQuad;
 layout(location = 6) in vec3 vOffsetView;
+layout(location = 7) in float vSphereRadiusMult;
 
 out vec4 outputColor;
 
@@ -15,7 +16,7 @@ uniform float paricleSize;
 
 void main()
 {
-    float sphereRadius = 2 * paricleSize;
+    float sphereRadius = 2 * paricleSize * vSphereRadiusMult;
 
     // Ray origin is camera in view space
     vec3 rayOrigin = vec3(0.0);

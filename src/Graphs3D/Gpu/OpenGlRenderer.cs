@@ -37,6 +37,8 @@ namespace Graphs3D.Gpu
 
         public int? DraggedIdx { get; set; }
 
+        public int? SelectedIdx { get; set; }
+
         private Panel placeholder;
 
         private System.Windows.Forms.Integration.WindowsFormsHost host;
@@ -159,14 +161,22 @@ namespace Graphs3D.Gpu
                 {
                     //going forward/backward current camera direction
                     center += GetCameraDirection() * delta;
-
                 }
             };
 
             glControl.MouseDoubleClick += GlControl_MouseDoubleClick;
+            glControl.MouseUp += GlControl_MouseUp;
             glControl.Paint += GlControl_Paint;
             glControl.SizeChanged += GlControl_SizeChanged;
             GlControl_SizeChanged(this, null);
+        }
+
+        private void GlControl_MouseUp(object? sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                SelectedIdx = GetClickedNodeIndex(e.X, e.Y);
+            }
         }
 
         private void GlControl_MouseDoubleClick(object? sender, MouseEventArgs e)
@@ -188,7 +198,7 @@ namespace Graphs3D.Gpu
         private int? GetClickedNodeIndex(int mouseX, int mouseY)
         {
             solverProgram.DownloadNodes(app.simulation.nodes);
-            int pixelRadius = 5;
+            int pixelRadius = 7;
             int? selectedIdx = null;
             float minDepth = app.simulation.config.fieldSize * 10;
             var projectionMatrix = GetCombinedProjectionMatrix();
@@ -304,6 +314,7 @@ namespace Graphs3D.Gpu
             if (!Paused)
             {
                 app.simulation.config.trackedIdx = TrackedIdx ?? -1;
+                app.simulation.config.marker1 = SelectedIdx ?? -1;
                 solverProgram.Run(ref app.simulation.config, frameCounter%100 == 0);
             }
 

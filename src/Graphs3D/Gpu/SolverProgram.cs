@@ -105,7 +105,7 @@ namespace Graphs3D.Gpu
             GL.BufferData(BufferTarget.UniformBuffer, Marshal.SizeOf<ShaderConfig>(), ref config, BufferUsageHint.StaticDraw);
         }
 
-        private int DispatchGroupsX => Math.Clamp((currentNodesCount + ShaderUtil.LocalSizeX - 1) / ShaderUtil.LocalSizeX, 1, maxGroupsX);
+        private int DispatchGroupsX(int count) => Math.Clamp((count + ShaderUtil.LocalSizeX - 1) / ShaderUtil.LocalSizeX, 1, maxGroupsX);
         
 
         public void Run(ref ShaderConfig config, bool recomputeBounds = false)
@@ -127,7 +127,7 @@ namespace Graphs3D.Gpu
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 13, restLengthsBuffer);
 
             GL.UseProgram(solvingProgram);
-            GL.DispatchCompute(DispatchGroupsX, 1, 1);
+            GL.DispatchCompute(DispatchGroupsX(currentNodesCount+1), 1, 1);
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit | MemoryBarrierFlags.VertexAttribArrayBarrierBit | MemoryBarrierFlags.BufferUpdateBarrierBit);
 
             (pointsBufferA, pointsBufferB) = (pointsBufferB, pointsBufferA);
@@ -147,7 +147,7 @@ namespace Graphs3D.Gpu
                 GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 1, pointsBufferA);
                 GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 4, boundsBuffer);
                 GL.UseProgram(tilingBoundsProgram);
-                GL.DispatchCompute(DispatchGroupsX, 1, 1);
+                GL.DispatchCompute(DispatchGroupsX(currentNodesCount), 1, 1);
                 GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit | MemoryBarrierFlags.VertexAttribArrayBarrierBit | MemoryBarrierFlags.BufferUpdateBarrierBit);
                 GL.BindBuffer(BufferTarget.ShaderStorageBuffer, boundsBuffer);
                 GL.GetBufferSubData(BufferTarget.ShaderStorageBuffer, IntPtr.Zero, Marshal.SizeOf<BoundsBuffer>(), ref bounds);
@@ -171,7 +171,7 @@ namespace Graphs3D.Gpu
                 GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 1, pointsBufferA);
                 GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 6, cellCountBuffer);
                 GL.UseProgram(tilingCountProgram);
-                GL.DispatchCompute(DispatchGroupsX, 1, 1);
+                GL.DispatchCompute(DispatchGroupsX(currentNodesCount), 1, 1);
                 GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
                 DownloadIntBuffer(cellCounts, cellCountBuffer, currentTotalCellsCount);
                 if (cellCounts.Sum() == 0) throw new Exception("counted 0");
@@ -204,7 +204,7 @@ namespace Graphs3D.Gpu
                     GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 7, cellOffsetBuffer);
                     GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 8, nodeIndicesBuffer);
                     GL.UseProgram(tilingBinProgram);
-                    GL.DispatchCompute(DispatchGroupsX, 1, 1);
+                    GL.DispatchCompute(DispatchGroupsX(currentNodesCount), 1, 1);
                     GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
                     //DebugUtil.DebugSolver(false, config, this);
                 }
@@ -304,8 +304,8 @@ namespace Graphs3D.Gpu
             if (currentNodesCount != nodesCount)
             {
                 currentNodesCount = nodesCount;
-                CreateBuffer(ref pointsBufferA, currentNodesCount, shaderPointStrideSize);
-                CreateBuffer(ref pointsBufferB, currentNodesCount, shaderPointStrideSize);
+                CreateBuffer(ref pointsBufferA, currentNodesCount+1, shaderPointStrideSize);
+                CreateBuffer(ref pointsBufferB, currentNodesCount+1, shaderPointStrideSize);
                 CreateBuffer(ref nodeIndicesBuffer, currentNodesCount, Marshal.SizeOf<int>());
                 CreateBuffer(ref neighboursStartBuffer, currentNodesCount, Marshal.SizeOf<int>());
                 CreateBuffer(ref neighboursCountBuffer, currentNodesCount, Marshal.SizeOf<int>());

@@ -22,6 +22,9 @@ struct ShaderConfig {
     int totalCellCount;
     vec4 minBounds;
     vec4 maxBounds;
+    int marker1;
+    int marker2;
+    int markerT;
 };
 
 struct Node
@@ -250,7 +253,7 @@ void update_one(uint idx)
     float uSpringK = 40.0;
     float uRepulsionK = 2000;
     float uFlatteningK = 1.0;
-    float uDamping = 0.95;
+    float uDamping = 0.9;
     float uMaxStep = 3;
     float maxSpringForce = 500.0;
 
@@ -302,7 +305,6 @@ void update_one(uint idx)
 
     if (config.trackedIdx > -1 && config.trackedIdx == idx)
     {
-        p.flags = 1;
         tracked = p;
     }
 }
@@ -310,10 +312,21 @@ void update_one(uint idx)
 void main()
 {
     uint idx = gl_GlobalInvocationID.x;
-    if (idx >=0 && idx < config.nodesCount) 
+    if (idx < config.nodesCount) 
     {
         update_one(idx);
+    }
+    else if (idx == config.nodesCount)
+    {
+        Node marker;
+        marker.position = vec4(0,0,0,0);
+        marker.flags = 2;
+        if (config.marker1 != -1)
+        {
+            marker = inNodes[config.marker1];
+            marker.flags = 1;
+        }
 
-
+        outNodes[idx] = marker;
     }
 }

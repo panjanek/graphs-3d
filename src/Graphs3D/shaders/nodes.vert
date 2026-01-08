@@ -28,6 +28,7 @@ layout(location = 3) out vec3 vCenterView;
 layout(location = 4) out vec2 vQuad;
 layout(location = 5) in vec2 quadPos;
 layout(location = 6) out vec3 vOffsetView;
+layout(location = 7) out float vSphereRadiusMult;
 
 float fading_alpha(float r2)
 {
@@ -43,7 +44,31 @@ void main()
     uint id = gl_InstanceID;
     Node p = points[id];
 
-    //if tracking enabled - make everything around tracked particle fade away
+    // player coloring
+    const vec3 colors[] = vec3[](
+        vec3(1.0, 1.0, 0.0), // yellow
+        vec3(1.0, 0.0, 1.0), // magenta
+        vec3(0.0, 1.0, 1.0), // cyan
+        vec3(1.0, 0.0, 0.0), // red
+        vec3(0.0, 1.0, 0.0), // green
+        vec3(0.0, 0.0, 1.0), // blue
+        vec3(1.0, 1.0, 1.0), // white
+        vec3(0.5, 0.5, 0.5)  // gray
+    );
+    vColor = colors[p.player % 8];
+    vSphereRadiusMult = 1.0;
+
+    //marker
+    if (p.flags == 1) 
+    {
+        vSphereRadiusMult = 1.5;
+        vColor = vec3(0.0, 0.0, 1.0);
+    }
+
+    //hide
+    if (p.flags == 2) sphereRadius = 0;
+
+    //tracked
     vFadingAlpha = 1.0;
     if (trackedPos.x > -100000)
     {
@@ -51,6 +76,7 @@ void main()
         float r2 = dot(d, d);
         vFadingAlpha = fading_alpha(r2);
     }
+
 
     //real spheres
     vec4 viewPos = view * vec4(p.position.xyz, 1.0);
@@ -65,21 +91,4 @@ void main()
 
     vec4 pos = viewPos + vec4(offset, 0.0);
     gl_Position = projection * pos;
-
-    // species coloring as before
-        const vec3 colors[] = vec3[](
-        vec3(1.0, 1.0, 0.0), // yellow
-        vec3(1.0, 0.0, 1.0), // magenta
-        vec3(0.0, 1.0, 1.0), // cyan
-        vec3(1.0, 0.0, 0.0), // red
-        vec3(0.0, 1.0, 0.0), // green
-        vec3(0.0, 0.0, 1.0), // blue
-        vec3(1.0, 1.0, 1.0), // white
-        vec3(0.5, 0.5, 0.5)  // gray
-    );
-
-    vColor = colors[p.player % 8];
-
-    if (p.flags == 1)
-        vColor = vColor*2;
 }
