@@ -306,8 +306,9 @@ namespace Graphs3D.Gpu
         {
             if (TrackedIdx.HasValue)
             {
-                var tracked = solverProgram.GetTrackedParticle();
-                var cameraPosition = tracked.position - GetCameraDirection() * app.simulation.followDistance; //move camera to back of tracked particle
+                var trackedPos = solverProgram.GetTrackedParticle().position;
+                //var trackedPos = solverProgram.GetCenterOfMass();
+                var cameraPosition = trackedPos - GetCameraDirection() * app.simulation.followDistance; //move camera to back of tracked particle
                 var delta = cameraPosition - center;
                 var translate = delta * app.simulation.cameraFollowSpeed;
                 center += translate;

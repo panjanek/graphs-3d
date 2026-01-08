@@ -73,6 +73,8 @@ namespace Graphs3D.Gpu
 
         public float[] restLengths;
 
+        private Vector4 avg;
+
         private Node trackedParticle;
 
         private BoundsBuffer bounds;
@@ -106,8 +108,9 @@ namespace Graphs3D.Gpu
         }
 
         private int DispatchGroupsX(int count) => Math.Clamp((count + ShaderUtil.LocalSizeX - 1) / ShaderUtil.LocalSizeX, 1, maxGroupsX);
-        
 
+        public Vector4 GetCenterOfMass() => avg;
+        
         public void Run(ref ShaderConfig config, bool recomputeBounds = false)
         {
             PrepareBuffers(config.nodesCount, config.totalCellCount, config.edgesCount);
@@ -154,6 +157,7 @@ namespace Graphs3D.Gpu
                 GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
                 config.minBound = bounds.GetMin() - new Vector4(-0.1f, -0.1f, -0.1f, 0);
                 config.maxBound = bounds.GetMax();
+                avg = bounds.GetSum() / config.nodesCount;
                 var d = config.maxBound - config.minBound;
                 config.gridSize = Math.Max(d.X, Math.Max(d.Y, d.Z)) + 0.2f;
                 config.cellCount = (int)Math.Floor(config.gridSize / config.maxDist);

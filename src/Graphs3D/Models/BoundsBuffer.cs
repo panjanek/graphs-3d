@@ -13,6 +13,7 @@ namespace Graphs3D.Models
     {
         public UVec4 MinBound;
         public UVec4 MaxBound;
+        public UVec4 Sum;
 
         public static uint FloatToOrderedUint(float f)
         {
@@ -41,7 +42,13 @@ namespace Graphs3D.Models
                     FloatToOrderedUint(float.NegativeInfinity),
                     FloatToOrderedUint(float.NegativeInfinity),
                     0
-                )
+                ),
+                Sum = new UVec4(
+                    0,
+                    0,
+                    0,
+                    0
+                ),
             };
 
             return maxed;
@@ -63,6 +70,16 @@ namespace Graphs3D.Models
                 OrderedUintToFloat(MaxBound.X),
                 OrderedUintToFloat(MaxBound.Y),
                 OrderedUintToFloat(MaxBound.Z),
+                0
+            );
+        }
+
+        public Vector4 GetSum()
+        {
+            return new Vector4(
+                Sum.X,
+                Sum.Y,
+                Sum.Z,
                 0
             );
         }
