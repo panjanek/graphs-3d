@@ -66,6 +66,8 @@ namespace Graphs3D.Gpu
 
         private AnimationTimer animation;
 
+        public bool Rotation { get; private set; }
+
         public OpenGlRenderer(Panel placeholder, AppContext app)
         {
             this.placeholder = placeholder;
@@ -117,6 +119,7 @@ namespace Graphs3D.Gpu
                 else
                 {
                     StopTracking();
+                    StopRotating();
                     var dragged = DraggedIdx;
                     if (dragged.HasValue)
                     {
@@ -151,14 +154,12 @@ namespace Graphs3D.Gpu
             glControl.MouseWheel += (s, e) =>
             {
                 var delta = e.Delta * ForwardSpeed;
-                if (TrackedIdx.HasValue)
+                if (TrackedIdx.HasValue || Rotation)
                 {
                     //change follow distance
                     app.simulation.followDistance -= delta;
                     if (app.simulation.followDistance < 10)
                         app.simulation.followDistance = 10;
-                    app.configWindow.UpdateActiveControls();
-                    app.configWindow.UpdatePassiveControls();
                 }
                 else
                 {
@@ -187,7 +188,6 @@ namespace Graphs3D.Gpu
                     else
                     {
                         var path = app.simulation.FindPath(currentIdx.Value, newIdx.Value);
-                        //AnimateTo(newIdx.Value);
                         AnimatePath(path);
                     }
                 }
@@ -302,17 +302,23 @@ namespace Graphs3D.Gpu
 
         private Matrix4 GetCombinedProjectionMatrix() => GetViewMatrix() * GetProjectionMatrix();
 
-        private void FollowTrackedParticle()
+        private void AutomaticCameraMovement()
         {
             if (TrackedIdx.HasValue)
+                PositionCameraTo(solverProgram.GetTrackedParticle().position, app.simulation.cameraFollowSpeed);
+            else if (Rotation)
             {
-                var trackedPos = solverProgram.GetTrackedParticle().position;
-                //var trackedPos = solverProgram.GetCenterOfMass();
-                var cameraPosition = trackedPos - GetCameraDirection() * app.simulation.followDistance; //move camera to back of tracked particle
-                var delta = cameraPosition - center;
-                var translate = delta * app.simulation.cameraFollowSpeed;
-                center += translate;
+                xzAngle -= 0.01;
+                PositionCameraTo(solverProgram.GetCenterOfMass(), 1);
             }
+        }
+
+        private void PositionCameraTo(Vector4 target, float adaptationSpeed)
+        {
+            var cameraPosition = target - GetCameraDirection() * app.simulation.followDistance; //move camera to back of tracked particle
+            var delta = cameraPosition - center;
+            var translate = delta * adaptationSpeed;
+            center += translate;
         }
 
         public void ResetOrigin()
@@ -321,6 +327,7 @@ namespace Graphs3D.Gpu
             center = new Vector4(app.simulation.config.fieldSize / 2, app.simulation.config.fieldSize / 2, -1.5f*app.simulation.config.fieldSize, 1.0f);
             xzAngle = 0;
             yAngle = 0;
+            StartRotating();
         }
 
         public void UploadGraph() => solverProgram.UploadGraph(ref app.simulation.config, app.simulation.nodes, app.simulation.edges);
@@ -331,6 +338,7 @@ namespace Graphs3D.Gpu
         {
             TrackedIdx = idx;
             app.simulation.config.trackedIdx = TrackedIdx ?? -1;
+            app.simulation.followDistance = 10;
             solverProgram.Run(ref app.simulation.config);
         }
 
@@ -343,6 +351,14 @@ namespace Graphs3D.Gpu
                 solverProgram.Run(ref app.simulation.config);
             }
         }
+
+        public void StartRotating()
+        {
+            app.simulation.followDistance = 100;
+            Rotation = true;
+        }
+
+        public void StopRotating() => Rotation = false;
 
         private void GlControl_SizeChanged(object? sender, EventArgs e)
         {
@@ -358,7 +374,7 @@ namespace Graphs3D.Gpu
 
         private void GlControl_Paint(object? sender, PaintEventArgs e)
         {
-            FollowTrackedParticle();
+            AutomaticCameraMovement();
             var trackedPos = TrackedIdx.HasValue ? solverProgram.GetTrackedParticle().position : new Vector4(-1000000, 0, 0, 0);
             displayProgram.Run(
                 solverProgram.pointsBufferB,
