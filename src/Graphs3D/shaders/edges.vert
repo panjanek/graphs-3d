@@ -31,6 +31,7 @@ layout(std430, binding = 3) buffer EdgesBuffer {
 uniform mat4 projection;
 uniform mat4 view;
 uniform vec2 viewportSize;
+uniform float lineWidth;
 
 out float vDepth;
 out vec3 vColor;
@@ -38,8 +39,6 @@ out float vEdgeDist;
 
 void main()
 {
-    float baseLineWidth = 750;
-
     const vec3 colors[] = vec3[](
         vec3(1.0, 1.0, 0.0), // yellow
         vec3(1.0, 0.0, 1.0), // magenta
@@ -80,7 +79,7 @@ void main()
     bool isTop         = (qc & 2u) != 0u;
 
     float depth = isSecondPoint ? -clip1.z : -clip0.z;
-    float width = baseLineWidth / (depth + 1.0);
+    float width = lineWidth / (depth + 1.0);
 
     vec2 offset = normal * (isTop ? width : -width) / viewportSize;
 

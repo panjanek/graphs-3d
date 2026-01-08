@@ -62,6 +62,7 @@ void main()
     if (p.flags == 1) 
     {
         vSphereRadiusMult = 3;
+        sphereRadius *= vSphereRadiusMult;
         vColor = vec3(0.0, 0.0, 1.0);
     }
 

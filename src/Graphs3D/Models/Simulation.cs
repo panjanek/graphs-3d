@@ -26,7 +26,8 @@ namespace Graphs3D.Models
 
         public float particleSize = 0.3f;
 
-        [JsonIgnore]
+        public float lineWidth = 750f;
+
         public Node[] nodes;
 
         public Edge[] edges;
@@ -37,7 +38,7 @@ namespace Graphs3D.Models
 
         public static Random globalRandom = new Random(1);
 
-        private IGraph graph;
+        public IGraph graph;
 
         public Simulation()
         {

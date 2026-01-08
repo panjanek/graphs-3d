@@ -20,7 +20,7 @@ void main()
         abs(vEdgeDist)
     );
 
-    alphaEdge = pow(alphaEdge, 0.5);
+    alphaEdge = pow(alphaEdge, 0.8);
 
     // ---- fog (correct) ----
     float fogDensity = 0.0005;

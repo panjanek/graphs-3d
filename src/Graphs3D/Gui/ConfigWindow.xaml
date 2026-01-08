@@ -122,48 +122,28 @@
                     <Button Name="backButton" Grid.Row="0" Grid.Column="5">Back</Button>
                 </Grid>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Number of particles" Grid.ColumnSpan="1" VerticalAlignment="Center" Margin="10,5,5,0" Foreground="White" TextWrapping="Wrap"/>
-                <ComboBox Name="particlesCount" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" SelectionChanged="global_SelectionChanged" Margin="0,5,10,0">
-                    <ComboBoxItem>500</ComboBoxItem>
-                    <ComboBoxItem>1000</ComboBoxItem>
-                    <ComboBoxItem>2500</ComboBoxItem>
-                    <ComboBoxItem>5000</ComboBoxItem>
-                    <ComboBoxItem IsSelected="True">10000</ComboBoxItem>
-                    <ComboBoxItem>25000</ComboBoxItem>
-                    <ComboBoxItem>50000</ComboBoxItem>
-                    <ComboBoxItem>100000</ComboBoxItem>
-                    <ComboBoxItem>500000</ComboBoxItem>
-                    <ComboBoxItem>1000000</ComboBoxItem>
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Graph" Grid.ColumnSpan="1" VerticalAlignment="Center" Margin="10,5,5,0" Foreground="White" TextWrapping="Wrap"/>
+                <ComboBox Name="graph" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" SelectionChanged="global_SelectionChanged" Margin="0,5,10,0">
+                    <ComboBoxItem IsSelected="True">LatticeGraph</ComboBoxItem>
                 </ComboBox>
 
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="Size of the field" Grid.ColumnSpan="1" VerticalAlignment="Center" Margin="10,5,5,0" Foreground="White" TextWrapping="Wrap"/>
-                <ComboBox Name="fieldSize" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" SelectionChanged="global_SelectionChanged" Margin="0,5,10,0">
-                    <ComboBoxItem>300x300x300</ComboBoxItem>
-                    <ComboBoxItem>500x500x500</ComboBoxItem>
-                    <ComboBoxItem IsSelected="True">800x800x800</ComboBoxItem>
-                    <ComboBoxItem>1000x1000x1000</ComboBoxItem>
-                    <ComboBoxItem>1500x1500x1500</ComboBoxItem>
-                    <ComboBoxItem>2000x2000x2000</ComboBoxItem>
-                    <ComboBoxItem>5000x5000x5000</ComboBoxItem>
-                    <ComboBoxItem>10000x10000x10000</ComboBoxItem>
-                </ComboBox>
-  
                 <!-- dt -->
                 <TextBlock Grid.Row="4" Grid.Column="0" Text="step dt ⓘ" VerticalAlignment="Center" Margin="10,0,8,0" TextWrapping="Wrap" Foreground="White" ToolTip="Integration step"/>
                 <Slider Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="1" Minimum="0.001" Maximum="1" SmallChange="0.001" LargeChange="0.1" ValueChanged="Slider_ValueChanged" Tag="config.dt" VerticalAlignment="Center"/>
                 <TextBlock Grid.Row="4" Grid.Column="2" Tag="config.dt"  FontFamily="Courier New" Margin="0,5,10,0" VerticalAlignment="Center" FontSize="11" MouseDown="infoText_MouseDown" Foreground="White" Background="DarkGray" TextAlignment="Center" Padding="1"/>
 
-                <!-- cameraFollowSpeed -->
-                <TextBlock Grid.Row="9" Grid.Column="0" Text="Speed of camera ⓘ" VerticalAlignment="Center" Margin="10,0,8,0" TextWrapping="Wrap" Foreground="White" ToolTip="Speed of camera when right-clicked on partice. Does not affect simulation"/>
-                <Slider Grid.Row="9" Grid.Column="1" Grid.ColumnSpan="1" Minimum="0.01" Maximum="1" SmallChange="0.01" LargeChange="0.1" ValueChanged="Slider_ValueChanged" Tag="cameraFollowSpeed" VerticalAlignment="Center"/>
-                <TextBlock Grid.Row="9" Grid.Column="2" Tag="cameraFollowSpeed"  FontFamily="Courier New" Margin="0,5,10,0" VerticalAlignment="Center" FontSize="11" MouseDown="infoText_MouseDown" Foreground="White" Background="DarkGray" TextAlignment="Center" Padding="1"/>
-                
                 <!-- particleSize -->
-                <TextBlock Grid.Row="10" Grid.Column="0" Text="Particle size ⓘ" VerticalAlignment="Center" Margin="10,0,8,0" TextWrapping="Wrap" Foreground="White" ToolTip="Screen size of particle. Does not affect simulation"/>
-                <Slider Grid.Row="10" Grid.Column="1" Grid.ColumnSpan="1" Minimum="0.1" Maximum="10" SmallChange="0.1" LargeChange="1" ValueChanged="Slider_ValueChanged" Tag="particleSize" VerticalAlignment="Center"/>
-                <TextBlock Grid.Row="10" Grid.Column="2" Tag="particleSize"  FontFamily="Courier New" Margin="0,5,10,0" VerticalAlignment="Center" FontSize="11" MouseDown="infoText_MouseDown" Foreground="White" Background="DarkGray" TextAlignment="Center" Padding="1"/>
-       
-                </Grid>
+                <TextBlock Grid.Row="5" Grid.Column="0" Text="Node size ⓘ" VerticalAlignment="Center" Margin="10,0,8,0" TextWrapping="Wrap" Foreground="White" ToolTip="Screen size of node balls"/>
+                <Slider Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="1" Minimum="0.1" Maximum="2" SmallChange="0.02" LargeChange="0.1" ValueChanged="Slider_ValueChanged" Tag="particleSize" VerticalAlignment="Center"/>
+                <TextBlock Grid.Row="5" Grid.Column="2" Tag="particleSize"  FontFamily="Courier New" Margin="0,5,10,0" VerticalAlignment="Center" FontSize="11" MouseDown="infoText_MouseDown" Foreground="White" Background="DarkGray" TextAlignment="Center" Padding="1"/>
+
+                <!-- line width -->
+                <TextBlock Grid.Row="6" Grid.Column="0" Text="line width ⓘ" VerticalAlignment="Center" Margin="10,0,8,0" TextWrapping="Wrap" Foreground="White" ToolTip="Width of edge line"/>
+                <Slider Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" Minimum="100" Maximum="3000" SmallChange="50" LargeChange="200" ValueChanged="Slider_ValueChanged" Tag="lineWidth" VerticalAlignment="Center"/>
+                <TextBlock Grid.Row="6" Grid.Column="2" Tag="lineWidth"  FontFamily="Courier New" Margin="0,5,10,0" VerticalAlignment="Center" FontSize="11" MouseDown="infoText_MouseDown" Foreground="White" Background="DarkGray" TextAlignment="Center" Padding="1"/>
+
+            
+            </Grid>
         </DockPanel>
     </Border>
 </Window>

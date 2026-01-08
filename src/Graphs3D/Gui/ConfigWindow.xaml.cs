@@ -70,17 +70,12 @@ namespace Graphs3D.Gui
 
         private void global_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (fieldSize != null && particlesCount != null && !updating)
+            if (graph != null && !updating)
             {
-                var newParticleCountStr = WpfUtil.GetComboSelectionAsString(particlesCount);
-                var newSizeStr = WpfUtil.GetComboSelectionAsString(fieldSize);
-                if (!string.IsNullOrWhiteSpace(newParticleCountStr) && !string.IsNullOrWhiteSpace(newSizeStr))
+                var newGraph = WpfUtil.GetComboSelectionAsString(graph);
+                if (!string.IsNullOrWhiteSpace(newGraph))
                 {
-                    var newParticleCount = int.Parse(newParticleCountStr);
-                    var sizeSplit = newSizeStr.Split('x');
-                    var newSize = int.Parse(sizeSplit[0]);
-                    if (newParticleCount != app.simulation.config.nodesCount ||
-                        newSize != app.simulation.config.fieldSize)
+                    if (newGraph != app.simulation.graph?.GetType().Name)
                     {
                         app.simulation.StartSimulation();
                         app.renderer.UploadGraph();
@@ -122,8 +117,7 @@ namespace Graphs3D.Gui
         public void UpdateActiveControls()
         {
             updating = true;
-            WpfUtil.SetComboStringSelection(fieldSize, $"{app.simulation.config.fieldSize}x{app.simulation.config.fieldSize}x{app.simulation.config.fieldSize}");
-            WpfUtil.SetComboStringSelection(particlesCount, app.simulation.config.nodesCount.ToString());
+            WpfUtil.SetComboStringSelection(graph, app.simulation.graph?.GetType().Name);
             foreach (var slider in WpfUtil.FindVisualChildren<Slider>(this))
             {
                 var tag = WpfUtil.GetTagAsString(slider);

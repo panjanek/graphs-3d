@@ -368,7 +368,8 @@ namespace Graphs3D.Gpu
                 new Vector2(glControl.Width, glControl.Height),
                 GetViewMatrix(),
                 trackedPos,
-                (int)app.simulation.config.edgesCount);
+                (int)app.simulation.config.edgesCount,
+                app.simulation.lineWidth);
             glControl.SwapBuffers();
             frameCounter++;
             Capture();

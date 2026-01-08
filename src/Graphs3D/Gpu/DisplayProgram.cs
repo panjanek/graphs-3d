@@ -28,6 +28,8 @@ namespace Graphs3D.Gpu
 
         private int viewEdgesLocation;
 
+        private int lineWidthLocation;
+
         private int trackedPosLocation;
 
         private int quadVao;
@@ -65,7 +67,8 @@ namespace Graphs3D.Gpu
             if (viewportSizeEdgesLocation == -1) throw new Exception("Uniform 'viewportSize' not found. Shader optimized it out?");
             viewEdgesLocation = GL.GetUniformLocation(edgesProgram, "view");
             if (viewEdgesLocation == -1) throw new Exception("Uniform 'view' not found. Shader optimized it out?");
-
+            lineWidthLocation = GL.GetUniformLocation(edgesProgram, "lineWidth");
+            if (lineWidthLocation == -1) throw new Exception("Uniform 'lineWidth' not found. Shader optimized it out?");
 
             float[] quad =
                 {
@@ -106,7 +109,16 @@ namespace Graphs3D.Gpu
             );
         }
 
-        public void Run(int nodesBuffer, int edgesBuffer, Matrix4 projectionMatrix, int particlesCount, float particleSize, Vector2 viewportSize, Matrix4 view, Vector4 trackedPos, int edgesCount)
+        public void Run(int nodesBuffer, 
+                        int edgesBuffer, 
+                        Matrix4 projectionMatrix, 
+                        int particlesCount, 
+                        float particleSize, 
+                        Vector2 viewportSize, 
+                        Matrix4 view, 
+                        Vector4 trackedPos, 
+                        int edgesCount,
+                        float lineWidth)
         {
             GL.Clear(
                 ClearBufferMask.ColorBufferBit |
@@ -142,6 +154,7 @@ namespace Graphs3D.Gpu
             GL.UniformMatrix4(projEdgesLocation, false, ref projection);
             GL.UniformMatrix4(viewEdgesLocation, false, ref view);
             GL.Uniform2(viewportSizeEdgesLocation, ref viewportSize);
+            GL.Uniform1(lineWidthLocation, lineWidth);
             GL.DrawArrays(PrimitiveType.Triangles, 0, edgesCount * 6);
         }
     }
