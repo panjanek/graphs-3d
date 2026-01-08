@@ -74,8 +74,7 @@ namespace Graphs3D
                     break;
                 case Key.Z:
                     app.renderer.DownloadNodes();
-                    for(int i=0; i<15; i++)
-                        app.simulation.Expand();
+                    app.simulation.Expand(50);
                     app.renderer.UploadGraph();
                     e.Handled = true;
                     break;

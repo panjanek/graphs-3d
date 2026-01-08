@@ -57,8 +57,8 @@ namespace Graphs3D.Models
             config.nodesCount = nodes.Length;
             config.edgesCount = edges.Length;
             nodes[0].position = new Vector4(config.fieldSize / 2, config.fieldSize / 2, config.fieldSize / 2, 1.0f);
-            for (int i = 0; i < 3; i++)
-                Expand();
+            config.marker1 = 0;
+            Expand(30);
 
             //Create2DGrid((uint)100, (uint)100, true, false);
         }
@@ -72,34 +72,45 @@ namespace Graphs3D.Models
             config.edgesCount = edges.Length;
         }
 
-        public void Expand()
+        public void Expand(int wantNodesCount)
         {
-            var parentIdx = graph.Expand();
-            var newNodes = graph.Nodes.ToArray();
-            var newEdges = graph.Edges.ToArray();
-            if (newNodes.Length > nodes.Length)
+            if (graph.IsFinished())
+                return;
+
+            int generatedNodes = 0;
+            int expandedCount = 0;
+            do
             {
-                var tmp = new Node[newNodes.Length];
-                Array.Copy(nodes, tmp, nodes.Length);
-                Array.Copy(newNodes, nodes.Length, tmp, nodes.Length, newNodes.Length - nodes.Length);
-                
-                for (int i = nodes.Length; i < newNodes.Length; i++)
+                var parentIdx = graph.Expand();
+                var newNodes = graph.Nodes.ToArray();
+                var newEdges = graph.Edges.ToArray();
+                expandedCount = newNodes.Length - nodes.Length;
+                if (newNodes.Length > nodes.Length)
                 {
-                    tmp[i].position = tmp[parentIdx].position + new Vector4((float)globalRandom.NextDouble()-0.5f, (float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f,1);
+                    var tmp = new Node[newNodes.Length];
+                    Array.Copy(nodes, tmp, nodes.Length);
+                    Array.Copy(newNodes, nodes.Length, tmp, nodes.Length, newNodes.Length - nodes.Length);
+
+                    for (int i = nodes.Length; i < newNodes.Length; i++)
+                    {
+                        tmp[i].position = tmp[parentIdx].position + new Vector4((float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f, 1);
+                    }
+
+                    nodes = tmp;
+                    config.nodesCount = nodes.Length;
                 }
 
-                nodes = tmp;
-                config.nodesCount = nodes.Length;
-            }
+                if (newEdges.Length > edges.Length)
+                {
+                    var tmp = new Edge[newEdges.Length];
+                    Array.Copy(edges, tmp, edges.Length);
+                    Array.Copy(newEdges, edges.Length, tmp, edges.Length, newEdges.Length - edges.Length);
+                    edges = tmp;
+                    config.edgesCount = edges.Length;
+                }
 
-            if (newEdges.Length > edges.Length)
-            {
-                var tmp = new Edge[newEdges.Length];
-                Array.Copy(edges, tmp, edges.Length);
-                Array.Copy(newEdges, edges.Length, tmp, edges.Length, newEdges.Length - edges.Length);
-                edges = tmp;
-                config.edgesCount = edges.Length;
-            }
+                generatedNodes += expandedCount;
+            } while (generatedNodes < wantNodesCount && !graph.IsFinished());
         }
 
         public List<int> GetChildren(int parentIdx)

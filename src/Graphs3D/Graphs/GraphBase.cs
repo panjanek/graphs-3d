@@ -36,6 +36,8 @@ namespace Graphs3D.Graphs
             return parent.idx;
         }
 
+        public bool IsFinished() => !graphNodes.Any(n => !n.expanded);
+
         public void ExpandNode(int parentIdx)
         {
             if (parentIdx < Nodes.Count)

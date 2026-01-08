@@ -13,6 +13,8 @@ namespace Graphs3D.Graphs
 
         void ExpandNode(int parentIdx);
 
+        bool IsFinished();
+
         List<Node> Nodes { get; }
 
         List<Edge> Edges { get; }
