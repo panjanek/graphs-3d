@@ -85,7 +85,7 @@ namespace Graphs3D
                     {
                         var children = app.simulation.GetChildren(selectedIdx.Value);
                         if (children.Count > 0)
-                            app.renderer.Select(children[rnd.Next(children.Count)]);
+                            app.renderer.AnimateTo(children[rnd.Next(children.Count)]);
                     }
 
                     e.Handled = true;
@@ -96,7 +96,7 @@ namespace Graphs3D
                     {
                         var parentIdx = app.simulation.GetParent(selectedIdx.Value);
                         if (parentIdx.HasValue)
-                            app.renderer.Select(parentIdx.Value);
+                            app.renderer.AnimateTo(parentIdx.Value);
                     }
 
                     e.Handled = true;

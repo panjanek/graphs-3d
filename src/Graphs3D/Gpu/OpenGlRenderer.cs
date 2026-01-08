@@ -20,6 +20,7 @@ using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using Panel = System.Windows.Controls.Panel;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
+using Graphs3D.Gui;
 
 namespace Graphs3D.Gpu
 {
@@ -62,6 +63,8 @@ namespace Graphs3D.Gpu
         public byte[] captureBuffer;
 
         private int? recFrameNr;
+
+        private AnimationTimer animation;
 
         public OpenGlRenderer(Panel placeholder, AppContext app)
         {
@@ -177,15 +180,40 @@ namespace Graphs3D.Gpu
             {
                 var selectedIdx = GetClickedNodeIndex(e.X, e.Y);
                 if (selectedIdx.HasValue)
-                    Select(selectedIdx.Value);
+                    AnimateTo(selectedIdx.Value);
             }
+        }
+
+        public void AnimateTo(int targetIdx)
+        {
+            if (animation != null)
+                return;
+
+            var currentIdx = SelectedIdx;
+            if (!currentIdx.HasValue)
+            {
+                Select(currentIdx.Value);
+                return;
+            }
+
+            animation = new AnimationTimer(0.04, 500, progress =>
+            {
+                app.simulation.config.marker1 = currentIdx.Value;
+                app.simulation.config.marker2 = targetIdx;
+                app.simulation.config.markerT = (float)progress;
+                if (progress > 1.0)
+                    Console.WriteLine();
+            }, 
+            () => Select(targetIdx));
         }
 
         public void Select(int idx)
         {
+            animation = null;
             SelectedIdx = idx;
             app.simulation.config.marker1 = SelectedIdx ?? -1;
-            solverProgram.Run(ref app.simulation.config);
+            app.simulation.config.marker2 = SelectedIdx ?? -1;
+            app.simulation.config.markerT = 1.0f;
         }
 
         private void GlControl_MouseDoubleClick(object? sender, MouseEventArgs e)
@@ -323,7 +351,6 @@ namespace Graphs3D.Gpu
             if (!Paused)
             {
                 app.simulation.config.trackedIdx = TrackedIdx ?? -1;
-                app.simulation.config.marker1 = SelectedIdx ?? -1;
                 solverProgram.Run(ref app.simulation.config, frameCounter%100 == 0);
             }
 

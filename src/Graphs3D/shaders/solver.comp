@@ -24,7 +24,7 @@ struct ShaderConfig {
     vec4 maxBounds;
     int marker1;
     int marker2;
-    int markerT;
+    float markerT;
 };
 
 struct Node
@@ -325,6 +325,12 @@ void main()
         {
             marker = inNodes[config.marker1];
             marker.flags = 1;
+            if (config.marker2 != -1)
+            {
+                float progress = clamp(config.markerT, 0, 1);
+                Node target = inNodes[config.marker2];
+                marker.position += (target.position - marker.position) * progress;
+            }
         }
 
         outNodes[idx] = marker;

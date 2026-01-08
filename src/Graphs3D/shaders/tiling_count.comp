@@ -24,7 +24,7 @@ struct ShaderConfig {
     vec4 maxBounds;
     int marker1;
     int marker2;
-    int markerT;
+    float markerT;
 };
 
 struct Node

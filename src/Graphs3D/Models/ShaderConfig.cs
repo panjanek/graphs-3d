@@ -9,7 +9,7 @@ using static OpenTK.Graphics.OpenGL.GL;
 
 namespace Graphs3D.Models
 {
-    [StructLayout(LayoutKind.Explicit, Size = 108)]
+    [StructLayout(LayoutKind.Explicit, Size = 112)]
     public unsafe struct ShaderConfig
     {
         public ShaderConfig()
@@ -47,7 +47,7 @@ namespace Graphs3D.Models
 
         [FieldOffset(56)] public int totalCellCount = 0;
 
-        [FieldOffset(60)] int _pad1;
+        [FieldOffset(60)] int _pad0;
 
         [FieldOffset(64)] public Vector4 minBound;
 
@@ -57,6 +57,8 @@ namespace Graphs3D.Models
 
         [FieldOffset(100)]  public int marker2;
 
-        [FieldOffset(104)]  public int markerT;
+        [FieldOffset(104)]  public float markerT;
+
+        [FieldOffset(108)] private int _pad1;
     }
 }

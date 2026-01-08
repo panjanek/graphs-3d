@@ -127,7 +127,7 @@ namespace Graphs3D.Gpu
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 13, restLengthsBuffer);
 
             GL.UseProgram(solvingProgram);
-            GL.DispatchCompute(DispatchGroupsX(currentNodesCount+1), 1, 1);
+            GL.DispatchCompute(DispatchGroupsX(currentNodesCount + 1), 1, 1);
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit | MemoryBarrierFlags.VertexAttribArrayBarrierBit | MemoryBarrierFlags.BufferUpdateBarrierBit);
 
             (pointsBufferA, pointsBufferB) = (pointsBufferB, pointsBufferA);
