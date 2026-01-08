@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Graphs3D.Gpu;
+using Graphs3D.Graphs;
 using Graphs3D.Gui;
 
 namespace Graphs3D.Models
@@ -17,5 +18,12 @@ namespace Graphs3D.Models
         public OpenGlRenderer renderer;
 
         public ConfigWindow configWindow;
+
+        public void StartNewGraph()
+        {
+            simulation.StartSimulation();
+            renderer.UploadGraph();
+            renderer.ResetOrigin();
+        }
     }
 }

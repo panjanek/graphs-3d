@@ -17,6 +17,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using Graphs3D.Models;
 using Graphs3D.Utils;
 using AppContext = Graphs3D.Models.AppContext;
+using Graphs3D.Graphs;
 
 namespace Graphs3D.Gui
 {
@@ -40,13 +41,10 @@ namespace Graphs3D.Gui
             ContentRendered += (s, e) => { UpdateActiveControls(); UpdatePassiveControls(); };
             restartButton.PreviewKeyDown += (s, e) => e.Handled = true;
             recordButton.PreviewKeyDown += (s, e) => e.Handled = true;
-            backButton.PreviewKeyDown += (s, e) => e.Handled = true;
-            backButton.Click += (s, e) => app.renderer.ResetOrigin();
-            restartButton.Click += (s, e) => 
-            { 
-
-            };
-
+            centerButton.PreviewKeyDown += (s, e) => e.Handled = true;
+            centerButton.Click += (s, e) => app.renderer.ResetOrigin();
+            restartButton.Click += (s, e) => app.StartNewGraph();
+            
             KeyDown += (s, e) => app.mainWindow.MainWindow_KeyDown(s, e);
         }
 

@@ -91,6 +91,7 @@
                     </Grid.RowDefinitions>
 
                     <Button Grid.Row="0" Grid.Column="0" Name="restartButton">Restart</Button>
+                    <Button Grid.Row="0" Grid.Column="1" Name="centerButton">Center</Button>
                     <ToggleButton Name="recordButton" Grid.Row="0" Grid.Column="4" ToolTip="Record frames as PNG files to given folder" Click="Record_Click">
                         <ToggleButton.Style>
                             <Style TargetType="ToggleButton">
@@ -119,7 +120,6 @@
                             </Style>
                         </ToggleButton.Style>
                     </ToggleButton>
-                    <Button Name="backButton" Grid.Row="0" Grid.Column="5">Back</Button>
                 </Grid>
 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Graph" Grid.ColumnSpan="1" VerticalAlignment="Center" Margin="10,5,5,0" Foreground="White" TextWrapping="Wrap"/>
