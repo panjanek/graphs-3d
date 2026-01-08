@@ -59,6 +59,8 @@ void main()
     vColor = colors[colorIdx % 8];
     if (p.player < 0)
         vColor = vColor * 3;
+    if (p.player == -1000)
+        vColor =  vec3(1.0, 0.0, 0.0);
    
     vSphereRadiusMult = p.player >= 0 ? 1.0 : 2.0;
 
