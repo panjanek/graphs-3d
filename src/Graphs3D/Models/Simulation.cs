@@ -54,7 +54,6 @@ namespace Graphs3D.Models
             config.nodesCount = nodes.Length;
             config.edgesCount = edges.Length;
             nodes[0].position = new Vector4(config.fieldSize / 2, config.fieldSize / 2, config.fieldSize / 2, 1.0f);
-            config.marker1 = 0;
 
             //Create2DGrid((uint)100, (uint)100, true, false);
         }
@@ -96,6 +95,25 @@ namespace Graphs3D.Models
                 edges = tmp;
                 config.edgesCount = edges.Length;
             }
+        }
+
+        public List<int> GetChildren(int parentIdx)
+        {
+            var parent = nodes[parentIdx];
+            List<int> childrenIdx = new List<int>();
+            for (int i = 0; i < edges.Length; i++)
+            {
+                var edge = edges[i];
+                if (edge.a == parentIdx || edge.b == parentIdx)
+                {
+                    var otherIdx = edge.a == parentIdx ? edge.b : edge.a;
+                    var other = nodes[otherIdx];
+                    if (other.level > parent.level && !childrenIdx.Contains((int)otherIdx))
+                        childrenIdx.Add((int)otherIdx);
+                }
+            }
+
+            return childrenIdx;
         }
 
         private void Create2DGrid(uint rowSizeX, uint rowSizeY, bool wrapHoriz, bool wrapVert)

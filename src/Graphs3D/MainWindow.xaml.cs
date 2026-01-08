@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -31,6 +32,8 @@ namespace Graphs3D
 
         private AppContext app;
 
+        private Random rnd = new Random(1);
+
         public MainWindow()
         {
             InitializeComponent();
@@ -44,6 +47,7 @@ namespace Graphs3D
             app.simulation = new Simulation();
             app.simulation.StartSimulation();
             app.renderer = new OpenGlRenderer(placeholder, app);
+            app.renderer.SelectedIdx = 0;
             app.configWindow = new ConfigWindow(app);
             app.configWindow.Show();
             app.configWindow.Activate();
@@ -73,6 +77,17 @@ namespace Graphs3D
                     for(int i=0; i<5; i++)
                         app.simulation.Expand();
                     app.renderer.UploadGraph();
+                    e.Handled = true;
+                    break;
+                case Key.Up:
+                    var selectedIdx = app.renderer.SelectedIdx;
+                    if (selectedIdx.HasValue)
+                    {
+                        var children = app.simulation.GetChildren(selectedIdx.Value);
+                        if (children.Count > 0)
+                            app.renderer.Select(children[rnd.Next(children.Count)]);
+                    }
+
                     e.Handled = true;
                     break;
             }

@@ -175,8 +175,17 @@ namespace Graphs3D.Gpu
         {
             if (e.Button == MouseButtons.Left)
             {
-                SelectedIdx = GetClickedNodeIndex(e.X, e.Y);
+                var selectedIdx = GetClickedNodeIndex(e.X, e.Y);
+                if (selectedIdx.HasValue)
+                    Select(selectedIdx.Value);
             }
+        }
+
+        public void Select(int idx)
+        {
+            SelectedIdx = idx;
+            app.simulation.config.marker1 = SelectedIdx ?? -1;
+            solverProgram.Run(ref app.simulation.config);
         }
 
         private void GlControl_MouseDoubleClick(object? sender, MouseEventArgs e)
