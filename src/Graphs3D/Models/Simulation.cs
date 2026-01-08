@@ -10,6 +10,7 @@ using Graphs3D.Graphs;
 using OpenTK.Audio.OpenAL;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
 namespace Graphs3D.Models
 {
@@ -114,6 +115,26 @@ namespace Graphs3D.Models
             }
 
             return childrenIdx;
+        }
+
+        public int? GetParent(int childIdx)
+        {
+            var child = nodes[childIdx];
+            if (child.level == 0)
+                return null;
+            for (int i = 0; i < edges.Length; i++)
+            {
+                var edge = edges[i];
+                if (edge.a == childIdx || edge.b == childIdx)
+                {
+                    var otherIdx = edge.a == childIdx ? edge.b : edge.a;
+                    var other = nodes[otherIdx];
+                    if (other.level == child.level - 1)
+                        return (int)otherIdx;
+                }
+            }
+
+            return null;
         }
 
         private void Create2DGrid(uint rowSizeX, uint rowSizeY, bool wrapHoriz, bool wrapVert)

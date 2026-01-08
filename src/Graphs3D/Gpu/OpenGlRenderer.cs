@@ -33,11 +33,11 @@ namespace Graphs3D.Gpu
 
         public bool Paused { get; set; }
 
-        public int? TrackedIdx { get; set; }
+        public int? TrackedIdx { get; private set; }
 
         public int? DraggedIdx { get; set; }
 
-        public int? SelectedIdx { get; set; }
+        public int? SelectedIdx { get; private set; }
 
         private Panel placeholder;
 

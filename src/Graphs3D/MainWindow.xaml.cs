@@ -47,7 +47,7 @@ namespace Graphs3D
             app.simulation = new Simulation();
             app.simulation.StartSimulation();
             app.renderer = new OpenGlRenderer(placeholder, app);
-            app.renderer.SelectedIdx = 0;
+            app.renderer.Select(0);
             app.configWindow = new ConfigWindow(app);
             app.configWindow.Show();
             app.configWindow.Activate();
@@ -86,6 +86,17 @@ namespace Graphs3D
                         var children = app.simulation.GetChildren(selectedIdx.Value);
                         if (children.Count > 0)
                             app.renderer.Select(children[rnd.Next(children.Count)]);
+                    }
+
+                    e.Handled = true;
+                    break;
+                case Key.Down:
+                    selectedIdx = app.renderer.SelectedIdx;
+                    if (selectedIdx.HasValue)
+                    {
+                        var parentIdx = app.simulation.GetParent(selectedIdx.Value);
+                        if (parentIdx.HasValue)
+                            app.renderer.Select(parentIdx.Value);
                     }
 
                     e.Handled = true;
