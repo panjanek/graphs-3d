@@ -55,8 +55,12 @@ void main()
         vec3(1.0, 1.0, 1.0), // white
         vec3(0.5, 0.5, 0.5)  // gray
     );
-    vColor = colors[p.player % 8];
-    vSphereRadiusMult = 1.0;
+    int colorIdx = p.player >= 0 ? p.player : (-1 - p.player);
+    vColor = colors[colorIdx % 8];
+    if (p.player < 0)
+        vColor = vColor * 3;
+   
+    vSphereRadiusMult = p.player >= 0 ? 1.0 : 2.0;
 
     //marker
     if (p.flags == 1) 

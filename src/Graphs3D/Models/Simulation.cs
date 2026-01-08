@@ -47,7 +47,8 @@ namespace Graphs3D.Models
 
         public void StartSimulation()
         {
-            var graph = new LatticeGraph(10, 20, true, true);
+            //var graph = new LatticeGraph(20, 40, true, true);
+            var graph = new TicTacToeGraph(2);
             config.fieldSize = 100;
 
             this.graph = graph;

@@ -19,7 +19,7 @@ namespace Graphs3D.Models
 
         [FieldOffset(0)] public int nodesCount = 0;
 
-        [FieldOffset(4)] public float dt = 0.1f;
+        [FieldOffset(4)] public float dt = 0.075f;
 
         [FieldOffset(8)] public float sigma2 = 0f;
 

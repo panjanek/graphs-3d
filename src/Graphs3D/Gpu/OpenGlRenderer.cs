@@ -308,7 +308,7 @@ namespace Graphs3D.Gpu
                 PositionCameraTo(solverProgram.GetTrackedParticle().position, app.simulation.cameraFollowSpeed);
             else if (Rotation)
             {
-                xzAngle -= 0.01;
+                xzAngle -= 0.001;
                 PositionCameraTo(solverProgram.GetCenterOfMass(), 1);
             }
         }
@@ -355,6 +355,18 @@ namespace Graphs3D.Gpu
         public void StartRotating()
         {
             app.simulation.followDistance = 100;
+            var massCenter = solverProgram.GetCenterOfMass();
+            solverProgram.DownloadNodes(app.simulation.nodes);
+            float maxD = 0;
+            for(int i=0; i<app.simulation.nodes.Length; i++)
+            {
+                var d = Math.Sqrt((app.simulation.nodes[i].position.X - massCenter.X) * (app.simulation.nodes[i].position.X - massCenter.X) +
+                                  (app.simulation.nodes[i].position.Y - massCenter.Y) * (app.simulation.nodes[i].position.Y - massCenter.Y) +
+                                  (app.simulation.nodes[i].position.Z - massCenter.Z) * (app.simulation.nodes[i].position.Z - massCenter.Z));
+                if (d > maxD) maxD = (float)d;
+            }
+            if (maxD*1.75f > app.simulation.followDistance)
+                app.simulation.followDistance = maxD*1.75f;
             Rotation = true;
         }
 
