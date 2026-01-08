@@ -55,6 +55,8 @@ namespace Graphs3D.Models
             config.nodesCount = nodes.Length;
             config.edgesCount = edges.Length;
             nodes[0].position = new Vector4(config.fieldSize / 2, config.fieldSize / 2, config.fieldSize / 2, 1.0f);
+            for (int i = 0; i < 3; i++)
+                Expand();
 
             //Create2DGrid((uint)100, (uint)100, true, false);
         }
@@ -135,6 +137,47 @@ namespace Graphs3D.Models
             }
 
             return null;
+        }
+
+        public List<int> FindPath(int startIdx, int targetIdx)
+        {
+            var startPath = PathToRoot(startIdx);
+            startPath.Reverse();
+            var targetPath = PathToRoot(targetIdx);
+            targetPath.Reverse();
+            var shorterLen = Math.Min(startPath.Count, targetPath.Count);
+            var commonDescendantIdx = 0;
+            for (int i = 0; i < shorterLen; i++)
+                if (startPath[i] == targetPath[i])
+                    commonDescendantIdx = startPath[i];
+            startPath.Reverse();
+            var sub1 = GetSubPath(startPath, startIdx, commonDescendantIdx);
+            var sub2 = GetSubPath(targetPath, commonDescendantIdx, targetIdx);
+            if (sub1.Count > 0 && sub2.Count > 0 && sub1.Last() == sub2.First())
+                sub1.RemoveAt(sub1.Count-1);
+            sub1.AddRange(sub2);
+            return sub1;
+        }
+
+        private List<int> GetSubPath(List<int> path, int startIdx, int targetIdx)
+        {
+            int start = path.IndexOf(startIdx);
+            int stop = path.IndexOf(targetIdx);
+            return path.Skip(start).Take(stop - start+1).ToList();
+        }
+
+        public List<int> PathToRoot(int startIdx)
+        {
+            var result = new List<int>();
+            int? parentIdx;
+            result.Add(startIdx);
+            while ( (parentIdx = GetParent(startIdx)).HasValue)
+            {
+                result.Add(parentIdx.Value);
+                startIdx = parentIdx.Value;
+            }
+
+            return result;
         }
 
         private void Create2DGrid(uint rowSizeX, uint rowSizeY, bool wrapHoriz, bool wrapVert)

@@ -178,10 +178,44 @@ namespace Graphs3D.Gpu
         {
             if (e.Button == MouseButtons.Left)
             {
-                var selectedIdx = GetClickedNodeIndex(e.X, e.Y);
-                if (selectedIdx.HasValue)
-                    AnimateTo(selectedIdx.Value);
+                var newIdx = GetClickedNodeIndex(e.X, e.Y);
+                if (newIdx.HasValue)
+                {
+                    var currentIdx = SelectedIdx;
+                    if (!currentIdx.HasValue)
+                        Select(newIdx.Value);
+                    else
+                    {
+                        var path = app.simulation.FindPath(currentIdx.Value, newIdx.Value);
+                        //AnimateTo(newIdx.Value);
+                        AnimatePath(path);
+                    }
+                }
             }
+        }
+
+        public void AnimatePath(List<int> path)
+        {
+            if (animation != null)
+                return;
+
+            if (path.Count == 0)
+                return;
+
+            if (path.Count == 1)
+                Select(path[0]);
+
+            var stageLen = 1.0 / (path.Count - 1);
+            animation = new AnimationTimer(0.04, 500 + 200*(path.Count-1), progress =>
+            {
+                var nr = (int)Math.Floor(progress / stageLen);
+                if (nr < 0 || nr > path.Count - 2)
+                    return;
+                app.simulation.config.marker1 = path[nr];
+                app.simulation.config.marker2 = path[nr+1];
+                app.simulation.config.markerT = (float)((progress - nr * stageLen) / stageLen);
+            },
+            () => Select(path.Last()));
         }
 
         public void AnimateTo(int targetIdx)
@@ -201,8 +235,6 @@ namespace Graphs3D.Gpu
                 app.simulation.config.marker1 = currentIdx.Value;
                 app.simulation.config.marker2 = targetIdx;
                 app.simulation.config.markerT = (float)progress;
-                if (progress > 1.0)
-                    Console.WriteLine();
             }, 
             () => Select(targetIdx));
         }
