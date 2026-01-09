@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Graphs3D.Models;
 using OpenTK.Graphics.ES20;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
 namespace Graphs3D.Utils
@@ -73,6 +74,13 @@ namespace Graphs3D.Utils
             }
 
             return ops;
+        }
+
+        public static bool IsOutside(Vector4 test, Vector4 min, Vector4 max, float margin)
+        {
+            return test.X < min.X - margin || test.X > max.X + margin ||
+                test.Y < min.Y - margin || test.Y > max.Y + margin ||
+                test.Z < min.Z - margin || test.Z > max.Z + margin;
         }
     }
 }
