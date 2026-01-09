@@ -11,7 +11,7 @@ struct Node
    int level;
    int leaf;
    int win;
-   int _pad1;
+   int parent;
    int _pad2;
 };
 

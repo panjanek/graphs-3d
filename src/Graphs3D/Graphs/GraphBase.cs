@@ -98,7 +98,7 @@ namespace Graphs3D.Graphs
 
         public Node ToInternalNode()
         {
-            return new Node() { level = level, player = player, win = win, leaf = leaf ? 1 : 0 };
+            return new Node() { level = level, player = player, win = win, leaf = leaf ? 1 : 0, parent = parentIdx ?? -1 };
         }
     }
 }

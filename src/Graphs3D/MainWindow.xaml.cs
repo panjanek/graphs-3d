@@ -92,11 +92,10 @@ namespace Graphs3D
                     break;
                 case Key.Down:
                     selectedIdx = app.renderer.SelectedIdx;
-                    if (selectedIdx.HasValue)
+                    if (selectedIdx.HasValue && selectedIdx.Value < app.simulation.nodes.Length)
                     {
-                        var parentIdx = app.simulation.GetParent(selectedIdx.Value);
-                        if (parentIdx.HasValue)
-                            app.renderer.AnimateTo(parentIdx.Value);
+                        var parentIdx = app.simulation.nodes[selectedIdx.Value].parent;
+                        app.renderer.AnimateTo(parentIdx);
                     }
 
                     e.Handled = true;

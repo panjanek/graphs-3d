@@ -122,25 +122,15 @@ namespace Graphs3D.Models
             return childrenIdx;
         }
 
+        /*
         public int? GetParent(int childIdx)
         {
-            var child = nodes[childIdx];
-            if (child.level == 0)
+            var parentIdx = nodes[childIdx].parent;
+            if (parentIdx == -1)
                 return null;
-            for (int i = 0; i < edges.Length; i++)
-            {
-                var edge = edges[i];
-                if (edge.a == childIdx || edge.b == childIdx)
-                {
-                    var otherIdx = edge.a == childIdx ? edge.b : edge.a;
-                    var other = nodes[otherIdx];
-                    if (other.level == child.level - 1)
-                        return (int)otherIdx;
-                }
-            }
-
-            return null;
-        }
+            else
+                return parentIdx;
+        }*/
 
         public List<int> FindPath(int startIdx, int targetIdx)
         {
@@ -172,12 +162,12 @@ namespace Graphs3D.Models
         public List<int> PathToRoot(int startIdx)
         {
             var result = new List<int>();
-            int? parentIdx;
+            int parentIdx;
             result.Add(startIdx);
-            while ( (parentIdx = GetParent(startIdx)).HasValue)
+            while ( (parentIdx = nodes[startIdx].parent) >= 0)
             {
-                result.Add(parentIdx.Value);
-                startIdx = parentIdx.Value;
+                result.Add(parentIdx);
+                startIdx = parentIdx;
             }
 
             return result;

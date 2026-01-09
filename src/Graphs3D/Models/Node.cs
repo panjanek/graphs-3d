@@ -20,7 +20,7 @@ namespace Graphs3D.Models
         public int level;
         public int leaf;
         public int win;
-        private int _pad1;
+        public int parent;
         private int _pad2;
     }
 }

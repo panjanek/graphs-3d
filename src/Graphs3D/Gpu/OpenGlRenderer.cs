@@ -223,6 +223,9 @@ namespace Graphs3D.Gpu
             if (animation != null)
                 return;
 
+            if (targetIdx < 0 || targetIdx >= app.simulation.nodes.Length)
+                return;
+
             var currentIdx = SelectedIdx;
             if (!currentIdx.HasValue)
             {
@@ -330,7 +333,11 @@ namespace Graphs3D.Gpu
             StartRotating();
         }
 
-        public void UploadGraph() => solverProgram.UploadGraph(ref app.simulation.config, app.simulation.nodes, app.simulation.edges);
+        public void UploadGraph()
+        {
+            solverProgram.UploadGraph(ref app.simulation.config, app.simulation.nodes, app.simulation.edges);
+            Select(0);
+        }
 
         public void DownloadNodes() => solverProgram.DownloadNodes(app.simulation.nodes);
 
