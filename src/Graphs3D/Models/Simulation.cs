@@ -122,16 +122,6 @@ namespace Graphs3D.Models
             return childrenIdx;
         }
 
-        /*
-        public int? GetParent(int childIdx)
-        {
-            var parentIdx = nodes[childIdx].parent;
-            if (parentIdx == -1)
-                return null;
-            else
-                return parentIdx;
-        }*/
-
         public List<int> FindPath(int startIdx, int targetIdx)
         {
             var startPath = PathToRoot(startIdx);
