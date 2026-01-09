@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using Graphs3D.Models;
 
 namespace Graphs3D.Graphs
@@ -18,5 +19,7 @@ namespace Graphs3D.Graphs
         List<Node> Nodes { get; }
 
         List<Edge> Edges { get; }
+
+        void DrawPosition(int idx, Canvas canvas);
     }
 }

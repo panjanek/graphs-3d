@@ -67,7 +67,7 @@ namespace Graphs3D.Graphs
             if (keyedNodes.TryGetValue(node.Key, out var existing))
             {
                 if (node.parentIdx.HasValue)
-                    AddEdge(node.parentIdx.Value, existing.idx, graphNodes[node.parentIdx.Value].player);
+                    AddEdge(node.parentIdx.Value, existing.idx, node.player);
             }
             else
             {
@@ -78,7 +78,7 @@ namespace Graphs3D.Graphs
                 internalNodes.Add(node.ToInternalNode());
                 graphNodes.Add(node);
                 if (node.parentIdx.HasValue)
-                    AddEdge(node.parentIdx.Value, node.idx, graphNodes[node.parentIdx.Value].player);
+                    AddEdge(node.parentIdx.Value, node.idx, node.player);
             }
         }
 

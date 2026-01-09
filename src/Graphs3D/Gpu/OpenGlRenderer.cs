@@ -212,6 +212,7 @@ namespace Graphs3D.Gpu
                 var nr = (int)Math.Floor(progress / stageLen);
                 if (nr < 0 || nr > path.Count - 2)
                     return;
+                app.DrawPosition(path[nr+1]);
                 app.simulation.config.marker1 = path[nr];
                 app.simulation.config.marker2 = path[nr+1];
                 app.simulation.config.markerT = (float)((progress - nr * stageLen) / stageLen);
@@ -250,6 +251,7 @@ namespace Graphs3D.Gpu
             app.simulation.config.marker1 = SelectedIdx ?? -1;
             app.simulation.config.marker2 = SelectedIdx ?? -1;
             app.simulation.config.markerT = 1.0f;
+            app.DrawPosition(idx);
         }
 
         private void GlControl_MouseDoubleClick(object? sender, MouseEventArgs e)
@@ -337,7 +339,8 @@ namespace Graphs3D.Gpu
         public void UploadGraph()
         {
             solverProgram.UploadGraph(ref app.simulation.config, app.simulation.nodes, app.simulation.edges);
-            Select(0);
+            if (SelectedIdx.HasValue && SelectedIdx.Value >= app.simulation.nodes.Length)
+                Select(0);
         }
 
         public void DownloadNodes() => solverProgram.DownloadNodes(app.simulation.nodes);

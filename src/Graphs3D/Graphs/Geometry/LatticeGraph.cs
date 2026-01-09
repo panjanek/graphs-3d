@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Navigation;
 using Graphs3D.Models;
@@ -29,6 +30,11 @@ namespace Graphs3D.Graphs.Geometry
             this.wrapHorizontal = wrapHorizontal;
             var root = new LatticeNode();
             AddNode(root);
+        }
+
+        public void DrawPosition(int idx, Canvas canvas)
+        {
+            
         }
 
         protected override void InternalExpandNode(LatticeNode parent)

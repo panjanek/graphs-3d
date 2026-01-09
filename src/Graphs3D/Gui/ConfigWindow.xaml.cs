@@ -33,6 +33,8 @@ namespace Graphs3D.Gui
         private bool updating;
 
         public string recordDir;
+
+        public Canvas PositionCanvas => boardCanvas;
         public ConfigWindow(AppContext app)
         {
             this.app = app;

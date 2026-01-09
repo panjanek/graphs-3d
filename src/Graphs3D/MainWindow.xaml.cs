@@ -47,9 +47,10 @@ namespace Graphs3D
             app.mainWindow = this;
             app.simulation = new Simulation();
             app.simulation.StartNewGraph(new TicTacToeGraph3x3());
+
+            app.configWindow = new ConfigWindow(app);
             app.renderer = new OpenGlRenderer(placeholder, app);
             app.renderer.Select(0);
-            app.configWindow = new ConfigWindow(app);
             app.configWindow.Show();
             app.configWindow.Activate();
 

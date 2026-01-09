@@ -4,8 +4,13 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Shapes;
+using Graphs3D.Gui;
 using static System.Windows.Forms.AxHost;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
+using Brushes = System.Windows.Media.Brushes;
+using AppContext = Graphs3D.Models.AppContext;
 
 namespace Graphs3D.Graphs.TicTacToe
 {
@@ -39,6 +44,31 @@ namespace Graphs3D.Graphs.TicTacToe
 
                         AddNode(newNode);
                     }
+                }
+        }
+
+        public void DrawPosition(int idx, Canvas canvas)
+        {
+            var node = graphNodes[idx];
+            canvas.Children.Clear();
+            canvas.Background = System.Windows.Media.Brushes.Black;
+            var w = canvas.Width / size;
+            var h = canvas.Height / size;
+            for (int x = 0; x < size; x++)
+                for (int y = 0; y < size; y++)
+                {
+                    if (y > 0) CanvasUtil.AddLine(canvas, 0.1 * w, y * h, size * w - 0.1 * w, y * h, 2, Brushes.White);
+                    if (x > 0) CanvasUtil.AddLine(canvas, x * w, 0.1 * h, x * w, size * h - 0.1 * h, 2, Brushes.White);
+                    if (node.board[x, y] == 0)
+                    {
+                        CanvasUtil.AddEllipse(canvas, x * w + 0.1 * w, y * h + 0.1 * h, w * 0.7, h * 0.7, 10, AppContext.BrushesColors[0], Brushes.Black);
+                    }
+                    else if (node.board[x, y] == 1)
+                    {
+                        CanvasUtil.AddLine(canvas, x * w + 0.15 * w, y * h + 0.15 * h, x * w + 0.85 * w, y * h + 0.85 * h, 10, AppContext.BrushesColors[1]);
+                        CanvasUtil.AddLine(canvas, x * w + 0.85 * w, y * h + 0.15 * h, x * w + 0.15 * w, y * h + 0.85 * h, 10, AppContext.BrushesColors[1]);
+                    }
+
                 }
         }
 
