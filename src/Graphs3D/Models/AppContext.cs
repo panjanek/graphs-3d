@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Printing.IndexedProperties;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -26,6 +27,8 @@ namespace Graphs3D.Models
 
         public ConfigWindow configWindow;
 
+        public byte[] pixels = new byte[300 * 300 * 4];
+
         public void StartNewGraph(IGraph graph)
         {
             lock (this)
@@ -44,6 +47,8 @@ namespace Graphs3D.Models
                 new Action(() =>
                 {
                     simulation.graph.DrawPosition(idx, canvas);
+                    CanvasUtil.ReadPixelData(canvas, pixels);
+                    renderer.UploadImage(pixels);
                 }));
         }
     }

@@ -343,6 +343,8 @@ namespace Graphs3D.Gpu
                 Select(0);
         }
 
+        public void UploadImage(byte[] pixels) => displayProgram.UploadImage(pixels);
+
         public void DownloadNodes() => solverProgram.DownloadNodes(app.simulation.nodes);
 
         public void StartTracking(int idx)
@@ -409,7 +411,8 @@ namespace Graphs3D.Gpu
                 GetViewMatrix(),
                 trackedPos,
                 (int)app.simulation.config.edgesCount,
-                app.simulation.lineWidth);
+                app.simulation.lineWidth,
+                true);
             glControl.SwapBuffers();
             frameCounter++;
             Capture();

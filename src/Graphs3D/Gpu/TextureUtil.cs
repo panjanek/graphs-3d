@@ -60,6 +60,30 @@ namespace Graphs3D.Gpu
             return plotTex;
         }
 
+        public static int CreateByteTexture(int width, int height)
+        {
+            int texture;
+            GL.GenTextures(1, out texture);
+            GL.BindTexture(TextureTarget.Texture2D, texture);
+
+            // Allocate immutable storage (recommended)
+            GL.TexStorage2D(
+                TextureTarget2d.Texture2D,
+                levels: 1,
+                internalformat: SizedInternalFormat.Rgba8,
+                width: width,
+                height: height
+            );
+
+            // Texture sampling parameters
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+            return texture;
+
+        }
+
         public static void SaveBufferToFile(byte[] pixels, int width, int height, string fileName)
         {
             for (int i = 0; i < pixels.Length; i += 4)

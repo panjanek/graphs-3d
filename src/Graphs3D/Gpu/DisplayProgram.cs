@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Media.Media3D;
+using System.Windows.Media.TextFormatting;
 using Graphs3D.Utils;
 using OpenTK.GLControl;
 using OpenTK.Graphics.OpenGL;
@@ -44,6 +45,18 @@ namespace Graphs3D.Gpu
 
         private int projEdgesLocation;
 
+        private int imageProgram;
+
+        private int imageTex;
+
+        private int texImageLocation;
+
+        private int offsetImageLocation;
+
+        private int sizeImageLocation;
+
+        private int dummyVao;
+
 
         public DisplayProgram()
         {
@@ -69,6 +82,17 @@ namespace Graphs3D.Gpu
             if (viewEdgesLocation == -1) throw new Exception("Uniform 'view' not found. Shader optimized it out?");
             lineWidthLocation = GL.GetUniformLocation(edgesProgram, "lineWidth");
             if (lineWidthLocation == -1) throw new Exception("Uniform 'lineWidth' not found. Shader optimized it out?");
+
+            imageTex = TextureUtil.CreateByteTexture(300, 300);
+            imageProgram = ShaderUtil.CompileAndLinkRenderShader("image.vert", "image.frag");
+            texImageLocation = GL.GetUniformLocation(imageProgram, "tex");
+            if (texImageLocation == -1) throw new Exception("Uniform 'tex' not found. Shader optimized it out?");
+            offsetImageLocation = GL.GetUniformLocation(imageProgram, "offset");
+            if (offsetImageLocation == -1) throw new Exception("Uniform 'offset' not found. Shader optimized it out?");
+            sizeImageLocation = GL.GetUniformLocation(imageProgram, "size");
+            if (sizeImageLocation == -1) throw new Exception("Uniform 'size' not found. Shader optimized it out?");
+
+            dummyVao = GL.GenVertexArray();
 
             float[] quad =
                 {
@@ -109,6 +133,39 @@ namespace Graphs3D.Gpu
             );
         }
 
+        public void UploadImage(byte[] pixels)
+        {
+            /*
+            for (int y = 0; y < 300; y++)
+            {
+                for (int x = 0; x < 300; x++)
+                {
+                    int i = (y * 300 + x) * 4;
+                    pixels[i + 0] = (byte)(x * 255 / 300); // R
+                    pixels[i + 1] = (byte)(y * 255 / 300); // G
+                    pixels[i + 2] = 0;                     // B
+                    pixels[i + 3] = 255;                   // A
+                }
+            }
+            */
+            // Upload pixel data
+
+      
+
+            GL.BindTexture(TextureTarget.Texture2D, imageTex);
+            GL.TexSubImage2D(
+                TextureTarget.Texture2D,
+                level: 0,
+                xoffset: 0,
+                yoffset: 0,
+                width: 300,
+                height: 300,
+                format: PixelFormat.Rgba,
+                type: PixelType.UnsignedByte,
+                pixels: pixels
+            );
+        }
+
         public void Run(int nodesBuffer, 
                         int edgesBuffer, 
                         Matrix4 projectionMatrix, 
@@ -118,13 +175,14 @@ namespace Graphs3D.Gpu
                         Matrix4 view, 
                         Vector4 trackedPos, 
                         int edgesCount,
-                        float lineWidth)
+                        float lineWidth,
+                        bool showImage)
         {
             GL.Clear(
                 ClearBufferMask.ColorBufferBit |
                 ClearBufferMask.DepthBufferBit
             );
-
+            
             //nodes as points
             GL.UseProgram(nodesProgram);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 2, nodesBuffer);
@@ -160,8 +218,21 @@ namespace Graphs3D.Gpu
             GL.Uniform2(viewportSizeEdgesLocation, ref viewportSize);
             GL.Uniform1(lineWidthLocation, lineWidth);
             GL.DrawArrays(PrimitiveType.Triangles, 0, edgesCount * 6);
+            
+            //image
+            if (showImage)
+            {
+                GL.UseProgram(imageProgram);
+                GL.Uniform2(offsetImageLocation, new Vector2(0,0));
+                GL.Uniform2(sizeImageLocation, new Vector2(300.0f/viewportSize.X, 300 / viewportSize.Y));
+                GL.ActiveTexture(TextureUnit.Texture0);
+                GL.BindTexture(TextureTarget.Texture2D, imageTex);
+                GL.Uniform1(texImageLocation, 0);
 
-            GL.GetInteger(GetPName.Samples, out int samples);
+                // Bind VAO and draw
+                GL.BindVertexArray(dummyVao);
+                GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
+            }
         }
     }
 }
