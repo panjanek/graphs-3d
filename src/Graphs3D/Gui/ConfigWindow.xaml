@@ -126,6 +126,7 @@
                 <ComboBox Name="graphCombo" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" SelectionChanged="global_SelectionChanged" Margin="0,5,10,0">
                     <ComboBoxItem IsSelected="True" Tag="Graphs3D.Graphs.TicTacToe.TicTacToeGraph3x3">Tic Tac Toe 3x3</ComboBoxItem>
                     <ComboBoxItem Tag="Graphs3D.Graphs.Geometry.CylinderGraph20x20">Cylinder 10x20</ComboBoxItem>
+                    <ComboBoxItem Tag="Graphs3D.Graphs.Geometry.TorusGraph30x60">Torus 30x60</ComboBoxItem>
                 </ComboBox>
 
                 <!-- dt -->
