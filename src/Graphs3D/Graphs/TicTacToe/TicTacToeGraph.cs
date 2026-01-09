@@ -24,7 +24,7 @@ namespace Graphs3D.Graphs.TicTacToe
 
         protected override void InternalExpandNode(TicTacToeNode parent)
         {
-            if (parent.player < 0)
+            if (parent.leaf)
                 return;
 
             var playerToGo = 1 - parent.player;
