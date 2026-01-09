@@ -18,5 +18,9 @@ namespace Graphs3D.Models
         public int flags;
         public int cellIndex;
         public int level;
+        public int leaf;
+        public int win;
+        private int _pad1;
+        private int _pad2;
     }
 }

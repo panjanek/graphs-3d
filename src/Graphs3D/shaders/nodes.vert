@@ -9,6 +9,10 @@ struct Node
    int flags;
    int  cellIndex;
    int level;
+   int leaf;
+   int win;
+   int _pad1;
+   int _pad2;
 };
 
 layout(std430, binding = 2) buffer OutputBuffer {
@@ -43,6 +47,7 @@ void main()
     float sphereRadius = 2 * paricleSize + (viewportSize.x/1920);
     uint id = gl_InstanceID;
     Node p = points[id];
+    vSphereRadiusMult = 1.0;
 
     // player coloring
     const vec3 colors[] = vec3[](
@@ -55,22 +60,24 @@ void main()
         vec3(1.0, 1.0, 1.0), // white
         vec3(0.5, 0.5, 0.5)  // gray
     );
-    int colorIdx = p.player >= 0 ? p.player : (-1 - p.player);
-    vColor = colors[colorIdx % 8];
-    if (p.player < 0)
-        vColor = vColor * 3;
-    if (p.player == -1000)
-        vColor =  vec3(1.0, 0.0, 0.0);
-   
-    vSphereRadiusMult = p.player >= 0 ? 1.0 : 2.0;
+    int colorIdx = p.leaf == 0 ? p.player : p.win;
+    vColor = colorIdx >= 0 ? colors[colorIdx % 8] : vec3(1.0, 0.0, 0.0);
+    if (p.leaf == 1)
+    {
+        vSphereRadiusMult = 2;
+        if (vColor.r == 0) vColor.r = 0.3;
+        if (vColor.g == 0) vColor.g = 0.3;
+        if (vColor.b == 0) vColor.b = 0.3;
+    }
 
     //marker
     if (p.flags == 1) 
     {
         vSphereRadiusMult = 3;
-        sphereRadius *= vSphereRadiusMult;
         vColor = vec3(0.0, 0.0, 1.0);
     }
+
+    sphereRadius *= vSphereRadiusMult;
 
     //hide
     if (p.flags == 2) sphereRadius = 0;

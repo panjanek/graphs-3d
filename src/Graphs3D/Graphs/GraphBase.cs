@@ -91,12 +91,14 @@ namespace Graphs3D.Graphs
         public int? parentIdx;
         public int level;
         public int player;
+        public int win;
+        public bool leaf;
         public bool expanded;
         public abstract string Key { get; }
 
         public Node ToInternalNode()
         {
-            return new Node() { level = level, player = player };
+            return new Node() { level = level, player = player, win = win, leaf = leaf ? 1 : 0 };
         }
     }
 }

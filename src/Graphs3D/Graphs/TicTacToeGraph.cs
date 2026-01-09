@@ -117,9 +117,15 @@ namespace Graphs3D.Graphs
             key = GetKey(board);
             var win = CheckForWin();
             if (win.HasValue)
-                this.player = -1 - win.Value;
+            {
+                this.leaf = true;
+                this.win = player;
+            }
             else if (IsTerminal())
-                this.player = -1000;
+            {
+                this.leaf = true;
+                this.win = -1;
+            }
         }
 
         public static string GetKey(int[,] state)

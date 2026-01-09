@@ -9,6 +9,10 @@ struct Node
    int flags;
    int  cellIndex;
    int level;
+   int leaf;
+   int win;
+   int _pad1;
+   int _pad2;
 };
 
 struct Edge
