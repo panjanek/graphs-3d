@@ -27,7 +27,7 @@ namespace Graphs3D.Models
 
         public float particleSize = 0.3f;
 
-        public float lineWidth = 750f;
+        public float lineWidth = 300f;
 
         public Node[] nodes;
 

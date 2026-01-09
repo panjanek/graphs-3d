@@ -27,7 +27,7 @@ namespace Graphs3D.Models
 
         [FieldOffset(16)] public int useCells = 0;
 
-        [FieldOffset(20)] public float fieldSize = 800;
+        [FieldOffset(20)] public float fieldSize = 100;
 
         [FieldOffset(24)] public float cellSize = 0;
 
