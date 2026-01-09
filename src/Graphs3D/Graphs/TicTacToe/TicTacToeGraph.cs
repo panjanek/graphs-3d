@@ -39,10 +39,14 @@ namespace Graphs3D.Graphs.TicTacToe
                     if (parent.board[x,y] == 2)
                     {
                         var newNode = new TicTacToeNode(parent, x, y, playerToGo);
-                        if (!CheckSymmetry(newNode.board))
-                            continue;
-
-                        AddNode(newNode);
+                        var exist = CheckSymmetry(newNode.board);
+                        if (exist != null)
+                        {
+                            exist.parentIdx = parent.idx;
+                            AddNode(exist);
+                        }
+                        else
+                            AddNode(newNode);
                     }
                 }
         }
@@ -72,51 +76,53 @@ namespace Graphs3D.Graphs.TicTacToe
                 }
         }
 
-        private bool CheckSymmetry(int[,] test)
+        private TicTacToeNode CheckSymmetry(int[,] test)
         {
+            TicTacToeNode existing; 
+
             for (int x = 0; x < size; x++)
                 for (int y = 0; y < size; y++)
                     tmp[x, y] = test[size - 1 - x, y];
-            if (keyedNodes.ContainsKey(TicTacToeNode.GetKey(tmp)))
-                return false;
+            if (keyedNodes.TryGetValue(TicTacToeNode.GetKey(tmp), out existing))
+                return existing;
 
             for (int x = 0; x < size; x++)
                 for (int y = 0; y < size; y++)
                     tmp[x, y] = test[x, size - 1 - y];
-            if (keyedNodes.ContainsKey(TicTacToeNode.GetKey(tmp)))
-                return false;
+            if (keyedNodes.TryGetValue(TicTacToeNode.GetKey(tmp), out existing))
+                return existing;
 
             for (int x = 0; x < size; x++)
                 for (int y = 0; y < size; y++)
                     tmp[x, y] = test[size - 1 - x, size - 1 - y];
-            if (keyedNodes.ContainsKey(TicTacToeNode.GetKey(tmp)))
-                return false;
+            if (keyedNodes.TryGetValue(TicTacToeNode.GetKey(tmp), out existing))
+                return existing;
 
             for (int x = 0; x < size; x++)
                 for (int y = 0; y < size; y++)
                     tmp[x, y] = test[y, x];
-            if (keyedNodes.ContainsKey(TicTacToeNode.GetKey(tmp)))
-                return false;
-       
+            if (keyedNodes.TryGetValue(TicTacToeNode.GetKey(tmp), out existing))
+                return existing;
+
             for (int x = 0; x < size; x++)
                 for (int y = 0; y < size; y++)
                     tmp[x, y] = test[y, size - 1 - x];
-            if (keyedNodes.ContainsKey(TicTacToeNode.GetKey(tmp)))
-                return false;
+            if (keyedNodes.TryGetValue(TicTacToeNode.GetKey(tmp), out existing))
+                return existing;
 
             for (int x = 0; x < size; x++)
                 for (int y = 0; y < size; y++)
                     tmp[x, y] = test[size - 1 - y, x];
-            if (keyedNodes.ContainsKey(TicTacToeNode.GetKey(tmp)))
-                return false;
+            if (keyedNodes.TryGetValue(TicTacToeNode.GetKey(tmp), out existing))
+                return existing;
 
             for (int x = 0; x < size; x++)
                 for (int y = 0; y < size; y++)
                     tmp[x, y] = test[size - 1 - y, size - 1 - x];
-            if (keyedNodes.ContainsKey(TicTacToeNode.GetKey(tmp)))
-                return false;
+            if (keyedNodes.TryGetValue(TicTacToeNode.GetKey(tmp), out existing))
+                return existing;
 
-            return true;
+            return null;
         }
     }
 }

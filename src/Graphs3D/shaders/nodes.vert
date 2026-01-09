@@ -64,10 +64,7 @@ void main()
     vColor = colorIdx >= 0 ? colors[colorIdx % 8] : vec3(1.0, 0.0, 0.0);
     if (p.leaf == 1)
     {
-        vSphereRadiusMult = 2;
-        if (vColor.r == 0) vColor.r = 0.3;
-        if (vColor.g == 0) vColor.g = 0.3;
-        if (vColor.b == 0) vColor.b = 0.3;
+        vSphereRadiusMult = 2.5;
     }
 
     //marker
