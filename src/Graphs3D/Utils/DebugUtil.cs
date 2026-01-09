@@ -37,7 +37,7 @@ namespace Graphs3D.Utils
             solver.DownloadNodes(nodes, bufferB);
             var counts = solver.cellCounts;
             var offsets = solver.cellOffsets;
-            solver.DownloadIntBuffer(nodeIndices, solver.nodeIndicesBuffer, config.nodesCount);
+            GpuUtil.DownloadIntBuffer(nodeIndices, solver.nodeIndicesBuffer, config.nodesCount);
 
             var cellSize = config.cellSize;
 

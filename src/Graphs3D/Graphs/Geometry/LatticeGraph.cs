@@ -9,7 +9,7 @@ using System.Windows.Navigation;
 using Graphs3D.Models;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
-namespace Graphs3D.Graphs
+namespace Graphs3D.Graphs.Geometry
 {
     public class LatticeGraph : GraphBase<LatticeNode>, IGraph
     {

@@ -90,8 +90,8 @@ namespace Graphs3D.Gpu
             GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, uboConfig);
 
             //constant-length buffers
-            CreateBuffer(ref trackingBuffer, 1, Marshal.SizeOf<Node>());
-            CreateBuffer(ref boundsBuffer, 1, Marshal.SizeOf<BoundsBuffer>());
+            GpuUtil.CreateBuffer(ref trackingBuffer, 1, Marshal.SizeOf<Node>());
+            GpuUtil.CreateBuffer(ref boundsBuffer, 1, Marshal.SizeOf<BoundsBuffer>());
 
             GL.GetInteger((OpenTK.Graphics.OpenGL.GetIndexedPName)All.MaxComputeWorkGroupCount, 0, out maxGroupsX);
             shaderPointStrideSize = Marshal.SizeOf<Node>();
@@ -177,7 +177,7 @@ namespace Graphs3D.Gpu
                 GL.UseProgram(tilingCountProgram);
                 GL.DispatchCompute(DispatchGroupsX(currentNodesCount), 1, 1);
                 GL.MemoryBarrier(MemoryBarrierFlags.ShaderStorageBarrierBit | MemoryBarrierFlags.ShaderImageAccessBarrierBit);
-                DownloadIntBuffer(cellCounts, cellCountBuffer, currentTotalCellsCount);
+                GpuUtil.DownloadIntBuffer(cellCounts, cellCountBuffer, currentTotalCellsCount);
                 if (cellCounts.Sum() == 0) throw new Exception("counted 0");
 
                 //decide if it makes sense to use tiling
@@ -188,7 +188,6 @@ namespace Graphs3D.Gpu
                         config.useCells = 1;
                 }
 
-                //config.useCells = (config.totalCellCount >= 64) ? 1 : 0;
                 if (config.useCells == 1)
                 {
                     // ---------------------- prefix sum ----------------------------------------
@@ -201,7 +200,7 @@ namespace Graphs3D.Gpu
 
                     //----------------------------- fill -----------------------------------
                     UploadConfig(ref config);
-                    UploadIntBuffer(cellOffsets, cellOffsetBuffer, currentTotalCellsCount);
+                    GpuUtil.UploadIntBuffer(cellOffsets, cellOffsetBuffer, currentTotalCellsCount);
                     GL.CopyNamedBufferSubData(cellOffsetBuffer, cellOffsetBuffer2, IntPtr.Zero, IntPtr.Zero, currentTotalCellsCount * sizeof(uint));
                     GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, uboConfig);
                     GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 1, pointsBufferA);
@@ -256,19 +255,6 @@ namespace Graphs3D.Gpu
             return trackedParticle;
         }
 
-        public void DownloadIntBuffer(int[] buffer, int bufferId, int size)
-        {
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bufferId);
-            GL.GetBufferSubData(BufferTarget.ShaderStorageBuffer, IntPtr.Zero, size * Marshal.SizeOf<int>(), buffer);
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
-        }
-
-        public void UploadIntBuffer(int[] buffer, int bufferId, int size)
-        {
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bufferId);
-            GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, size * Marshal.SizeOf<int>(), buffer);
-        }
-
         public void ComputeNeighbours(Node[] nodes, Edge[] edges)
         {
             Array.Clear(neighboursCount);
@@ -308,11 +294,11 @@ namespace Graphs3D.Gpu
             if (currentNodesCount != nodesCount)
             {
                 currentNodesCount = nodesCount;
-                CreateBuffer(ref pointsBufferA, currentNodesCount+1, shaderPointStrideSize);
-                CreateBuffer(ref pointsBufferB, currentNodesCount+1, shaderPointStrideSize);
-                CreateBuffer(ref nodeIndicesBuffer, currentNodesCount, Marshal.SizeOf<int>());
-                CreateBuffer(ref neighboursStartBuffer, currentNodesCount, Marshal.SizeOf<int>());
-                CreateBuffer(ref neighboursCountBuffer, currentNodesCount, Marshal.SizeOf<int>());
+                GpuUtil.CreateBuffer(ref pointsBufferA, currentNodesCount+1, shaderPointStrideSize);
+                GpuUtil.CreateBuffer(ref pointsBufferB, currentNodesCount+1, shaderPointStrideSize);
+                GpuUtil.CreateBuffer(ref nodeIndicesBuffer, currentNodesCount, Marshal.SizeOf<int>());
+                GpuUtil.CreateBuffer(ref neighboursStartBuffer, currentNodesCount, Marshal.SizeOf<int>());
+                GpuUtil.CreateBuffer(ref neighboursCountBuffer, currentNodesCount, Marshal.SizeOf<int>());
                 neighboursStart = new uint[nodesCount];
                 neighboursCount = new uint[nodesCount];
             }
@@ -320,9 +306,9 @@ namespace Graphs3D.Gpu
             if (currentTotalCellsCount != totalCellsCount)
             {
                 currentTotalCellsCount = totalCellsCount;
-                CreateBuffer(ref cellCountBuffer, currentTotalCellsCount, Marshal.SizeOf<int>());
-                CreateBuffer(ref cellOffsetBuffer, currentTotalCellsCount, Marshal.SizeOf<int>());
-                CreateBuffer(ref cellOffsetBuffer2, currentTotalCellsCount, Marshal.SizeOf<int>());
+                GpuUtil.CreateBuffer(ref cellCountBuffer, currentTotalCellsCount, Marshal.SizeOf<int>());
+                GpuUtil.CreateBuffer(ref cellOffsetBuffer, currentTotalCellsCount, Marshal.SizeOf<int>());
+                GpuUtil.CreateBuffer(ref cellOffsetBuffer2, currentTotalCellsCount, Marshal.SizeOf<int>());
                 cellCounts = new int[totalCellsCount];
                 cellOffsets = new int[totalCellsCount];
             }
@@ -330,24 +316,12 @@ namespace Graphs3D.Gpu
             if (currentEdgesCount != edgesCount)
             {
                 currentEdgesCount = edgesCount;
-                CreateBuffer(ref edgesBuffer, (int)edgesCount, Marshal.SizeOf<Edge>());
-                CreateBuffer(ref neighboursBuffer, (int)edgesCount * 2, Marshal.SizeOf<uint>());
-                CreateBuffer(ref restLengthsBuffer, (int)edgesCount * 2, Marshal.SizeOf<float>());
+                GpuUtil.CreateBuffer(ref edgesBuffer, (int)edgesCount, Marshal.SizeOf<Edge>());
+                GpuUtil.CreateBuffer(ref neighboursBuffer, (int)edgesCount * 2, Marshal.SizeOf<uint>());
+                GpuUtil.CreateBuffer(ref restLengthsBuffer, (int)edgesCount * 2, Marshal.SizeOf<float>());
                 neighbours = new uint[edgesCount * 2];
                 restLengths = new float[edgesCount * 2];
             }
-        }
-
-        private void CreateBuffer(ref int bufferId, int elementCount, int elementSize, BufferTarget target = BufferTarget.ShaderStorageBuffer, BufferUsageHint hint = BufferUsageHint.DynamicDraw)
-        {
-            if (bufferId > 0)
-            {
-                GL.DeleteBuffer(bufferId);
-                bufferId = 0;
-            }
-            GL.GenBuffers(1, out bufferId);
-            GL.BindBuffer(target, bufferId);
-            GL.BufferData(target, elementCount * elementSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
         }
     }
 }

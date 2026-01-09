@@ -19,11 +19,14 @@ namespace Graphs3D.Models
 
         public ConfigWindow configWindow;
 
-        public void StartNewGraph()
+        public void StartNewGraph(IGraph graph)
         {
-            simulation.StartSimulation();
-            renderer.UploadGraph();
-            renderer.ResetOrigin();
+            lock (this)
+            {
+                simulation.StartNewGraph(graph);
+                renderer.UploadGraph();
+                renderer.ResetOrigin();
+            }
         }
     }
 }

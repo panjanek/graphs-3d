@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Sources;
 using Graphs3D.Graphs;
+using Graphs3D.Graphs.TicTacToe;
 using OpenTK.Audio.OpenAL;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
@@ -45,13 +46,10 @@ namespace Graphs3D.Models
             config = new ShaderConfig();
         }
 
-        public void StartSimulation()
+        public void StartNewGraph(IGraph graph)
         {
-            //var graph = new LatticeGraph(20, 40, true, true);
-            var graph = new TicTacToeGraph(3);
-            config.fieldSize = 100;
-
             this.graph = graph;
+            config.fieldSize = 100;
             nodes = graph.Nodes.ToArray();
             edges = graph.Edges.ToArray();
             config.nodesCount = nodes.Length;
@@ -59,17 +57,6 @@ namespace Graphs3D.Models
             nodes[0].position = new Vector4(config.fieldSize / 2, config.fieldSize / 2, config.fieldSize / 2, 1.0f);
             config.marker1 = 0;
             Expand(30);
-
-            //Create2DGrid((uint)100, (uint)100, true, false);
-        }
-
-        public void StartNewGraph(IGraph graph)
-        {
-            this.graph = graph;
-            nodes = nodes.ToArray();
-            edges = edges.ToArray();
-            config.nodesCount = nodes.Length;
-            config.edgesCount = edges.Length;
         }
 
         public void Expand(int wantNodesCount)

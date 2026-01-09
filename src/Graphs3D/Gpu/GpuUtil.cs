@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK.GLControl;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 
 namespace Graphs3D.Gpu
@@ -160,6 +162,31 @@ namespace Graphs3D.Gpu
 
             float t = Vector3.Dot(planePoint - rayOrigin, planeNormal) / denom;
             return rayOrigin + rayDir * t;
+        }
+
+        public static void CreateBuffer(ref int bufferId, int elementCount, int elementSize)
+        {
+            if (bufferId > 0)
+            {
+                GL.DeleteBuffer(bufferId);
+                bufferId = 0;
+            }
+            GL.GenBuffers(1, out bufferId);
+            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bufferId);
+            GL.BufferData(BufferTarget.ShaderStorageBuffer, elementCount * elementSize, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+        }
+
+        public static void DownloadIntBuffer(int[] buffer, int bufferId, int size)
+        {
+            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bufferId);
+            GL.GetBufferSubData(BufferTarget.ShaderStorageBuffer, IntPtr.Zero, size * Marshal.SizeOf<int>(), buffer);
+            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
+        }
+
+        public static void UploadIntBuffer(int[] buffer, int bufferId, int size)
+        {
+            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bufferId);
+            GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, size * Marshal.SizeOf<int>(), buffer);
         }
     }
 }

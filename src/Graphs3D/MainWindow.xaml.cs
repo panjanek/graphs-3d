@@ -11,6 +11,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Graphs3D.Gpu;
+using Graphs3D.Graphs.TicTacToe;
 using Graphs3D.Gui;
 using Graphs3D.Models;
 using Graphs3D.Utils;
@@ -45,7 +46,7 @@ namespace Graphs3D
             app = new AppContext();
             app.mainWindow = this;
             app.simulation = new Simulation();
-            app.simulation.StartSimulation();
+            app.simulation.StartNewGraph(new TicTacToeGraph3x3());
             app.renderer = new OpenGlRenderer(placeholder, app);
             app.renderer.Select(0);
             app.configWindow = new ConfigWindow(app);

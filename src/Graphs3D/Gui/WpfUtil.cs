@@ -32,14 +32,14 @@ namespace Graphs3D.Gui
             return int.Parse(str);
         }
 
-        public static void SetComboStringSelection(ComboBox combo, string value)
+        public static void SetComboStringSelection(ComboBox combo, string value, bool byTag = false)
         {
             foreach (var item in combo.Items)
             {
                 if (item is ComboBoxItem)
                 {
                     var comboItem = item as ComboBoxItem;
-                    comboItem.IsSelected = comboItem.Content?.ToString() == value;
+                    comboItem.IsSelected = byTag ? (GetTagAsString(comboItem) == value) : (comboItem.Content?.ToString() == value);
                 }
             }
         }

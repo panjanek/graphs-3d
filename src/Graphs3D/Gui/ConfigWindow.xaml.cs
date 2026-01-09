@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -13,11 +14,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Microsoft.WindowsAPICodePack.Dialogs;
+using Graphs3D.Graphs;
+using Graphs3D.Graphs.Geometry;
 using Graphs3D.Models;
 using Graphs3D.Utils;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using AppContext = Graphs3D.Models.AppContext;
-using Graphs3D.Graphs;
 
 namespace Graphs3D.Gui
 {
@@ -43,7 +45,7 @@ namespace Graphs3D.Gui
             recordButton.PreviewKeyDown += (s, e) => e.Handled = true;
             centerButton.PreviewKeyDown += (s, e) => e.Handled = true;
             centerButton.Click += (s, e) => app.renderer.ResetOrigin();
-            restartButton.Click += (s, e) => app.StartNewGraph();
+            restartButton.Click += (s, e) => app.StartNewGraph(CreateGraphObject(app.simulation.graph.GetType().FullName));
             
             KeyDown += (s, e) => app.mainWindow.MainWindow_KeyDown(s, e);
         }
@@ -68,15 +70,15 @@ namespace Graphs3D.Gui
 
         private void global_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (graph != null && !updating)
+            if (graphCombo != null && !updating)
             {
-                var newGraph = WpfUtil.GetComboSelectionAsString(graph);
-                if (!string.IsNullOrWhiteSpace(newGraph))
+                var newGraphTypeName = WpfUtil.GetTagAsString(graphCombo.SelectedItem);
+                string currentType = app.simulation.graph?.GetType().FullName;
+                if (!string.IsNullOrWhiteSpace(newGraphTypeName))
                 {
-                    if (newGraph != app.simulation.graph?.GetType().Name)
+                    if (newGraphTypeName != currentType)
                     {
-                        app.simulation.StartSimulation();
-                        app.renderer.UploadGraph();
+                        app.StartNewGraph(CreateGraphObject(newGraphTypeName));
                         UpdateActiveControls();
                         UpdatePassiveControls();
                         if (app.renderer.Paused)
@@ -89,6 +91,13 @@ namespace Graphs3D.Gui
                 }
 
             }
+        }
+
+        public IGraph CreateGraphObject(string typeName)
+        {
+            Type type = Assembly.GetExecutingAssembly().GetType(typeName, throwOnError: false, ignoreCase: false);
+            var newGraph = (IGraph)Activator.CreateInstance(type);
+            return newGraph;
         }
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -115,7 +124,8 @@ namespace Graphs3D.Gui
         public void UpdateActiveControls()
         {
             updating = true;
-            WpfUtil.SetComboStringSelection(graph, app.simulation.graph?.GetType().Name);
+            string currentGrapthTypeName = app.simulation.graph?.GetType().FullName;
+            WpfUtil.SetComboStringSelection(graphCombo, currentGrapthTypeName, true);
             foreach (var slider in WpfUtil.FindVisualChildren<Slider>(this))
             {
                 var tag = WpfUtil.GetTagAsString(slider);

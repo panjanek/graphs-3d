@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using static System.Windows.Forms.AxHost;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
 
-namespace Graphs3D.Graphs
+namespace Graphs3D.Graphs.TicTacToe
 {
     public class TicTacToeGraph : GraphBase<TicTacToeNode>, IGraph
     {
@@ -113,17 +113,17 @@ namespace Graphs3D.Graphs
                     board[i, j] = prev.board[i,j];
             board[x, y] = player;
             this.player = player;
-            this.parentIdx = prev.idx;
+            parentIdx = prev.idx;
             key = GetKey(board);
             var win = CheckForWin();
             if (win.HasValue)
             {
-                this.leaf = true;
+                leaf = true;
                 this.win = player;
             }
             else if (IsTerminal())
             {
-                this.leaf = true;
+                leaf = true;
                 this.win = -1;
             }
         }
@@ -135,7 +135,7 @@ namespace Graphs3D.Graphs
             {
                 for (int y = 0; y < state.GetLength(1); y++)
                 {
-                    sb.Append(state[x, y] == 2 ? " " : (state[x, y] == 0 ? "X" : "O"));
+                    sb.Append(state[x, y] == 2 ? " " : state[x, y] == 0 ? "X" : "O");
                 }
 
                 sb.Append("\n");
