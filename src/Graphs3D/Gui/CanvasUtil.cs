@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -32,6 +33,9 @@ namespace Graphs3D.Gui
 
         public static void ReadPixelData(Canvas canvas, byte[] pixels)
         {
+            canvas.UpdateLayout();
+            var size = canvas.RenderSize;
+
             RenderTargetBitmap rtb = new RenderTargetBitmap(
                 (int)canvas.ActualWidth,
                 (int)canvas.ActualHeight,
@@ -46,22 +50,23 @@ namespace Graphs3D.Gui
             if (pixels.Length != height * stride)
                 throw new Exception($"pixel buffer should have {width * height * 4} bytes instead of {pixels.Length}");
 
-            rtb.Render(canvas);
-
-
-            rtb.CopyPixels(pixels, stride, 0);
-
-
-            for (int i = 0; i < pixels.Length; i++)
-                if (pixels[i] > 0)
-                    Console.WriteLine();
-
-
-            for (int i = 0; i < pixels.Length/4; i++)
+            var dv = new DrawingVisual();
+            using (var dc = dv.RenderOpen())
             {
+                dc.PushTransform(new ScaleTransform(1, -1));
+                dc.PushTransform(new TranslateTransform(0, -height));
+                var vb = new VisualBrush(canvas);
+                dc.DrawRectangle(vb, null, new Rect(0, 0, width, height));
+            }
 
-                //pixels[i * 4 + 0] = 255;
+            rtb.Render(dv);
+            rtb.CopyPixels(pixels, stride, 0);
+            for (int i = 0; i < pixels.Length / 4; i++)
+            {
                 pixels[i * 4 + 3] = 255;
+                var r = pixels[i * 4 + 0];
+                pixels[i * 4 + 0] = pixels[i * 4 + 2];
+                pixels[i * 4 + 2] = r;
             }
         }
     }

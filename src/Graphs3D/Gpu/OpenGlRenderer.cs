@@ -212,7 +212,7 @@ namespace Graphs3D.Gpu
                 var nr = (int)Math.Floor(progress / stageLen);
                 if (nr < 0 || nr > path.Count - 2)
                     return;
-                app.DrawPosition(path[nr+1]);
+                //app.DrawPosition(path[nr+1]);
                 app.simulation.config.marker1 = path[nr];
                 app.simulation.config.marker2 = path[nr+1];
                 app.simulation.config.markerT = (float)((progress - nr * stageLen) / stageLen);

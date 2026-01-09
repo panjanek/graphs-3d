@@ -29,6 +29,8 @@ namespace Graphs3D.Models
 
         public byte[] pixels = new byte[300 * 300 * 4];
 
+        private int prevIdx = -1;
+
         public void StartNewGraph(IGraph graph)
         {
             lock (this)
@@ -48,7 +50,11 @@ namespace Graphs3D.Models
                 {
                     simulation.graph.DrawPosition(idx, canvas);
                     CanvasUtil.ReadPixelData(canvas, pixels);
-                    renderer.UploadImage(pixels);
+                    if (prevIdx != idx)
+                    {
+                        renderer.UploadImage(pixels);
+                        prevIdx = idx;
+                    }
                 }));
         }
     }
