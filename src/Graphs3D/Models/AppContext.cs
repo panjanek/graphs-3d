@@ -49,9 +49,9 @@ namespace Graphs3D.Models
                 new Action(() =>
                 {
                     simulation.graph.DrawPosition(idx, canvas);
-                    CanvasUtil.ReadPixelData(canvas, pixels);
                     if (prevIdx != idx)
                     {
+                        CanvasUtil.ReadPixelData(canvas, pixels);
                         renderer.UploadImage(pixels);
                         prevIdx = idx;
                     }
