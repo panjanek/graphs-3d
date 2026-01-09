@@ -147,11 +147,10 @@ namespace Graphs3D.Gpu
             // edges as quads (x6)
             GL.UseProgram(edgesProgram);
             GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.Enable(EnableCap.Multisample);
             GL.Enable(EnableCap.FramebufferSrgb);
             GL.DepthFunc(DepthFunction.Lequal);
-
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 2, nodesBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 3, edgesBuffer);

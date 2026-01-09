@@ -44,14 +44,9 @@ void main()
     float d = dist - (lineWidth-0.5);
 
     // analytic AA
-    //float aa = fwidth(d);
-    float aa = max(fwidth(d), 1.0);
-    //float alphaEdge = 1.0 - smoothstep(0.0, aa, d);
-    
+    float aa = max(fwidth(d)*1.5, 1.0);
     float coverage = 1.0 - smoothstep(0.0, aa, d);
     float alphaEdge = coverage * 0.8;
-
-
 
     // ---- fog (correct) ----
     float fogDensity = 0.0005;
