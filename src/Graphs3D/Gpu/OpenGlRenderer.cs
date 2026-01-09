@@ -82,7 +82,8 @@ namespace Graphs3D.Gpu
                 APIVersion = new Version(3, 3), // OpenGL 3.3
                 Profile = ContextProfile.Compatability,
                 Flags = ContextFlags.Default,
-                IsEventDriven = false
+                IsEventDriven = false,
+                NumberOfSamples = 8
             });
             glControl.Dock = DockStyle.Fill;
             host.Child = glControl;

@@ -157,7 +157,7 @@ namespace Graphs3D.Gpu
                 GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
                 config.minBound = bounds.GetMin() - new Vector4(-0.1f, -0.1f, -0.1f, 0);
                 config.maxBound = bounds.GetMax();
-                avg = (bounds.GetSum() * 10) / config.nodesCount;
+                avg = (bounds.GetSum()) / config.nodesCount;
                 if (MathUtil.IsOutside(avg, config.minBound, config.maxBound, 0))
                     avg = (config.minBound + config.maxBound) / 2;
 

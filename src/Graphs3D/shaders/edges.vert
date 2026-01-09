@@ -40,6 +40,8 @@ uniform float lineWidth;
 out float vDepth;
 out vec3 vColor;
 out float vEdgeDist;
+out vec2 vP0;
+out vec2 vP1;
 
 void main()
 {
@@ -96,4 +98,10 @@ void main()
     vEdgeDist = side * width;
 
     vColor = colors[e.player % 8];
+
+    vec2 screen0 = (ndc0 * 0.5 + 0.5) * viewportSize;
+    vec2 screen1 = (ndc1 * 0.5 + 0.5) * viewportSize;
+
+    vP0 = screen0;
+    vP1 = screen1;
 }

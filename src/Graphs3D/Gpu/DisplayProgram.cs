@@ -147,7 +147,12 @@ namespace Graphs3D.Gpu
             // edges as quads (x6)
             GL.UseProgram(edgesProgram);
             GL.Enable(EnableCap.Blend);
+            GL.Enable(EnableCap.Multisample);
+            GL.Enable(EnableCap.FramebufferSrgb);
+            GL.DepthFunc(DepthFunction.Lequal);
+
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 2, nodesBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 3, edgesBuffer);
             var projection = view * projectionMatrix;
@@ -156,6 +161,8 @@ namespace Graphs3D.Gpu
             GL.Uniform2(viewportSizeEdgesLocation, ref viewportSize);
             GL.Uniform1(lineWidthLocation, lineWidth);
             GL.DrawArrays(PrimitiveType.Triangles, 0, edgesCount * 6);
+
+            GL.GetInteger(GetPName.Samples, out int samples);
         }
     }
 }

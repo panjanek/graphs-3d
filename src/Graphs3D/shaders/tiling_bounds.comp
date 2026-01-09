@@ -86,8 +86,8 @@ void main()
         atomicMax(maxBound.y, oy);
         atomicMax(maxBound.z, oz);
 
-        atomicAdd(sum.x, int(round(nodes[idx].position.x*0.1)));
-        atomicAdd(sum.y, int(round(nodes[idx].position.y*0.1)));
-        atomicAdd(sum.z, int(round(nodes[idx].position.z*0.1)));
+        atomicAdd(sum.x, int(round(nodes[idx].position.x)));
+        atomicAdd(sum.y, int(round(nodes[idx].position.y)));
+        atomicAdd(sum.z, int(round(nodes[idx].position.z)));
     }
 }
