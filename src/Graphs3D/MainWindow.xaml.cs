@@ -47,7 +47,11 @@ namespace Graphs3D
             app.mainWindow = this;
             app.simulation = new Simulation();
             app.simulation.StartNewGraph(new TicTacToeGraph3x3());
-            app.simulation.graph.NavigateTo = idx => app.renderer.AnimateTo(idx);
+            app.simulation.graph.NavigateTo = idx =>
+
+            {
+                app.renderer.AnimateTo(idx);
+            };
 
             app.configWindow = new ConfigWindow(app);
             app.renderer = new OpenGlRenderer(placeholder, app);

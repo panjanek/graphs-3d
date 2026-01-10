@@ -48,6 +48,7 @@ namespace Graphs3D.Graphs.TicTacToe
         private TicTacToeNode CreateNextMove(TicTacToeNode parent, int x, int y)
         {
             var newNode = new TicTacToeNode(parent, x, y, 1 - parent.player);
+            newNode.level = parent.level + 1;
             var exist = CheckSymmetry(newNode.board);
             if (exist != null)
             {
@@ -82,14 +83,22 @@ namespace Graphs3D.Graphs.TicTacToe
                         CanvasUtil.AddLine(canvas, x * w + 0.85 * w, y * h + 0.15 * h, x * w + 0.15 * w, y * h + 0.85 * h, 10, AppContext.BrushesColors[1]);
                     }
 
+                    string str = "";
                     int? clickableIdx = null;
-                    if (node.parentIdx.HasValue && graphNodes[node.parentIdx.Value].board[x,y] != node.board[x,y])
-                            clickableIdx = node.parentIdx.Value;
+                    if (node.parentIdx.HasValue && graphNodes[node.parentIdx.Value].board[x, y] != node.board[x, y] && node.board[x, y] != 2)
+                    {
+                        str = $"to parent: {node.idx} -> {node.parentIdx}";
+                        clickableIdx = node.parentIdx.Value;
+                    }
                     else if (node.board[x, y] == 2)
                     {
                         var child = CreateNextMove(node, x, y);
-                        if (keyedNodes.ContainsKey(child.Key) && child.board[x, y] != node.board[x, y] && child.level == node.level+1)
+                        if (keyedNodes.ContainsKey(child.Key) && child.board[x, y] != node.board[x, y] && child.level > node.level)
+                        {
+                            child = keyedNodes[child.Key];
                             clickableIdx = child.idx;
+                            str = $"to child: {node.idx} -> {child.idx}";
+                        }
                     }
 
                     if (clickableIdx.HasValue)
@@ -97,6 +106,7 @@ namespace Graphs3D.Graphs.TicTacToe
                         CanvasUtil.AddRect(canvas, x * w + 0.05 * w, y * h + 0.05 * h, w * 0.9, h * 0.9, 0, Brushes.Black, clickableBrush, null, -10);
                         var clickable = CanvasUtil.AddRect(canvas, x * w + 0.05 * w, y * h + 0.05 * h, w * 0.9, h * 0.9, 0, Brushes.Transparent, Brushes.Transparent, clickableIdx.Value.ToString(), 10);
                         clickable.MouseDown += (s, e) => { if (NavigateTo != null) NavigateTo(WpfUtil.GetTagAsInt(s)); };
+                        clickable.ToolTip = str;
                     }
                 }
 

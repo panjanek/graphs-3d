@@ -195,10 +195,7 @@ namespace Graphs3D.Gpu
                     if (!currentIdx.HasValue)
                         Select(newIdx.Value);
                     else
-                    {
-                        var path = app.simulation.FindPath(currentIdx.Value, newIdx.Value);
-                        AnimatePath(path);
-                    }
+                        AnimateTo(newIdx.Value);
                 }
             }
         }
@@ -249,13 +246,8 @@ namespace Graphs3D.Gpu
                 return;
             }
 
-            animation = new AnimationTimer(0.04, 500, progress =>
-            {
-                app.simulation.config.marker1 = currentIdx.Value;
-                app.simulation.config.marker2 = targetIdx;
-                app.simulation.config.markerT = (float)progress;
-            }, 
-            () => Select(targetIdx));
+            var path = app.simulation.FindPath(currentIdx.Value, targetIdx);
+            AnimatePath(path);
         }
 
         public void Select(int idx)
@@ -266,33 +258,32 @@ namespace Graphs3D.Gpu
             app.simulation.config.marker2 = SelectedIdx ?? -1;
             app.simulation.config.markerT = 1.0f;
             app.DrawPosition(idx);
-            
-            if (app.simulation.ExpandOne(idx))
-            {
-                placeholder.Dispatcher.BeginInvoke(
-                    DispatcherPriority.Render,
-                    new Action(() =>
+
+            placeholder.Dispatcher.BeginInvoke(
+                DispatcherPriority.Render,
+                new Action(() =>
+                {
+                    lock (solverProgram)
                     {
-                        UploadGraph();
-                        if (SelectedIdx.HasValue)
-                            app.DrawPosition(SelectedIdx.Value);
-                    }));
-            }
+                        if (app.simulation.ExpandOne(idx))
+                        {
+                            UploadGraph();
+                            if (SelectedIdx.HasValue)
+                                app.DrawPosition(SelectedIdx.Value);
+                        }
+                    }
+                }));
         }
 
         private void GlControl_MouseDoubleClick(object? sender, MouseEventArgs e)
         {
-            lock (app.simulation)
+            var selectedIdx = GetClickedNodeIndex(e.X, e.Y);
+            if (selectedIdx.HasValue)
             {
-                //DebugUtil.DebugSolver(true, app.simulation.config, solverProgram);
-                var selectedIdx = GetClickedNodeIndex(e.X, e.Y);
-                if (selectedIdx.HasValue)
-                {
-                    if (TrackedIdx == selectedIdx.Value)
-                        StopTracking();
-                    else
-                        StartTracking(selectedIdx.Value);
-                }
+                if (TrackedIdx == selectedIdx.Value)
+                    StopTracking();
+                else
+                    StartTracking(selectedIdx.Value);
             }
         }
 
