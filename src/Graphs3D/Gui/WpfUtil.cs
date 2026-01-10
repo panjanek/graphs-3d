@@ -6,10 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using Graphs3D.Utils;
 using Brushes = System.Windows.Media.Brushes;
 using ComboBox = System.Windows.Controls.ComboBox;
+using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+using Point = System.Windows.Point;
 
 namespace Graphs3D.Gui
 {
@@ -116,6 +119,37 @@ namespace Graphs3D.Gui
                 text.Background = Brushes.Black;
                 text.Foreground = Brushes.White;
             }
+        }
+
+        public static void RaiseMouseDown(UIElement targetElement, double x, double y, MouseButton button = MouseButton.Left)
+        {
+            if (targetElement == null)
+                throw new ArgumentNullException(nameof(targetElement));
+
+            targetElement.Dispatcher.Invoke(() =>
+            {
+                // Ensure the element can receive input
+                if (!targetElement.IsVisible || !targetElement.IsEnabled)
+                    return;
+
+                var mouseDevice = InputManager.Current.PrimaryMouseDevice;
+
+                var args = new MouseButtonEventArgs(
+                    mouseDevice,
+                    Environment.TickCount,
+                    button)
+                {
+                    RoutedEvent = UIElement.MouseDownEvent,
+                    Source = targetElement
+                };
+
+                // Set position via override
+                typeof(MouseEventArgs)
+                    .GetProperty("Position", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)?
+                    .SetValue(args, new Point(x, y));
+
+                targetElement.RaiseEvent(args);
+            });
         }
     }
 }

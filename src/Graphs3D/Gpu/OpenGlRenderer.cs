@@ -7,20 +7,22 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Threading;
 using System.Windows.Xps;
+using Graphs3D.Gui;
+using Graphs3D.Models;
+using Graphs3D.Utils;
 using OpenTK.GLControl;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
-using Graphs3D.Models;
-using Graphs3D.Utils;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 using AppContext = Graphs3D.Models.AppContext;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 using Panel = System.Windows.Controls.Panel;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
-using Graphs3D.Gui;
 
 namespace Graphs3D.Gpu
 {
@@ -103,6 +105,9 @@ namespace Graphs3D.Gpu
 
             var dragging = new DraggingHandler(glControl, (mousePos, btn) =>
             {
+                if (app.positionDrawn && mousePos.X <= AppContext.PosWidth && mousePos.Y >= glControl.Height - AppContext.PosHeight)
+                    return false;
+
                 var selectedIdx = GetClickedNodeIndex((int)mousePos.X, (int)mousePos.Y);
                 if (selectedIdx.HasValue && !TrackedIdx.HasValue)
                     DraggedIdx = selectedIdx;
@@ -170,16 +175,19 @@ namespace Graphs3D.Gpu
             };
 
             glControl.MouseDoubleClick += GlControl_MouseDoubleClick;
-            glControl.MouseUp += GlControl_MouseUp;
+            glControl.MouseDown += GlControl_Clicked;
             glControl.Paint += GlControl_Paint;
             glControl.SizeChanged += GlControl_SizeChanged;
             GlControl_SizeChanged(this, null);
         }
 
-        private void GlControl_MouseUp(object? sender, MouseEventArgs e)
+        private void GlControl_Clicked(object? sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
+                if (app.positionDrawn && e.X <= AppContext.PosWidth && e.Y >= glControl.Height - AppContext.PosHeight)
+                    app.simulation.graph.Click(e.X, e.Y - glControl.Height + AppContext.PosHeight);
+
                 var newIdx = GetClickedNodeIndex(e.X, e.Y);
                 if (newIdx.HasValue)
                 {
@@ -258,6 +266,18 @@ namespace Graphs3D.Gpu
             app.simulation.config.marker2 = SelectedIdx ?? -1;
             app.simulation.config.markerT = 1.0f;
             app.DrawPosition(idx);
+            
+            if (app.simulation.ExpandOne(idx))
+            {
+                placeholder.Dispatcher.BeginInvoke(
+                    DispatcherPriority.Render,
+                    new Action(() =>
+                    {
+                        UploadGraph();
+                        if (SelectedIdx.HasValue)
+                            app.DrawPosition(SelectedIdx.Value);
+                    }));
+            }
         }
 
         private void GlControl_MouseDoubleClick(object? sender, MouseEventArgs e)
@@ -347,6 +367,8 @@ namespace Graphs3D.Gpu
             solverProgram.UploadGraph(ref app.simulation.config, app.simulation.nodes, app.simulation.edges);
             if (SelectedIdx.HasValue && SelectedIdx.Value >= app.simulation.nodes.Length)
                 Select(0);
+            if (SelectedIdx.HasValue)
+                app.DrawPosition(SelectedIdx.Value);
         }
 
         public void UploadImage(byte[] pixels) => displayProgram.UploadImage(pixels);
@@ -418,7 +440,7 @@ namespace Graphs3D.Gpu
                 trackedPos,
                 (int)app.simulation.config.edgesCount,
                 app.simulation.lineWidth,
-                true);
+                app.positionDrawn);
             glControl.SwapBuffers();
             frameCounter++;
             Capture();

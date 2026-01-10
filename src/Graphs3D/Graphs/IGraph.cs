@@ -12,7 +12,7 @@ namespace Graphs3D.Graphs
     {
         int Expand();
 
-        void ExpandNode(int parentIdx);
+        bool ExpandNode(int parentIdx);
 
         bool IsFinished();
 
@@ -20,6 +20,10 @@ namespace Graphs3D.Graphs
 
         List<Edge> Edges { get; }
 
-        void DrawPosition(int idx, Canvas canvas);
+        bool DrawPosition(int idx, Canvas canvas);
+
+        void Click(double x, double y);
+
+        Action<int> NavigateTo { get; set; }
     }
 }

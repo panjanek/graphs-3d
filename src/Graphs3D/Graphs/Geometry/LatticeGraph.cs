@@ -32,11 +32,6 @@ namespace Graphs3D.Graphs.Geometry
             AddNode(root);
         }
 
-        public void DrawPosition(int idx, Canvas canvas)
-        {
-            
-        }
-
         protected override void InternalExpandNode(LatticeNode parent)
         {
             TryAdd(parent, -1, 0);

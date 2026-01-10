@@ -33,6 +33,8 @@ namespace Graphs3D.Models
 
         public byte[] pixels = new byte[PosWidth * PosHeight * 4];
 
+        public bool positionDrawn;
+
         public void StartNewGraph(IGraph graph)
         {
             lock (this)
@@ -40,6 +42,7 @@ namespace Graphs3D.Models
                 simulation.StartNewGraph(graph);
                 renderer.UploadGraph();
                 renderer.ResetOrigin();
+                graph.NavigateTo = idx => renderer.AnimateTo(idx);
             }
         }
 
@@ -50,7 +53,7 @@ namespace Graphs3D.Models
                 DispatcherPriority.Render,
                 new Action(() =>
                 {
-                    simulation.graph.DrawPosition(idx, canvas);
+                    positionDrawn = simulation.graph.DrawPosition(idx, canvas);
                     CanvasUtil.ReadPixelData(canvas, pixels);
                     renderer.UploadImage(pixels);
                 }));

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using System.Windows.Forms.VisualStyles;
 using Graphs3D.Models;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
@@ -15,6 +16,8 @@ namespace Graphs3D.Graphs
         public List<Node> Nodes => internalNodes;
 
         public List<Edge> Edges => internalEdges;
+
+        public Action<int> NavigateTo { get; set; }
 
         private List<Node> internalNodes = new List<Node>();
 
@@ -38,7 +41,7 @@ namespace Graphs3D.Graphs
 
         public bool IsFinished() => !graphNodes.Any(n => !n.expanded);
 
-        public void ExpandNode(int parentIdx)
+        public bool ExpandNode(int parentIdx)
         {
             if (parentIdx < Nodes.Count)
             {
@@ -47,9 +50,19 @@ namespace Graphs3D.Graphs
                 {
                     InternalExpandNode(parent);
                     parent.expanded = true;
+                    return true;
                 }
             }
+
+            return false;
         }
+        public virtual bool DrawPosition(int idx, Canvas canvas)
+        {
+            canvas.Children.Clear();
+            return false;
+        }
+
+        public virtual void Click(double x, double y) { }
 
         protected abstract void InternalExpandNode(TNode parent);
 

@@ -71,35 +71,50 @@ namespace Graphs3D.Models
                 do
                 {
                     var parentIdx = graph.Expand();
-                    var newNodes = graph.Nodes.ToArray();
-                    var newEdges = graph.Edges.ToArray();
-                    expandedCount = newNodes.Length - nodes.Length;
-                    if (newNodes.Length > nodes.Length)
-                    {
-                        var tmp = new Node[newNodes.Length];
-                        Array.Copy(nodes, tmp, nodes.Length);
-                        Array.Copy(newNodes, nodes.Length, tmp, nodes.Length, newNodes.Length - nodes.Length);
-
-                        for (int i = nodes.Length; i < newNodes.Length; i++)
-                        {
-                            tmp[i].position = tmp[parentIdx].position + new Vector4((float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f, 1);
-                        }
-
-                        nodes = tmp;
-                        config.nodesCount = nodes.Length;
-                    }
-
-                    if (newEdges.Length > edges.Length)
-                    {
-                        var tmp = new Edge[newEdges.Length];
-                        Array.Copy(edges, tmp, edges.Length);
-                        Array.Copy(newEdges, edges.Length, tmp, edges.Length, newEdges.Length - edges.Length);
-                        edges = tmp;
-                        config.edgesCount = edges.Length;
-                    }
-
+                    expandedCount = graph.Nodes.Count - nodes.Length;
+                    ExpandBuffers(parentIdx);
                     generatedNodes += expandedCount;
                 } while (generatedNodes < wantNodesCount && !graph.IsFinished());
+            }
+        }
+
+        public bool ExpandOne(int idx)
+        {
+            if (graph.ExpandNode(idx))
+            {
+                ExpandBuffers(idx);
+                return true;
+            }
+
+            return false;
+        }
+
+        private void ExpandBuffers(int centerIdx)
+        {
+            var newNodes = graph.Nodes.ToArray();
+            var newEdges = graph.Edges.ToArray();
+            if (newNodes.Length > nodes.Length)
+            {
+                var tmp = new Node[newNodes.Length];
+                Array.Copy(nodes, tmp, nodes.Length);
+                Array.Copy(newNodes, nodes.Length, tmp, nodes.Length, newNodes.Length - nodes.Length);
+
+                for (int i = nodes.Length; i < newNodes.Length; i++)
+                {
+                    tmp[i].position = tmp[centerIdx].position + new Vector4((float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f, 1);
+                }
+
+                nodes = tmp;
+                config.nodesCount = nodes.Length;
+            }
+
+            if (newEdges.Length > edges.Length)
+            {
+                var tmp = new Edge[newEdges.Length];
+                Array.Copy(edges, tmp, edges.Length);
+                Array.Copy(newEdges, edges.Length, tmp, edges.Length, newEdges.Length - edges.Length);
+                edges = tmp;
+                config.edgesCount = edges.Length;
             }
         }
 

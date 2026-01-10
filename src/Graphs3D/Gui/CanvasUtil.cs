@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brush;
+using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace Graphs3D.Gui
 {
@@ -29,6 +30,19 @@ namespace Graphs3D.Gui
             el.SetValue(Canvas.TopProperty, top);
             canvas.Children.Add(el);
             return el;
+        }
+
+        public static Rectangle AddRect(Canvas canvas, double left, double top, double width, double height, double thickness, Brush stroke, Brush fill, object tag = null, int? zIndex = null)
+        {
+            Rectangle rect = new Rectangle() { Fill = fill, Stroke = stroke, StrokeThickness = thickness, Width = width, Height = height };
+            rect.SetValue(Canvas.LeftProperty, left);
+            rect.SetValue(Canvas.TopProperty, top);
+            if (zIndex.HasValue)
+                rect.SetValue(Canvas.ZIndexProperty, zIndex.Value);
+            if (tag != null)
+                rect.Tag = tag;
+            canvas.Children.Add(rect);
+            return rect;
         }
 
         public static void ReadPixelData(Canvas canvas, byte[] pixels)
