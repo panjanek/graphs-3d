@@ -312,7 +312,7 @@ namespace Graphs3D.Gpu
         private void PrepareBuffers(int nodesCount, int totalCellsCount, int edgesCount)
         {
             if (currentNodesCount != nodesCount)
-            {
+            { 
                 currentNodesCount = nodesCount;
                 GpuUtil.CreateBuffer(ref pointsBufferA, currentNodesCount+1, shaderPointStrideSize);
                 GpuUtil.CreateBuffer(ref pointsBufferB, currentNodesCount+1, shaderPointStrideSize);

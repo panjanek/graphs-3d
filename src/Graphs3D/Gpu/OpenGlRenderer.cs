@@ -265,6 +265,7 @@ namespace Graphs3D.Gpu
                 {
                     lock (solverProgram)
                     {
+                        solverProgram.DownloadNodes(app.simulation.nodes);
                         if (app.simulation.ExpandOne(idx))
                         {
                             UploadGraph();

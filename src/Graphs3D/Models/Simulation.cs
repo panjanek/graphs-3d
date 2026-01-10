@@ -80,28 +80,35 @@ namespace Graphs3D.Models
 
         public bool ExpandOne(int idx)
         {
-            if (graph.ExpandNode(idx))
+            lock (this)
             {
-                ExpandBuffers(idx);
-                return true;
-            }
+                if (graph.ExpandNode(idx))
+                {
+                    ExpandBuffers(idx);
+                    return true;
+                }
 
-            return false;
+                return false;
+            }
         }
+
+        private static int debug = 0;
 
         private void ExpandBuffers(int centerIdx)
         {
             var newNodes = graph.Nodes.ToArray();
             var newEdges = graph.Edges.ToArray();
+            float randomRadius = 1.0f;
             if (newNodes.Length > nodes.Length)
             {
                 var tmp = new Node[newNodes.Length];
                 Array.Copy(nodes, tmp, nodes.Length);
                 Array.Copy(newNodes, nodes.Length, tmp, nodes.Length, newNodes.Length - nodes.Length);
-
                 for (int i = nodes.Length; i < newNodes.Length; i++)
                 {
-                    tmp[i].position = tmp[centerIdx].position + new Vector4((float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f, (float)globalRandom.NextDouble() - 0.5f, 1);
+                    tmp[i].position = tmp[centerIdx].position + new Vector4((float)(globalRandom.NextDouble() - 0.5f)*randomRadius, 
+                                                                            (float)(globalRandom.NextDouble() - 0.5f)*randomRadius,
+                                                                            (float)(globalRandom.NextDouble() - 0.5f)*randomRadius, 1);
                 }
 
                 nodes = tmp;
