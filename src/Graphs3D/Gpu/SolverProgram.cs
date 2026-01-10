@@ -260,6 +260,15 @@ namespace Graphs3D.Gpu
             }
         }
 
+        public void UploadEdgesFlags(Edge[] edges)
+        {
+            lock (this)
+            {
+                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, edgesBuffer);
+                GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, edges.Length * Marshal.SizeOf<Edge>(), edges);
+            }
+        }
+
         public void DownloadNodes(Node[] nodes, bool bufferB = false)
         {
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bufferB ? pointsBufferB : pointsBufferA);

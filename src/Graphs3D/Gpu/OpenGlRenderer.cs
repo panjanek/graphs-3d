@@ -298,7 +298,7 @@ namespace Graphs3D.Gpu
                     var screen = screenAndDepth.Value.screen;
                     var depth = screenAndDepth.Value.depth;
                     var distance = Math.Sqrt((screen.X - mouseX) * (screen.X - mouseX) +
-                                                (screen.Y - mouseY) * (screen.Y - mouseY));
+                                             (screen.Y - mouseY) * (screen.Y - mouseY));
                     if (distance < ClickingRadius && depth < minDepth)
                     {
                         selectedIdx = idx;
@@ -356,6 +356,8 @@ namespace Graphs3D.Gpu
             if (SelectedIdx.HasValue)
                 app.DrawPosition(SelectedIdx.Value);
         }
+
+        public void UploadEdgesFlags() => solverProgram.UploadEdgesFlags(app.simulation.edges);
 
         public void UploadImage(byte[] pixels) => displayProgram.UploadImage(pixels);
 

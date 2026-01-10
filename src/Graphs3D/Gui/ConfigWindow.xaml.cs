@@ -19,6 +19,7 @@ using Graphs3D.Graphs.Geometry;
 using Graphs3D.Models;
 using Graphs3D.Utils;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 using AppContext = Graphs3D.Models.AppContext;
 
 namespace Graphs3D.Gui
@@ -33,6 +34,8 @@ namespace Graphs3D.Gui
         private bool updating;
 
         public string recordDir;
+
+        public bool PathHighlighed => pathButton.IsChecked == true;
 
         public Canvas PositionCanvas => positionCanvas;
         public ConfigWindow(AppContext app)
@@ -50,9 +53,10 @@ namespace Graphs3D.Gui
             centerButton.PreviewKeyDown += (s, e) => e.Handled = true;
             centerButton.Click += (s, e) => app.renderer.ResetOrigin();
             restartButton.Click += (s, e) => app.StartNewGraph(CreateGraphObject(app.simulation.graph.GetType().FullName));
-            
+            pathButton.Click += (s, e) => { app.ChangePathHighlight(); };
             KeyDown += (s, e) => app.mainWindow.MainWindow_KeyDown(s, e);
         }
+
 
         private void Record_Click(object sender, RoutedEventArgs e)
         {

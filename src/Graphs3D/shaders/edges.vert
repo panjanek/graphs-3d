@@ -42,6 +42,7 @@ out vec3 vColor;
 out float vEdgeDist;
 out vec2 vP0;
 out vec2 vP1;
+out float vFadingAlpha;
 
 void main()
 {
@@ -97,7 +98,10 @@ void main()
     float side = (isTop ? 1.0 : -1.0);
     vEdgeDist = side * width;
 
+    vFadingAlpha = 1.0;
     vColor = colors[e.player % 8];
+    if (e.flags == 1)
+        vFadingAlpha = 0.3;
 
     vec2 screen0 = (ndc0 * 0.5 + 0.5) * viewportSize;
     vec2 screen1 = (ndc1 * 0.5 + 0.5) * viewportSize;

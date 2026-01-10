@@ -5,6 +5,7 @@ in vec3 vColor;
 in float vEdgeDist;
 in vec2 vP0;
 in vec2 vP1;
+in float vFadingAlpha;
 
 uniform float lineWidth;
 
@@ -53,6 +54,6 @@ void main()
     float fog = exp(-fogDensity * vDepth);
     fog = clamp(fog, 0.0, 1.0);
 
-    float alpha = alphaEdge * fog;
+    float alpha = alphaEdge * fog * vFadingAlpha;
     FragColor = vec4(vColor * fog, alpha);
 }

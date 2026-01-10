@@ -92,6 +92,18 @@
 
                     <Button Grid.Row="0" Grid.Column="0" Name="restartButton">Restart</Button>
                     <Button Grid.Row="0" Grid.Column="1" Name="centerButton">Center</Button>
+                    <ToggleButton Grid.Row="0" Grid.Column="2" IsChecked="False" Name="pathButton" ToolTip="Highligh path to root">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Setter Property="Content" Value="Highligh"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsChecked" Value="True">
+                                        <Setter Property="Content" Value="Normal"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                    </ToggleButton>
                     <ToggleButton Name="recordButton" Grid.Row="0" Grid.Column="4" ToolTip="Record frames as PNG files to given folder" Click="Record_Click">
                         <ToggleButton.Style>
                             <Style TargetType="ToggleButton">

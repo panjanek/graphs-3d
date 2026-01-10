@@ -5,6 +5,7 @@ using System.Printing.IndexedProperties;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Graphs3D.Gpu;
@@ -86,6 +87,33 @@ namespace Graphs3D.Models
             renderer.DownloadNodes();
             simulation.Expand(count);
             renderer.UploadGraph();
+        }
+
+        public void ChangePathHighlight()
+        {
+            if (renderer.SelectedIdx.HasValue && configWindow.PathHighlighed)
+            {
+                var path = simulation.PathToRoot(renderer.SelectedIdx.Value).ToArray();
+                for (int e = 0; e < simulation.edges.Length; e++)
+                {
+                    simulation.edges[e].flags = 1;
+                    for (int p = 0; p < path.Length - 1; p++)
+                    {
+                        if ((simulation.edges[e].a == path[p] && simulation.edges[e].b == path[p + 1]) ||
+                            (simulation.edges[e].b == path[p] && simulation.edges[e].a == path[p + 1]))
+                        {
+                            simulation.edges[e].flags = 0;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int e = 0; e < simulation.edges.Length; e++)
+                    simulation.edges[e].flags = 0;
+            }
+
+            renderer.UploadEdgesFlags();
         }
     }
 }
