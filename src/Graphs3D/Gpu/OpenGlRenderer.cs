@@ -32,6 +32,8 @@ namespace Graphs3D.Gpu
 
         public const float DirectionChangeSpeed = 0.003f;
 
+        public const int ClickingRadius = 7;
+
         public int FrameCounter => frameCounter;
 
         public bool Paused { get; set; }
@@ -183,6 +185,9 @@ namespace Graphs3D.Gpu
 
         private void GlControl_Clicked(object? sender, MouseEventArgs e)
         {
+            if (animation != null)
+                return;
+
             if (e.Button == MouseButtons.Left)
             {
                 if (app.positionDrawn && e.X <= AppContext.PosWidth && e.Y >= glControl.Height - AppContext.PosHeight)
@@ -198,37 +203,6 @@ namespace Graphs3D.Gpu
                         AnimateTo(newIdx.Value);
                 }
             }
-        }
-
-        public void AnimatePath(List<int> path)
-        {
-            if (animation != null)
-                return;
-
-            if (path.Count == 0)
-                return;
-
-            if (path.Count == 1)
-                Select(path[0]);
-
-            var stageLen = 1.0 / (path.Count - 1);
-            int currPos = path.First();
-            animation = new AnimationTimer(0.04, 500 + 200*(path.Count-1), progress =>
-            {
-                var nr = (int)Math.Floor(progress / stageLen);
-                if (nr < 0 || nr > path.Count - 2)
-                    return;
-                var nextPos = path[nr + 1];
-                if (nextPos != currPos)
-                {
-                    currPos = nextPos;
-                    app.DrawPosition(currPos);
-                }
-                app.simulation.config.marker1 = path[nr];
-                app.simulation.config.marker2 = path[nr+1];
-                app.simulation.config.markerT = (float)((progress - nr * stageLen) / stageLen);
-            },
-            () => Select(path.Last()));
         }
 
         public void AnimateTo(int targetIdx)
@@ -247,12 +221,41 @@ namespace Graphs3D.Gpu
             }
 
             var path = app.simulation.FindPath(currentIdx.Value, targetIdx);
-            AnimatePath(path);
+            if (path.Count == 0)
+                return;
+
+            if (path.Count == 1)
+                Select(path[0]);
+
+            var stageLen = 1.0 / (path.Count - 1);
+            int currPos = path.First();
+            animation = new AnimationTimer(0.04, 500 + 200 * (path.Count - 1), progress =>
+            {
+                var nr = (int)Math.Floor(progress / stageLen);
+                if (nr < 0 || nr > path.Count - 2)
+                    return;
+                var nextPos = path[nr + 1];
+                if (nextPos != currPos)
+                {
+                    currPos = nextPos;
+                    app.DrawPosition(currPos);
+                }
+                app.simulation.config.marker1 = path[nr];
+                app.simulation.config.marker2 = path[nr + 1];
+                app.simulation.config.markerT = (float)((progress - nr * stageLen) / stageLen);
+            },
+            () =>
+            {
+                animation = null;
+                Select(path.Last());
+            });
         }
 
         public void Select(int idx)
         {
-            animation = null;
+            if (animation != null)
+                return; 
+
             SelectedIdx = idx;
             app.simulation.config.marker1 = SelectedIdx ?? -1;
             app.simulation.config.marker2 = SelectedIdx ?? -1;
@@ -266,16 +269,6 @@ namespace Graphs3D.Gpu
                     app.ExpandOne(idx);
                 }
             });
-            /*
-            placeholder.Dispatcher.BeginInvoke(
-                DispatcherPriority.Render,
-                new Action(() =>
-                {
-                    lock (solverProgram)
-                    {
-                        app.ExpandOne(idx);
-                    }
-                }));*/
         }
 
         private void GlControl_MouseDoubleClick(object? sender, MouseEventArgs e)
@@ -292,8 +285,7 @@ namespace Graphs3D.Gpu
 
         private int? GetClickedNodeIndex(int mouseX, int mouseY)
         {
-            solverProgram.DownloadNodes(app.simulation.nodes);
-            int pixelRadius = 7;
+            DownloadNodes();
             int? selectedIdx = null;
             float minDepth = app.simulation.config.fieldSize * 10;
             var projectionMatrix = GetCombinedProjectionMatrix();
@@ -307,7 +299,7 @@ namespace Graphs3D.Gpu
                     var depth = screenAndDepth.Value.depth;
                     var distance = Math.Sqrt((screen.X - mouseX) * (screen.X - mouseX) +
                                                 (screen.Y - mouseY) * (screen.Y - mouseY));
-                    if (distance < pixelRadius && depth < minDepth)
+                    if (distance < ClickingRadius && depth < minDepth)
                     {
                         selectedIdx = idx;
                         minDepth = depth;

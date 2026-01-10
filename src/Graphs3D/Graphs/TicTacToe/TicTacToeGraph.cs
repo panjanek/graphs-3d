@@ -116,18 +116,15 @@ namespace Graphs3D.Graphs.TicTacToe
         public override void Click(double x, double y)
         {
             foreach(var rect in WpfUtil.FindVisualChildren<Rectangle>(canvas))
-            {
-                var left = (double)rect.GetValue(Canvas.LeftProperty);
-                var top = (double)rect.GetValue(Canvas.TopProperty);
-                var w = rect.Width;
-                var h = rect.Height;
-                if (x >= left && x <= left+w && y >= top && y <= top+h)
+                if (WpfUtil.CheckIfHit(rect, x, y))
                 {
                     var tag = WpfUtil.GetTagAsString(rect);
-                    if (int.TryParse(tag, out var idx))
-                        if (NavigateTo != null) NavigateTo(idx);
+                    if (int.TryParse(tag, out var idx) && NavigateTo!= null)
+                    {
+                        NavigateTo(idx);
+                        return;
+                    }
                 }
-            }
         }
 
         private TicTacToeNode CheckSymmetry(int[,] test)

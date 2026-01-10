@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using Graphs3D.Gpu;
 using Graphs3D.Utils;
@@ -25,6 +26,15 @@ namespace Graphs3D.Gui
             dispatcher.BeginInvoke(
             DispatcherPriority.Render,
             new Action(() => action()));
+        }
+
+        public static bool CheckIfHit(Shape shape, double x, double y)
+        {
+            var left = (double)shape.GetValue(Canvas.LeftProperty);
+            var top = (double)shape.GetValue(Canvas.TopProperty);
+            var w = shape.Width;
+            var h = shape.Height;
+            return (x >= left && x <= left + w && y >= top && y <= top + h);
         }
 
         public static string GetComboSelectionAsString(ComboBox combo)
