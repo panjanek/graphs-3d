@@ -108,7 +108,7 @@ void main()
     vFadingAlpha = 1.0;
     vColor = colors[e.player % 8];
     if (e.flags == 4)
-        vFadingAlpha = 0.3;
+        vFadingAlpha = 0.5;
 
     vec2 screen0 = (ndc0 * 0.5 + 0.5) * viewportSize;
     vec2 screen1 = (ndc1 * 0.5 + 0.5) * viewportSize;

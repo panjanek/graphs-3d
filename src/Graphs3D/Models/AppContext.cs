@@ -14,6 +14,7 @@ using Graphs3D.Graphs.TicTacToe;
 using Graphs3D.Gui;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
+using Timer = System.Timers.Timer;
 
 namespace Graphs3D.Models
 {
@@ -52,9 +53,9 @@ namespace Graphs3D.Models
         {
             lock (this)
             {
+                renderer.Select(0);
                 simulation.StartNewGraph(graph);
                 renderer.UploadGraph();
-                renderer.Select(0);
                 renderer.ResetOrigin();
                 graph.NavigateTo = idx => renderer.AnimateTo(idx);
             }
@@ -91,11 +92,25 @@ namespace Graphs3D.Models
             renderer.UploadGraph();
         }
 
-        public void SetupPathHighlight()
+        public void ExpandAll()
         {
-            if (renderer.SelectedIdx.HasValue && configWindow.PathHighlighed)
+            ExpandMany(10);
+            DispatcherTimer timer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(150) };
+            timer.Tick += (s, e) =>
             {
-                var path = simulation.PathToRoot(renderer.SelectedIdx.Value).ToArray();
+                ExpandMany(10);
+                if (simulation.graph.IsFinished())
+                    timer.Stop();
+            };
+            timer.Start();
+        }
+
+        public void SetupPathHighlight(int? explicitIdx = null)
+        {
+            int? nodeIdx = configWindow.PathHighlighed ? (explicitIdx.HasValue ? explicitIdx.Value : renderer.SelectedIdx) : null;
+            if (nodeIdx.HasValue)
+            {
+                var path = simulation.PathToRoot(nodeIdx.Value).ToArray();
                 for (int e = 0; e < simulation.edges.Length; e++)
                 {
                     simulation.edges[e].flags = 4;

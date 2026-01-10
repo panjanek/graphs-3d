@@ -239,7 +239,7 @@ namespace Graphs3D.Gpu
                 {
                     currPos = nextPos;
                     app.DrawPosition(currPos);
-                    //app.SetupPathHighlight();
+                    WpfUtil.DispatchRender(placeholder.Dispatcher, () => { app.SetupPathHighlight(currPos); });
                 }
                 app.simulation.config.marker1 = path[nr];
                 app.simulation.config.marker2 = path[nr + 1];
@@ -329,7 +329,7 @@ namespace Graphs3D.Gpu
             else if (Rotation)
             {
                 xzAngle -= 0.001;
-                PositionCameraTo(solverProgram.GetCenterOfMass(), 1);
+                PositionCameraTo(solverProgram.GetCenterOfMass(), app.simulation.cameraFollowSpeed);
             }
         }
 

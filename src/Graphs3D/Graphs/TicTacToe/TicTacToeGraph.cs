@@ -61,6 +61,9 @@ namespace Graphs3D.Graphs.TicTacToe
 
         public override bool DrawPosition(int idx, Canvas canvas)
         {
+            if (idx >= graphNodes.Count)
+                return false;
+
             this.canvas = canvas;
             var node = graphNodes[idx];
             canvas.Children.Clear();
