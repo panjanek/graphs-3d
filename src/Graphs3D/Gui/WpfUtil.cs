@@ -8,6 +8,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
+using Graphs3D.Gpu;
 using Graphs3D.Utils;
 using Brushes = System.Windows.Media.Brushes;
 using ComboBox = System.Windows.Controls.ComboBox;
@@ -18,6 +20,13 @@ namespace Graphs3D.Gui
 {
     public static class WpfUtil
     {
+        public static void DispatchRender(Dispatcher dispatcher, Action action)
+        {
+            dispatcher.BeginInvoke(
+            DispatcherPriority.Render,
+            new Action(() => action()));
+        }
+
         public static string GetComboSelectionAsString(ComboBox combo)
         {
             if (combo.SelectedItem is ComboBoxItem)

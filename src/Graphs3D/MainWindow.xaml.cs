@@ -80,9 +80,7 @@ namespace Graphs3D
                     e.Handled = true;
                     break;
                 case Key.Z:
-                    app.renderer.DownloadNodes();
-                    app.simulation.Expand(50);
-                    app.renderer.UploadGraph();
+                    app.ExpandMany(50);
                     e.Handled = true;
                     break;
                 case Key.Up:

@@ -92,8 +92,6 @@ namespace Graphs3D.Models
             }
         }
 
-        private static int debug = 0;
-
         private void ExpandBuffers(int centerIdx)
         {
             var newNodes = graph.Nodes.ToArray();

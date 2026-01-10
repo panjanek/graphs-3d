@@ -259,21 +259,23 @@ namespace Graphs3D.Gpu
             app.simulation.config.markerT = 1.0f;
             app.DrawPosition(idx);
 
+            WpfUtil.DispatchRender(placeholder.Dispatcher, () =>
+            {
+                lock (solverProgram)
+                {
+                    app.ExpandOne(idx);
+                }
+            });
+            /*
             placeholder.Dispatcher.BeginInvoke(
                 DispatcherPriority.Render,
                 new Action(() =>
                 {
                     lock (solverProgram)
                     {
-                        solverProgram.DownloadNodes(app.simulation.nodes);
-                        if (app.simulation.ExpandOne(idx))
-                        {
-                            UploadGraph();
-                            if (SelectedIdx.HasValue)
-                                app.DrawPosition(SelectedIdx.Value);
-                        }
+                        app.ExpandOne(idx);
                     }
-                }));
+                }));*/
         }
 
         private void GlControl_MouseDoubleClick(object? sender, MouseEventArgs e)

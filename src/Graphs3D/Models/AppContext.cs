@@ -49,14 +49,30 @@ namespace Graphs3D.Models
         public void DrawPosition(int idx)
         {
             var canvas = configWindow.PositionCanvas;
-            canvas.Dispatcher.BeginInvoke(
-                DispatcherPriority.Render,
-                new Action(() =>
-                {
-                    positionDrawn = simulation.graph.DrawPosition(idx, canvas);
-                    CanvasUtil.ReadPixelData(canvas, pixels);
-                    renderer.UploadImage(pixels);
-                }));
+            WpfUtil.DispatchRender(canvas.Dispatcher, () =>
+            {
+                positionDrawn = simulation.graph.DrawPosition(idx, canvas);
+                CanvasUtil.ReadPixelData(canvas, pixels);
+                renderer.UploadImage(pixels);
+            });
+        }
+
+        public void ExpandOne(int idx)
+        {
+            renderer.DownloadNodes();
+            if (simulation.ExpandOne(idx))
+            {
+                renderer.UploadGraph();
+                if (renderer.SelectedIdx.HasValue)
+                    DrawPosition(renderer.SelectedIdx.Value);
+            }
+        }
+
+        public void ExpandMany(int count)
+        {
+            renderer.DownloadNodes();
+            simulation.Expand(count);
+            renderer.UploadGraph();
         }
     }
 }
