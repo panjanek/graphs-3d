@@ -33,6 +33,8 @@ namespace Graphs3D.Gpu
 
         public int pointsBufferB;
 
+        public int nodeFlagsBuffer;
+
         private int trackingBuffer;
 
         public int cellCountBuffer;
@@ -233,7 +235,7 @@ namespace Graphs3D.Gpu
             }
         }
 
-        public void UploadGraph(ref ShaderConfig config, Node[] nodes, Edge[] edges)
+        public void UploadGraph(ref ShaderConfig config, Node[] nodes, Edge[] edges, int[] nodeFlags)
         {
             lock (this)
             {
@@ -243,6 +245,8 @@ namespace Graphs3D.Gpu
                 GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, nodes.Length * shaderPointStrideSize, nodes);
                 GL.BindBuffer(BufferTarget.ShaderStorageBuffer, pointsBufferB);
                 GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, nodes.Length * shaderPointStrideSize, nodes);
+                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, nodeFlagsBuffer);
+                GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, nodeFlags.Length * Marshal.SizeOf<int>(), nodeFlags);
                 GL.BindBuffer(BufferTarget.ShaderStorageBuffer, edgesBuffer);
                 GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, edges.Length * Marshal.SizeOf<Edge>(), edges);
 
@@ -260,12 +264,14 @@ namespace Graphs3D.Gpu
             }
         }
 
-        public void UploadEdgesFlags(Edge[] edges)
+        public void UploadFlags(Edge[] edges, int[] nodeFlags)
         {
             lock (this)
             {
                 GL.BindBuffer(BufferTarget.ShaderStorageBuffer, edgesBuffer);
                 GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, edges.Length * Marshal.SizeOf<Edge>(), edges);
+                GL.BindBuffer(BufferTarget.ShaderStorageBuffer, nodeFlagsBuffer);
+                GL.BufferSubData(BufferTarget.ShaderStorageBuffer, 0, nodeFlags.Length * Marshal.SizeOf<int>(), nodeFlags);
             }
         }
 
@@ -325,6 +331,7 @@ namespace Graphs3D.Gpu
                 currentNodesCount = nodesCount;
                 GpuUtil.CreateBuffer(ref pointsBufferA, currentNodesCount+1, shaderPointStrideSize);
                 GpuUtil.CreateBuffer(ref pointsBufferB, currentNodesCount+1, shaderPointStrideSize);
+                GpuUtil.CreateBuffer(ref nodeFlagsBuffer, currentNodesCount, Marshal.SizeOf<int>());
                 GpuUtil.CreateBuffer(ref nodeIndicesBuffer, currentNodesCount, Marshal.SizeOf<int>());
                 GpuUtil.CreateBuffer(ref neighboursStartBuffer, currentNodesCount, Marshal.SizeOf<int>());
                 GpuUtil.CreateBuffer(ref neighboursCountBuffer, currentNodesCount, Marshal.SizeOf<int>());

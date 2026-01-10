@@ -53,7 +53,7 @@ namespace Graphs3D.Gui
             centerButton.PreviewKeyDown += (s, e) => e.Handled = true;
             centerButton.Click += (s, e) => app.renderer.ResetOrigin();
             restartButton.Click += (s, e) => app.StartNewGraph(CreateGraphObject(app.simulation.graph.GetType().FullName));
-            pathButton.Click += (s, e) => { app.ChangePathHighlight(); };
+            pathButton.Click += (s, e) => { app.SetupPathHighlight(); };
             KeyDown += (s, e) => app.mainWindow.MainWindow_KeyDown(s, e);
         }
 

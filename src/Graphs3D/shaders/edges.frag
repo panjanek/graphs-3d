@@ -6,6 +6,7 @@ in float vEdgeDist;
 in vec2 vP0;
 in vec2 vP1;
 in float vFadingAlpha;
+in float vWidthMult;
 
 uniform float lineWidth;
 
@@ -14,23 +15,6 @@ out vec4 FragColor;
 void main()
 {
     // ----- analytic anti-aliasing -----
-    /*
-    float halfWidth = abs(vEdgeDist);
-
-    // fwidth gives pixel-space derivative
-    float aa = fwidth(vEdgeDist) * 1.5;
-
-    float alphaEdge = 1.0 - smoothstep(
-        halfWidth - aa,
-        halfWidth + aa,
-        abs(vEdgeDist)
-    );
-
-    alphaEdge = pow(alphaEdge, 0.8);
-    */
-
-
-    
     vec2 p = gl_FragCoord.xy;
 
     vec2 v = vP1 - vP0;
@@ -42,7 +26,7 @@ void main()
     float dist = length(p - closest);
 
     // signed distance
-    float d = dist - (lineWidth-0.5);
+    float d = dist - (vWidthMult*lineWidth-0.5);
 
     // analytic AA
     float aa = max(fwidth(d)*1.5, 1.0);

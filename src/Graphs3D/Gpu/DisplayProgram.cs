@@ -152,6 +152,7 @@ namespace Graphs3D.Gpu
 
         public void Run(int nodesBuffer, 
                         int edgesBuffer, 
+                        int nodeFlagsBuffer,
                         Matrix4 projectionMatrix, 
                         int particlesCount, 
                         float particleSize, 
@@ -170,7 +171,7 @@ namespace Graphs3D.Gpu
             //nodes as points
             GL.UseProgram(nodesProgram);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 2, nodesBuffer);
-            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 3, edgesBuffer);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 14, nodeFlagsBuffer);
             GL.BindVertexArray(quadVao);
             GL.UniformMatrix4(projNodesLocation, false, ref projectionMatrix);
             GL.Uniform1(particleSizeLocation, particleSize);

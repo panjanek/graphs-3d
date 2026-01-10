@@ -43,6 +43,7 @@ out float vEdgeDist;
 out vec2 vP0;
 out vec2 vP1;
 out float vFadingAlpha;
+out float vWidthMult;
 
 void main()
 {
@@ -65,6 +66,12 @@ void main()
 
     Edge e = edges[edgeIndex];
 
+    vWidthMult = 1.0;
+    if (e.flags == 4)
+        vWidthMult = 0.75;
+    if (e.flags == 3)
+        vWidthMult = 2;
+
     vec3 p0 = nodes[e.a].position.xyz;
     vec3 p1 = nodes[e.b].position.xyz;
 
@@ -86,7 +93,7 @@ void main()
     bool isTop         = (qc & 2u) != 0u;
 
     float depth = isSecondPoint ? -clip1.z : -clip0.z;
-    float width = lineWidth / (depth + 1.0);
+    float width = vWidthMult*lineWidth / (depth + 1.0);
 
     vec2 offset = normal * (isTop ? width : -width) / viewportSize;
 
@@ -100,7 +107,7 @@ void main()
 
     vFadingAlpha = 1.0;
     vColor = colors[e.player % 8];
-    if (e.flags == 3)
+    if (e.flags == 4)
         vFadingAlpha = 0.3;
 
     vec2 screen0 = (ndc0 * 0.5 + 0.5) * viewportSize;

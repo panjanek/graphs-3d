@@ -76,6 +76,7 @@ namespace Graphs3D.Models
             renderer.DownloadNodes();
             if (simulation.ExpandOne(idx))
             {
+                SetupPathHighlight();
                 renderer.UploadGraph();
                 if (renderer.SelectedIdx.HasValue)
                     DrawPosition(renderer.SelectedIdx.Value);
@@ -86,34 +87,40 @@ namespace Graphs3D.Models
         {
             renderer.DownloadNodes();
             simulation.Expand(count);
+            SetupPathHighlight();
             renderer.UploadGraph();
         }
 
-        public void ChangePathHighlight()
+        public void SetupPathHighlight()
         {
             if (renderer.SelectedIdx.HasValue && configWindow.PathHighlighed)
             {
                 var path = simulation.PathToRoot(renderer.SelectedIdx.Value).ToArray();
                 for (int e = 0; e < simulation.edges.Length; e++)
                 {
-                    simulation.edges[e].flags = 3;
+                    simulation.edges[e].flags = 4;
                     for (int p = 0; p < path.Length - 1; p++)
                     {
                         if ((simulation.edges[e].a == path[p] && simulation.edges[e].b == path[p + 1]) ||
                             (simulation.edges[e].b == path[p] && simulation.edges[e].a == path[p + 1]))
                         {
-                            simulation.edges[e].flags = 0;
+                            simulation.edges[e].flags = 3;
                         }
                     }
                 }
+
+                var hashset = path.ToHashSet();
+                for (int i = 0; i < simulation.nodeFlags.Length; i++)
+                    simulation.nodeFlags[i] = hashset.Contains(i) ? 0 : 3;
             }
             else
             {
                 for (int e = 0; e < simulation.edges.Length; e++)
                     simulation.edges[e].flags = 0;
+                Array.Clear(simulation.nodeFlags);
             }
 
-            renderer.UploadEdgesFlags();
+            renderer.UploadFlags();
         }
     }
 }

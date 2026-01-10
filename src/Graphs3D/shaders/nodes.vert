@@ -15,8 +15,12 @@ struct Node
    int _pad2;
 };
 
-layout(std430, binding = 2) buffer OutputBuffer {
+layout(std430, binding = 2) buffer NodesBuffer {
     Node points[];
+};
+
+layout(std430, binding = 14) buffer FlagsBuffer {
+    int nodeFlags[];
 };
 
 uniform mat4 view;
@@ -32,14 +36,6 @@ layout(location = 4) out vec2 vQuad;
 layout(location = 5) in vec2 quadPos;
 layout(location = 6) out vec3 vOffsetView;
 layout(location = 7) out float vSphereRadiusMult;
-
-float fading_alpha(float r2)
-{
-    float sigma2 = 500*500;
-    float minAlpha = 0.5;
-    float a = exp(-(r2) / sigma2);
-    return max(a, minAlpha);
-}
 
 void main()
 {
@@ -61,27 +57,26 @@ void main()
     );
     int colorIdx = p.leaf == 0 ? p.player : p.win;
     vColor = colorIdx >= 0 ? colors[colorIdx % 8] : vec3(1.0, 0.0, 0.0);
+    vFadingAlpha = 1.0;
     if (p.leaf == 1)
-    {
         vSphereRadiusMult = 2.5;
-    }
 
     //marker
     if (p.flags == 1) 
     {
         vSphereRadiusMult = 3;
-        vColor = vec3(0.0, 0.0, 1.0);
+        vColor = vec3(1.0, 1.0, 1.0);
+    }
+    else
+    {
+        if (nodeFlags[id] == 3)
+            vFadingAlpha = 0.5;
     }
 
     sphereRadius *= vSphereRadiusMult;
 
     //hide
-    if (p.flags == 2) sphereRadius = 0;
-
-    vFadingAlpha = 1.0;
-    if (p.flags == 3)
-        vFadingAlpha = 0.3;
-
+    //if (p.flags == 2) sphereRadius = 0;
 
     //real spheres
     vec4 viewPos = view * vec4(p.position.xyz, 1.0);

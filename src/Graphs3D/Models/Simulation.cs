@@ -33,6 +33,8 @@ namespace Graphs3D.Models
 
         public Edge[] edges = new Edge[0];
 
+        public int[] nodeFlags = new int[0];
+
         public int seed = 11;
 
         public float followDistance = 10;
@@ -52,6 +54,7 @@ namespace Graphs3D.Models
             config.fieldSize = 100;
             nodes = graph.Nodes.ToArray();
             edges = graph.Edges.ToArray();
+            nodeFlags = new int[nodes.Length];
             config.nodesCount = nodes.Length;
             config.edgesCount = edges.Length;
             nodes[0].position = new Vector4(config.fieldSize / 2, config.fieldSize / 2, config.fieldSize / 2, 1.0f);
@@ -111,6 +114,11 @@ namespace Graphs3D.Models
 
                 nodes = tmp;
                 config.nodesCount = nodes.Length;
+
+                var tmpFlags = new int[newNodes.Length];
+                for (int i = 0; i < nodeFlags.Length; i++)
+                    tmpFlags[i] = nodeFlags[i];
+                nodeFlags = tmpFlags;
             }
 
             if (newEdges.Length > edges.Length)

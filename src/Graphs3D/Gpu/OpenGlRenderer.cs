@@ -143,7 +143,7 @@ namespace Graphs3D.Gpu
                         var translation = p1 - p0;
                         solverProgram.DownloadNodes(app.simulation.nodes);
                         app.simulation.nodes[dragged.Value].position += new Vector4(translation, 0);
-                        solverProgram.UploadGraph(ref app.simulation.config, app.simulation.nodes, app.simulation.edges);
+                        solverProgram.UploadGraph(ref app.simulation.config, app.simulation.nodes, app.simulation.edges, app.simulation.nodeFlags);
                     }
                     else
                     {
@@ -239,6 +239,7 @@ namespace Graphs3D.Gpu
                 {
                     currPos = nextPos;
                     app.DrawPosition(currPos);
+                    //app.SetupPathHighlight();
                 }
                 app.simulation.config.marker1 = path[nr];
                 app.simulation.config.marker2 = path[nr + 1];
@@ -261,11 +262,12 @@ namespace Graphs3D.Gpu
             app.simulation.config.marker2 = SelectedIdx ?? -1;
             app.simulation.config.markerT = 1.0f;
             app.DrawPosition(idx);
-
+            
             WpfUtil.DispatchRender(placeholder.Dispatcher, () =>
             {
                 lock (solverProgram)
                 {
+                    app.SetupPathHighlight();
                     app.ExpandOne(idx);
                 }
             });
@@ -350,14 +352,14 @@ namespace Graphs3D.Gpu
 
         public void UploadGraph()
         {
-            solverProgram.UploadGraph(ref app.simulation.config, app.simulation.nodes, app.simulation.edges);
+            solverProgram.UploadGraph(ref app.simulation.config, app.simulation.nodes, app.simulation.edges, app.simulation.nodeFlags);
             if (SelectedIdx.HasValue && SelectedIdx.Value >= app.simulation.nodes.Length)
                 Select(0);
             if (SelectedIdx.HasValue)
                 app.DrawPosition(SelectedIdx.Value);
         }
 
-        public void UploadEdgesFlags() => solverProgram.UploadEdgesFlags(app.simulation.edges);
+        public void UploadFlags() => solverProgram.UploadFlags(app.simulation.edges, app.simulation.nodeFlags);
 
         public void UploadImage(byte[] pixels) => displayProgram.UploadImage(pixels);
 
@@ -422,7 +424,8 @@ namespace Graphs3D.Gpu
             var trackedPos = TrackedIdx.HasValue ? solverProgram.GetTrackedParticle().position : new Vector4(-1000000, 0, 0, 0);
             displayProgram.Run(
                 solverProgram.pointsBufferB,
-                solverProgram.edgesBuffer,
+                solverProgram.edgesBuffer, 
+                solverProgram.nodeFlagsBuffer,
                 GetProjectionMatrix(),
                 app.simulation.config.nodesCount,
                 app.simulation.particleSize,
