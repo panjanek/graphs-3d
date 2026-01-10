@@ -96,7 +96,7 @@ namespace Graphs3D.Models
                 var path = simulation.PathToRoot(renderer.SelectedIdx.Value).ToArray();
                 for (int e = 0; e < simulation.edges.Length; e++)
                 {
-                    simulation.edges[e].flags = 1;
+                    simulation.edges[e].flags = 3;
                     for (int p = 0; p < path.Length - 1; p++)
                     {
                         if ((simulation.edges[e].a == path[p] && simulation.edges[e].b == path[p + 1]) ||

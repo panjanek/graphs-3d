@@ -32,7 +32,7 @@ namespace Graphs3D.Gpu
 
         private int lineWidthLocation;
 
-        private int trackedPosLocation;
+        //private int trackedPosLocation;
 
         private int quadVao;
 
@@ -71,8 +71,8 @@ namespace Graphs3D.Gpu
             if (viewportSizeNodesLocation == -1) throw new Exception("Uniform 'viewportSize' not found. Shader optimized it out?");
             viewNodesLocation = GL.GetUniformLocation(nodesProgram, "view");
             if (viewNodesLocation == -1) throw new Exception("Uniform 'view' not found. Shader optimized it out?");
-            trackedPosLocation = GL.GetUniformLocation(nodesProgram, "trackedPos");
-            if (trackedPosLocation == -1) throw new Exception("Uniform 'trackedPos' not found. Shader optimized it out?");
+            //trackedPosLocation = GL.GetUniformLocation(nodesProgram, "trackedPos");
+            //if (trackedPosLocation == -1) throw new Exception("Uniform 'trackedPos' not found. Shader optimized it out?");
 
             edgesProgram = ShaderUtil.CompileAndLinkRenderShader("edges.vert", "edges.frag");
             projEdgesLocation = GL.GetUniformLocation(edgesProgram, "projection");
@@ -176,7 +176,7 @@ namespace Graphs3D.Gpu
             GL.Uniform1(particleSizeLocation, particleSize);
             GL.Uniform2(viewportSizeNodesLocation, viewportSize);
             GL.UniformMatrix4(viewNodesLocation, false, ref view);
-            GL.Uniform4(trackedPosLocation, ref trackedPos);
+            //GL.Uniform4(trackedPosLocation, ref trackedPos);
 
             GL.DrawElementsInstanced(
                 PrimitiveType.Triangles,

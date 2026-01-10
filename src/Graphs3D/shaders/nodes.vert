@@ -23,7 +23,6 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform float paricleSize;
 uniform vec2 viewportSize;
-uniform vec4 trackedPos;
 
 layout(location = 0) out vec3 vColor;
 layout(location = 1) out float vDepth;
@@ -79,14 +78,9 @@ void main()
     //hide
     if (p.flags == 2) sphereRadius = 0;
 
-    //tracked
     vFadingAlpha = 1.0;
-    if (trackedPos.x > -100000)
-    {
-        vec4 d = p.position - trackedPos;
-        float r2 = dot(d, d);
-        vFadingAlpha = fading_alpha(r2);
-    }
+    if (p.flags == 3)
+        vFadingAlpha = 0.3;
 
 
     //real spheres

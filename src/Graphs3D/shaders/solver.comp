@@ -216,16 +216,9 @@ vec3 repulsion_cells(uint idx, vec3 pos, float strength)
                 localCount++;
                 vec3 d = pos - inNodes[otherIdx].position.xyz;
                 force += repulsion_single(d, strength);
-
-                //float r = length(d);
-                //float cutoff = config.cellSize * 1.5;
-                //float w = smoothstep(cutoff, 0.0, r);
-                //force += repulsion_single(d, strength * w);
             }
         }
     }
-
-    //force *= inversesqrt(float(localCount) + 1.0);
 
     return force;
 }
