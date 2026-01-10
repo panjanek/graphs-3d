@@ -144,7 +144,7 @@
                 <Slider Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="1" Minimum="10" Maximum="3000" SmallChange="50" LargeChange="200" ValueChanged="Slider_ValueChanged" Tag="lineWidth" VerticalAlignment="Center"/>
                 <TextBlock Grid.Row="6" Grid.Column="2" Tag="lineWidth"  FontFamily="Courier New" Margin="0,5,10,0" VerticalAlignment="Center" FontSize="11" MouseDown="infoText_MouseDown" Foreground="White" Background="DarkGray" TextAlignment="Center" Padding="1"/>
 
-                <Canvas Name="boardCanvas" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" Width="300" Height="300" Background="Black" Margin="10,10,10,10" />
+                <Canvas Name="positionCanvas" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="3" Width="300" Height="300" Background="Black" Margin="10,10,10,10" />
 
             </Grid>
         </DockPanel>

@@ -34,11 +34,13 @@ namespace Graphs3D.Gui
 
         public string recordDir;
 
-        public Canvas PositionCanvas => boardCanvas;
+        public Canvas PositionCanvas => positionCanvas;
         public ConfigWindow(AppContext app)
         {
             this.app = app;
             InitializeComponent();
+            positionCanvas.Width = AppContext.PosWidth;
+            positionCanvas.Height = AppContext.PosHeight;
             customTitleBar.MouseLeftButtonDown += (s, e) => { if (e.ButtonState == MouseButtonState.Pressed) DragMove(); };
             minimizeButton.Click += (s, e) => WindowState = WindowState.Minimized;
             Closing += (s, e) => { e.Cancel = true; WindowState = WindowState.Minimized; };

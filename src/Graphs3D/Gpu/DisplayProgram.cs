@@ -10,6 +10,7 @@ using Graphs3D.Utils;
 using OpenTK.GLControl;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
+using AppContext = Graphs3D.Models.AppContext;
 
 namespace Graphs3D.Gpu
 {
@@ -83,7 +84,7 @@ namespace Graphs3D.Gpu
             lineWidthLocation = GL.GetUniformLocation(edgesProgram, "lineWidth");
             if (lineWidthLocation == -1) throw new Exception("Uniform 'lineWidth' not found. Shader optimized it out?");
 
-            imageTex = TextureUtil.CreateByteTexture(300, 300);
+            imageTex = TextureUtil.CreateByteTexture(AppContext.PosWidth, AppContext.PosHeight);
             imageProgram = ShaderUtil.CompileAndLinkRenderShader("image.vert", "image.frag");
             texImageLocation = GL.GetUniformLocation(imageProgram, "tex");
             if (texImageLocation == -1) throw new Exception("Uniform 'tex' not found. Shader optimized it out?");
@@ -135,31 +136,14 @@ namespace Graphs3D.Gpu
 
         public void UploadImage(byte[] pixels)
         {
-            /*
-            for (int y = 0; y < 300; y++)
-            {
-                for (int x = 0; x < 300; x++)
-                {
-                    int i = (y * 300 + x) * 4;
-                    pixels[i + 0] = (byte)(x * 255 / 300); // R
-                    pixels[i + 1] = (byte)(y * 255 / 300); // G
-                    pixels[i + 2] = 0;                     // B
-                    pixels[i + 3] = 255;                   // A
-                }
-            }
-            */
-            // Upload pixel data
-
-      
-
             GL.BindTexture(TextureTarget.Texture2D, imageTex);
             GL.TexSubImage2D(
                 TextureTarget.Texture2D,
                 level: 0,
                 xoffset: 0,
                 yoffset: 0,
-                width: 300,
-                height: 300,
+                width: AppContext.PosWidth,
+                height: AppContext.PosHeight,
                 format: PixelFormat.Rgba,
                 type: PixelType.UnsignedByte,
                 pixels: pixels

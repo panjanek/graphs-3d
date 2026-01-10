@@ -19,6 +19,10 @@ namespace Graphs3D.Models
     {
         public static readonly Brush[] BrushesColors = [Brushes.Yellow, Brushes.Magenta, Brushes.Cyan, Brushes.Red, Brushes.Green, Brushes.Blue, Brushes.White, Brushes.Gray ];
 
+        public const int PosWidth = 300;
+
+        public const int PosHeight = 300;
+
         public Simulation simulation;
 
         public MainWindow mainWindow;
@@ -27,7 +31,7 @@ namespace Graphs3D.Models
 
         public ConfigWindow configWindow;
 
-        public byte[] pixels = new byte[300 * 300 * 4];
+        public byte[] pixels = new byte[PosWidth * PosHeight * 4];
 
         public void StartNewGraph(IGraph graph)
         {
