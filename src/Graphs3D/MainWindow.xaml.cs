@@ -43,22 +43,7 @@ namespace Graphs3D
 
         private void parent_Loaded(object sender, RoutedEventArgs e)
         {
-            app = new AppContext();
-            app.mainWindow = this;
-            app.simulation = new Simulation();
-            app.simulation.StartNewGraph(new TicTacToeGraph3x3());
-            app.simulation.graph.NavigateTo = idx =>
-
-            {
-                app.renderer.AnimateTo(idx);
-            };
-
-            app.configWindow = new ConfigWindow(app);
-            app.renderer = new OpenGlRenderer(placeholder, app);
-            app.renderer.Select(0);
-            app.configWindow.Show();
-            app.configWindow.Activate();
-
+            app = new AppContext(this);
             KeyDown += MainWindow_KeyDown;
             System.Timers.Timer systemTimer = new System.Timers.Timer() { Interval = 10 };
             systemTimer.Elapsed += SystemTimer_Elapsed;

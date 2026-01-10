@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Graphs3D.Gpu;
 using Graphs3D.Graphs;
+using Graphs3D.Graphs.TicTacToe;
 using Graphs3D.Gui;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
@@ -35,12 +36,24 @@ namespace Graphs3D.Models
 
         public bool positionDrawn;
 
+        public AppContext(MainWindow mainWindow)
+        {
+            this.mainWindow = mainWindow;
+            simulation = new Simulation();
+            configWindow = new ConfigWindow(this);
+            renderer = new OpenGlRenderer(mainWindow.placeholder, this);
+            StartNewGraph(new TicTacToeGraph3x3());
+            configWindow.Show();
+            configWindow.Activate();
+        }
+
         public void StartNewGraph(IGraph graph)
         {
             lock (this)
             {
                 simulation.StartNewGraph(graph);
                 renderer.UploadGraph();
+                renderer.Select(0);
                 renderer.ResetOrigin();
                 graph.NavigateTo = idx => renderer.AnimateTo(idx);
             }

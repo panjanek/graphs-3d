@@ -29,9 +29,9 @@ namespace Graphs3D.Models
 
         public float lineWidth = 300f;
 
-        public Node[] nodes;
+        public Node[] nodes = new Node[0];
 
-        public Edge[] edges;
+        public Edge[] edges = new Edge[0];
 
         public int seed = 11;
 

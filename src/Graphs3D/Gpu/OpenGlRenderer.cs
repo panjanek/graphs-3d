@@ -100,8 +100,8 @@ namespace Graphs3D.Gpu
 
             solverProgram = new SolverProgram();
             displayProgram = new DisplayProgram();
-            UploadGraph();
-            ResetOrigin();
+            //UploadGraph();
+            //ResetOrigin();
 
             var dragging = new DraggingHandler(glControl, (mousePos, btn) =>
             {
@@ -409,6 +409,9 @@ namespace Graphs3D.Gpu
 
         private void GlControl_SizeChanged(object? sender, EventArgs e)
         {
+            if (app.simulation.nodes.Length == 0)
+                return;
+
             if (glControl.Width <= 0 || glControl.Height <= 0)
                 return;
 
