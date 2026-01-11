@@ -47,6 +47,57 @@ namespace Graphs3D.Graphs.Sokoban
             }
         }
 
+        public override void PostExpandActions()
+        {
+            if (graphNodes.Any(n => n.win == 1) && graphNodes.All(n => n.expanded))
+            {
+                for(int i=0; i<graphNodes.Count; i++)
+                {
+                    var testing = graphNodes[i];
+                    if (!testing.parentIdx.HasValue)
+                    {
+                        testing.player = 0;
+                        SetInternal(i, 0);
+                        continue;
+                    }
+
+                    var wantReturnTo = graphNodes[testing.parentIdx.Value];
+                    var moves = GenerateMoves(testing);
+                    bool canReturn = false;
+                    foreach(var move in moves)
+                    {
+                        var next = new SokobanNode(testing, move.boxToPush, move.dir);
+                        if (next.Key == wantReturnTo.Key)
+                        {
+                            canReturn = true;
+                            break;
+                        }
+                    }
+
+                    if (!canReturn)
+                        Console.WriteLine();
+                    
+                    testing.player = canReturn ? 0 : 3;
+                    SetInternal(i, testing.player);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < graphNodes.Count; i++)
+                {
+                    graphNodes[i].player = 0;
+                    SetInternal(i, 0);
+                }
+            }
+        }
+
+        private void SetInternal(int idx, int player)
+        {
+            var internalNode = internalNodes[idx];
+            internalNode.player = player;
+            internalNodes[idx] = internalNode;
+        }
+
         private List<SokobanMove> GenerateMoves(SokobanNode parent)
         {
             List<SokobanMove> moves = new List<SokobanMove>();

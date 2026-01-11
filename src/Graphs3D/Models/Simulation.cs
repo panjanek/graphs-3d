@@ -129,6 +129,13 @@ namespace Graphs3D.Models
                 edges = tmp;
                 config.edgesCount = edges.Length;
             }
+
+            //always copy attributes
+            for (int i = 0; i < newNodes.Length; i++)
+            {
+                nodes[i].player = newNodes[i].player;
+                nodes[i].leaf = newNodes[i].leaf;
+            }
         }
 
         public List<int> GetChildren(int parentIdx)

@@ -36,6 +36,7 @@ namespace Graphs3D.Graphs
                 return 0;
 
             ExpandNode(parent.idx);
+            PostExpandActions();
             return parent.idx;
         }
 
@@ -63,6 +64,8 @@ namespace Graphs3D.Graphs
         }
 
         public virtual void Click(double x, double y) { }
+
+        public virtual void PostExpandActions() { }
 
         protected abstract void InternalExpandNode(TNode parent);
 
