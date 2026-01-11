@@ -32,7 +32,7 @@ namespace Graphs3D.Graphs.Sokoban
 
         public SokobanGraph()
         {
-            var root = new SokobanNode(ResourceUtil.LoadStringFromResource("maps.sokoban2.txt"));
+            var root = new SokobanNode(ResourceUtil.LoadStringFromResource("maps.sokoban3.txt"));
             width = root.position.GetLength(0);
             height = root.position.GetLength(1);
             visited = new bool[width, height];
@@ -53,7 +53,7 @@ namespace Graphs3D.Graphs.Sokoban
 
         public override void PostExpandActions()
         {
-            if (graphNodes.Any(n => n.win == 1) && graphNodes.All(n => n.expanded))
+            if (graphNodes.Any(n => n.win > 0) && graphNodes.All(n => n.expanded))
             {
                 for (int i = 0; i < graphNodes.Count; i++)
                     graphNodes[i].player = -1;
@@ -94,7 +94,7 @@ namespace Graphs3D.Graphs.Sokoban
                         }
                         while (processing.Count > 0);
 
-                        if (!subgraph.Any(n => n.win != 0))
+                        if (!subgraph.Any(n => n.win >0 ))
                             foreach (var n in subgraph)
                                 n.player = ColorDeadend;
                         else

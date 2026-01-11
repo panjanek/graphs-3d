@@ -28,6 +28,8 @@ namespace Graphs3D.Graphs.Sokoban
 
         public SokobanXY playerPos;
 
+        public SokobanXY playerVisualPos;
+
         public static SokobanXY[] stack;
 
         public static bool[,] visited;
@@ -37,6 +39,7 @@ namespace Graphs3D.Graphs.Sokoban
         public SokobanNode(string startPosition)
         {
             (position, playerPos) = SokobanUtil.ReadPositionFromString(startPosition);
+            playerVisualPos = playerPos;
             visited = new bool[position.GetLength(0), position.GetLength(1)];
             stack = new SokobanXY[position.GetLength(0) * position.GetLength(1)];
             NormalizePosition();
@@ -53,14 +56,15 @@ namespace Graphs3D.Graphs.Sokoban
             position[newBoxPos.X, newBoxPos.Y] = position[newBoxPos.X, newBoxPos.Y] == SokobanNode.EMPTY ? SokobanNode.BOX : SokobanNode.BOXONTARGET;
             position[move.boxToPush.X, move.boxToPush.Y] = position[move.boxToPush.X, move.boxToPush.Y] == SokobanNode.BOX ? SokobanNode.EMPTY : SokobanNode.TARGET;
             playerPos = move.boxToPush;
+            playerVisualPos = playerPos;
             NormalizePosition();
-
             parentIdx = prev.idx;
             key = SokobanUtil.SerializePositionToString(position, playerPos);
             if (SokobanUtil.IsWin(position))
             {
                 leaf = true;
-                win = 1;
+                win = SokobanGraph.ColorOk;
+                player = SokobanGraph.ColorOk;
             }
         }
 
@@ -83,8 +87,6 @@ namespace Graphs3D.Graphs.Sokoban
 
                 if (p.Y == normalized.Y && p.X < normalized.X)
                     normalized = p;
-
-                
 
                 //walk
                 for (int d = 0; d < SokobanGraph.dirs.Length; d++)

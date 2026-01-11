@@ -10,6 +10,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brush;
+using Color = System.Windows.Media.Color;
 using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace Graphs3D.Gui
@@ -51,6 +52,117 @@ namespace Graphs3D.Gui
                 rect.Tag = tag;
             canvas.Children.Add(rect);
             return rect;
+        }
+
+        public static Brush CreateDiagonalStripeBrush(Color color1, Color color2, double stripeWidth = 6, double angleDegrees = 45)
+        {
+            double size = stripeWidth * 2;
+
+            var group = new DrawingGroup();
+
+            // First stripe
+            group.Children.Add(
+                new GeometryDrawing(
+                    new SolidColorBrush(color1),
+                    null,
+                    new RectangleGeometry(new Rect(0, 0, stripeWidth, size))));
+
+            // Second stripe
+            group.Children.Add(
+                new GeometryDrawing(
+                    new SolidColorBrush(color2),
+                    null,
+                    new RectangleGeometry(new Rect(stripeWidth, 0, stripeWidth, size))));
+
+            var brush = new DrawingBrush(group)
+            {
+                TileMode = TileMode.Tile,
+                Viewport = new Rect(0, 0, size, size),
+                ViewportUnits = BrushMappingMode.Absolute,
+                Transform = new RotateTransform(angleDegrees)
+            };
+
+            // Freeze for performance (important)
+            brush.Freeze();
+
+            return brush;
+        }
+
+        public static Brush CreateBrickBrush(
+           Color brickColor,
+           Color mortarColor,
+           double brickWidth = 40,
+           double brickHeight = 20,
+           double mortarThickness = 2)
+        {
+            double tileWidth = brickWidth * 3;
+            double tileHeight = brickHeight * 2;
+
+            var group = new DrawingGroup();
+
+            // Mortar background
+            group.Children.Add(
+                new GeometryDrawing(
+                    new SolidColorBrush(mortarColor),
+                    null,
+                    new RectangleGeometry(new Rect(0, 0, tileWidth, tileHeight))));
+
+            double bw = brickWidth - mortarThickness;
+            double bh = brickHeight - mortarThickness;
+
+            // ---- Row 1 (even, no offset)
+            for (int i = 0; i < 3; i++)
+            {
+                group.Children.Add(CreateBrick(
+                    brickColor,
+                    i * brickWidth + mortarThickness,
+                    mortarThickness,
+                    bw,
+                    bh));
+            }
+
+            // ---- Row 2 (odd, half-brick offset)
+            double offset = brickWidth / 2;
+
+            for (int i = 0; i < 3; i++)
+            {
+                group.Children.Add(CreateBrick(
+                    brickColor,
+                    offset + i * brickWidth + mortarThickness,
+                    brickHeight + mortarThickness,
+                    bw,
+                    bh));
+            }
+
+            group.Children.Add(CreateBrick(
+                brickColor,
+                0,
+                brickHeight + mortarThickness,
+                bw/2,
+                bh));
+
+            var brush = new DrawingBrush(group)
+            {
+                TileMode = TileMode.Tile,
+                Viewport = new Rect(0, 0, tileWidth, tileHeight),
+                ViewportUnits = BrushMappingMode.Absolute
+            };
+
+            brush.Freeze();
+            return brush;
+        }
+
+        private static GeometryDrawing CreateBrick(
+            Color color,
+            double x,
+            double y,
+            double width,
+            double height)
+        {
+            return new GeometryDrawing(
+                new SolidColorBrush(color),
+                null,
+                new RectangleGeometry(new Rect(x, y, width, height)));
         }
 
         public static void ReadPixelData(Canvas canvas, byte[] pixels)

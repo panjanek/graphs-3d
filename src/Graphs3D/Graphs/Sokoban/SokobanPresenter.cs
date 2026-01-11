@@ -11,6 +11,7 @@ using Brushes = System.Windows.Media.Brushes;
 using Rectangle = System.Windows.Shapes.Rectangle;
 using Color = System.Windows.Media.Color;
 using Colors = System.Windows.Media.Colors;
+using System.Windows.Media;
 
 namespace Graphs3D.Graphs.Sokoban
 {
@@ -59,8 +60,8 @@ namespace Graphs3D.Graphs.Sokoban
                         PositionNextTarget(ref targetNr, x, y);
                 }
 
-            player.SetValue(Canvas.LeftProperty, marginLeft + node.playerPos.X * cellWidth + cellWidth * 0.15);
-            player.SetValue(Canvas.TopProperty, marginTop + node.playerPos.Y * cellHeight + cellHeight * 0.15);
+            player.SetValue(Canvas.LeftProperty, marginLeft + node.playerVisualPos.X * cellWidth + cellWidth * 0.15);
+            player.SetValue(Canvas.TopProperty, marginTop + node.playerVisualPos.Y * cellHeight + cellHeight * 0.15);
             return true;
         }
 
@@ -80,8 +81,8 @@ namespace Graphs3D.Graphs.Sokoban
 
         private void PositionNextTarget(ref int targetNr, int x, int y)
         {
-            targets[targetNr].SetValue(Canvas.LeftProperty, marginLeft + x * cellWidth);
-            targets[targetNr].SetValue(Canvas.TopProperty, marginTop + y * cellHeight);
+            targets[targetNr].SetValue(Canvas.LeftProperty, marginLeft + x * cellWidth + 0.05*cellWidth);
+            targets[targetNr].SetValue(Canvas.TopProperty, marginTop + y * cellHeight + 0.05*cellHeight);
             targetNr++;
         }
 
@@ -100,16 +101,20 @@ namespace Graphs3D.Graphs.Sokoban
             marginLeft = (canv.Width - map.GetLength(0) * cellWidth) / 2;
             marginTop = (canv.Height - map.GetLength(1) * cellHeight) / 2;
 
-            player = CanvasUtil.AddEllipse(canvas, 0, 0, cellWidth*0.7, cellHeight*0.7, 2, Brushes.Blue, Brushes.Yellow, null, 100);
+            var boxBrush = CanvasUtil.CreateDiagonalStripeBrush(Colors.SandyBrown, Colors.Yellow, 5, 45);
+            var targetBrush = new SolidColorBrush(Color.FromArgb(96, 0, 255, 0));
+            var brickBrush = CanvasUtil.CreateBrickBrush(Colors.LightGray, Colors.DarkGray, cellWidth * 0.6, cellHeight * 0.25, cellWidth*0.05);
+
+            player = CanvasUtil.AddEllipse(canvas, 0, 0, cellWidth*0.7, cellHeight*0.7, 5, Brushes.Cyan, Brushes.Yellow, null, 100);
             for (int y=0; y< map.GetLength(1); y++)
                 for(int x=0; x<map.GetLength(0); x++)
                 {
                     if (map[x, y] == SokobanNode.WALL)
-                        walls.Add(CanvasUtil.AddRect(canvas, 0, 0, cellWidth, cellHeight, 0, Brushes.Transparent, Brushes.Brown));
+                        walls.Add(CanvasUtil.AddRect(canvas, 0, 0, cellWidth+1, cellHeight+1, 0, Brushes.Brown, brickBrush));
                     else if (map[x,y] == SokobanNode.BOX)
-                        boxes.Add(CanvasUtil.AddRect(canvas, 0, 0, cellWidth*0.8, cellHeight*0.8, 2, Brushes.Black, Brushes.Red, null, 50));
+                        boxes.Add(CanvasUtil.AddRect(canvas, 0, 0, cellWidth*0.8, cellHeight*0.8, 2, Brushes.SandyBrown, boxBrush, null, 50));
                     else if (map[x, y] == SokobanNode.TARGET)
-                        targets.Add(CanvasUtil.AddRect(canvas, 0, 0, cellWidth, cellHeight, 0, Brushes.Transparent, Brushes.DarkGreen, null, 0));
+                        targets.Add(CanvasUtil.AddRect(canvas, 0, 0, cellWidth*0.9, cellHeight*0.9, 0, Brushes.Transparent, targetBrush, null, 0));
 
                 }
         }
