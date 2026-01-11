@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Graphs3D.Gpu;
 using Graphs3D.Graphs;
+using Graphs3D.Graphs.Sokoban;
 using Graphs3D.Graphs.TicTacToe;
 using Graphs3D.Gui;
 using Brush = System.Windows.Media.Brush;
@@ -44,7 +45,8 @@ namespace Graphs3D.Models
             simulation = new Simulation();
             configWindow = new ConfigWindow(this);
             renderer = new OpenGlRenderer(mainWindow.placeholder, this);
-            StartNewGraph(new TicTacToeGraph3x3());
+            //StartNewGraph(new TicTacToeGraph3x3());
+            StartNewGraph(new SokobanGraph());
             configWindow.Show();
             configWindow.Activate();
         }
