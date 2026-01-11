@@ -21,7 +21,7 @@ namespace Graphs3D.Graphs
 
         protected List<Node> internalNodes = new List<Node>();
 
-        private List<Edge> internalEdges = new List<Edge>();
+        protected List<Edge> internalEdges = new List<Edge>();
 
         private HashSet<string> existingEdges = new HashSet<string>();
 
@@ -96,6 +96,20 @@ namespace Graphs3D.Graphs
                 if (node.parentIdx.HasValue)
                     AddEdge(node.parentIdx.Value, node.idx, node.player);
             }
+        }
+
+        protected void SetInternalNodeAttributes(int idx, int player)
+        {
+            var internalNode = internalNodes[idx];
+            internalNode.player = player;
+            internalNodes[idx] = internalNode;
+        }
+
+        protected void SetInternalEdgeAttributes(int idx, int player)
+        {
+            var internalEdge = internalEdges[idx];
+            internalEdge.player = (uint)player;
+            internalEdges[idx] = internalEdge;
         }
 
         protected bool EdgeExists(int a, int b) => existingEdges.Contains($"{a}-{b}");

@@ -14,6 +14,10 @@ namespace Graphs3D.Graphs.Sokoban
 {
     public class SokobanGraph : GraphBase<SokobanNode>, IGraph
     {
+        public const int ColorOk = 4;
+
+        public const int ColorDeadend = 3;
+
         private int width;
 
         private int height;
@@ -28,7 +32,7 @@ namespace Graphs3D.Graphs.Sokoban
 
         public SokobanGraph()
         {
-            var root = new SokobanNode(ResourceUtil.LoadStringFromResource("maps.sokoban3.txt"));
+            var root = new SokobanNode(ResourceUtil.LoadStringFromResource("maps.sokoban2.txt"));
             width = root.position.GetLength(0);
             height = root.position.GetLength(1);
             visited = new bool[width, height];
@@ -42,7 +46,7 @@ namespace Graphs3D.Graphs.Sokoban
             var moves = GenerateMoves(parent);
             foreach(var move in moves)
             {
-                var next = new SokobanNode(parent, move.boxToPush, move.dir);
+                var next = new SokobanNode(parent, move);
                 AddNode(next);
             }
         }
@@ -51,51 +55,69 @@ namespace Graphs3D.Graphs.Sokoban
         {
             if (graphNodes.Any(n => n.win == 1) && graphNodes.All(n => n.expanded))
             {
-                for(int i=0; i<graphNodes.Count; i++)
-                {
-                    var testing = graphNodes[i];
-                    if (!testing.parentIdx.HasValue)
-                    {
-                        testing.player = 0;
-                        SetInternal(i, 0);
-                        continue;
-                    }
+                for (int i = 0; i < graphNodes.Count; i++)
+                    graphNodes[i].player = -1;
 
-                    var wantReturnTo = graphNodes[testing.parentIdx.Value];
-                    var moves = GenerateMoves(testing);
-                    bool canReturn = false;
-                    foreach(var move in moves)
+                for (int i = 0; i < graphNodes.Count; i++)
+                    if (graphNodes[i].player == -1)
                     {
-                        var next = new SokobanNode(testing, move.boxToPush, move.dir);
-                        if (next.Key == wantReturnTo.Key)
+                        var seed = graphNodes[i];
+                        if (!seed.parentIdx.HasValue)
                         {
-                            canReturn = true;
-                            break;
+                            seed.player = 0;
+                            continue;
                         }
+
+                        var subgraph = new List<SokobanNode>();
+                        var keys = new HashSet<string>();
+                        var processing = new List<SokobanNode>();
+                        processing.Add(seed);
+                        subgraph.Add(seed);
+                        do
+                        {
+                            var node = processing[0];
+                            processing.RemoveAt(0);
+                            keys.Add(node.Key);
+
+                            var moves = GenerateMoves(node);
+                            foreach (var move in moves)
+                            {
+                                var next = new SokobanNode(node, move);
+                                if (!keys.Contains(next.Key))
+                                {
+                                    processing.Add(next);
+                                    subgraph.Add(next);
+
+                                }
+                            }
+
+                        }
+                        while (processing.Count > 0);
+
+                        if (!subgraph.Any(n => n.win != 0))
+                            foreach (var n in subgraph)
+                                n.player = ColorDeadend;
+                        else
+                            seed.player = ColorOk;
                     }
 
-                    if (!canReturn)
-                        Console.WriteLine();
-                    
-                    testing.player = canReturn ? 0 : 3;
-                    SetInternal(i, testing.player);
-                }
+                for (int i = 0; i < graphNodes.Count; i++)
+                    SetInternalNodeAttributes(i, graphNodes[i].player);
+
+                for (int e = 0; e < internalEdges.Count; e++)
+                    SetInternalEdgeAttributes(e, internalNodes[(int)(internalEdges[e].a)].player == 3 || internalNodes[(int)(internalEdges[e].b)].player == ColorDeadend ? ColorDeadend : ColorOk);
             }
             else
             {
                 for (int i = 0; i < graphNodes.Count; i++)
                 {
-                    graphNodes[i].player = 0;
-                    SetInternal(i, 0);
+                    graphNodes[i].player = ColorOk;
+                    SetInternalNodeAttributes(i, graphNodes[i].player);
                 }
-            }
-        }
 
-        private void SetInternal(int idx, int player)
-        {
-            var internalNode = internalNodes[idx];
-            internalNode.player = player;
-            internalNodes[idx] = internalNode;
+                for (int e = 0; e < internalEdges.Count; e++)
+                    SetInternalEdgeAttributes(e, ColorOk);
+            }
         }
 
         private List<SokobanMove> GenerateMoves(SokobanNode parent)

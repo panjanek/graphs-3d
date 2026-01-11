@@ -43,16 +43,16 @@ namespace Graphs3D.Graphs.Sokoban
             key = SokobanUtil.SerializePositionToString(position, playerPos);
         }
 
-        public SokobanNode(SokobanNode prev, SokobanXY boxToPush, SokobanXY dir)
+        public SokobanNode(SokobanNode prev, SokobanMove move)
         {
             position = new int[prev.position.GetLength(0), prev.position.GetLength(1)];
             GraphUtil.Copy2D(prev.position, position);
-            SokobanXY newBoxPos = boxToPush;
-            newBoxPos.X += dir.X;
-            newBoxPos.Y += dir.Y;
+            SokobanXY newBoxPos = move.boxToPush;
+            newBoxPos.X += move.dir.X;
+            newBoxPos.Y += move.dir.Y;
             position[newBoxPos.X, newBoxPos.Y] = position[newBoxPos.X, newBoxPos.Y] == SokobanNode.EMPTY ? SokobanNode.BOX : SokobanNode.BOXONTARGET;
-            position[boxToPush.X, boxToPush.Y] = position[boxToPush.X, boxToPush.Y] == SokobanNode.BOX ? SokobanNode.EMPTY : SokobanNode.TARGET;
-            playerPos = boxToPush;
+            position[move.boxToPush.X, move.boxToPush.Y] = position[move.boxToPush.X, move.boxToPush.Y] == SokobanNode.BOX ? SokobanNode.EMPTY : SokobanNode.TARGET;
+            playerPos = move.boxToPush;
             NormalizePosition();
 
             parentIdx = prev.idx;

@@ -136,6 +136,9 @@ namespace Graphs3D.Models
                 nodes[i].player = newNodes[i].player;
                 nodes[i].leaf = newNodes[i].leaf;
             }
+
+            for (int e = 0; e < newEdges.Length; e++)
+                edges[e].player = newEdges[e].player;
         }
 
         public List<int> GetChildren(int parentIdx)
