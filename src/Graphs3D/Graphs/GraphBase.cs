@@ -19,7 +19,7 @@ namespace Graphs3D.Graphs
 
         public Action<int> NavigateTo { get; set; }
 
-        private List<Node> internalNodes = new List<Node>();
+        protected List<Node> internalNodes = new List<Node>();
 
         private List<Edge> internalEdges = new List<Edge>();
 

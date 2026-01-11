@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media.Media3D;
 using Graphs3D.Graphs.TicTacToe;
 using Microsoft.VisualBasic;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TextBox;
@@ -36,6 +37,9 @@ namespace Graphs3D.Graphs.Sokoban
         public SokobanNode(string startPosition)
         {
             (position, playerPos) = SokobanUtil.ReadPositionFromString(startPosition);
+            visited = new bool[position.GetLength(0), position.GetLength(1)];
+            stack = new SokobanXY[position.GetLength(0) * position.GetLength(1)];
+            NormalizePosition();
             key = SokobanUtil.SerializePositionToString(position, playerPos);
         }
 

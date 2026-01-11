@@ -18,24 +18,23 @@ namespace Graphs3D.Graphs.Sokoban
 
         private int height;
 
-        private Canvas canvas;
-
         public static SokobanXY[] stack;
 
         public static bool[,] visited;
 
         public static SokobanXY[] dirs = new SokobanXY[4] { new SokobanXY(-1, 0), new SokobanXY(1, 0), new SokobanXY(0, -1), new SokobanXY(0, 1) };
 
+        private SokobanPresenter presenter;
+
         public SokobanGraph()
         {
-            var root = new SokobanNode(ResourceUtil.LoadStringFromResource("maps.sokoban1.txt"));
+            var root = new SokobanNode(ResourceUtil.LoadStringFromResource("maps.sokoban2.txt"));
             width = root.position.GetLength(0);
             height = root.position.GetLength(1);
             visited = new bool[width, height];
             stack = new SokobanXY[width * height];
-            SokobanNode.visited = new bool[width, height];
-            SokobanNode.stack = new SokobanXY[width * height];
             AddNode(root);
+            presenter = new SokobanPresenter(this);
         }
 
         protected override void InternalExpandNode(SokobanNode parent)
@@ -83,7 +82,17 @@ namespace Graphs3D.Graphs.Sokoban
             }
 
             if (added == 0)
+            {
                 parent.leaf = true;
+                parent.win = 0;
+                var internalNode = internalNodes[parent.idx];
+                internalNode.leaf = 1;
+                internalNode.win = 1;
+                internalNode.player = 1;
+                internalNodes[parent.idx] = internalNode;
+            }
         }
+
+        public override bool DrawPosition(int idx, Canvas canvas) => presenter.Draw(canvas, graphNodes[idx]);
     }
 }
