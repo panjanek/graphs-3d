@@ -28,7 +28,7 @@ namespace Graphs3D.Graphs.Sokoban
 
         public SokobanGraph()
         {
-            var root = new SokobanNode(ResourceUtil.LoadStringFromResource("maps.sokoban2.txt"));
+            var root = new SokobanNode(ResourceUtil.LoadStringFromResource("maps.sokoban3.txt"));
             width = root.position.GetLength(0);
             height = root.position.GetLength(1);
             visited = new bool[width, height];
@@ -39,12 +39,22 @@ namespace Graphs3D.Graphs.Sokoban
 
         protected override void InternalExpandNode(SokobanNode parent)
         {
+            var moves = GenerateMoves(parent);
+            foreach(var move in moves)
+            {
+                var next = new SokobanNode(parent, move.boxToPush, move.dir);
+                AddNode(next);
+            }
+        }
+
+        private List<SokobanMove> GenerateMoves(SokobanNode parent)
+        {
+            List<SokobanMove> moves = new List<SokobanMove>();
             Array.Clear(visited, 0, visited.Length);
             stack[0] = parent.playerPos;
             visited[parent.playerPos.X, parent.playerPos.Y] = true;
             int stackTop = 0;
             SokobanXY p;
-            int added = 0;
             while (stackTop >= 0)
             {
                 p = stack[stackTop];
@@ -58,11 +68,7 @@ namespace Graphs3D.Graphs.Sokoban
                     var testBehind = new SokobanXY(p, dir, 2);
                     if ((parent.position[testBox.X, testBox.Y] == SokobanNode.BOX || parent.position[testBox.X, testBox.Y] == SokobanNode.BOXONTARGET) &&
                         (parent.position[testBehind.X, testBehind.Y] == SokobanNode.EMPTY || parent.position[testBehind.X, testBehind.Y] == SokobanNode.TARGET))
-                    {
-                        var next = new SokobanNode(parent, testBox, dir);
-                        AddNode(next);
-                        added++;
-                    }
+                        moves.Add(new SokobanMove() { boxToPush = testBox, dir = dir });
 
                 }
 
@@ -81,18 +87,17 @@ namespace Graphs3D.Graphs.Sokoban
                 }
             }
 
-            if (added == 0)
-            {
-                parent.leaf = true;
-                parent.win = 0;
-                var internalNode = internalNodes[parent.idx];
-                internalNode.leaf = 1;
-                internalNode.win = 1;
-                internalNode.player = 1;
-                internalNodes[parent.idx] = internalNode;
-            }
+            return moves;
+
         }
 
         public override bool DrawPosition(int idx, Canvas canvas) => presenter.Draw(canvas, graphNodes[idx]);
+    }
+
+    public class SokobanMove
+    {
+        public SokobanXY boxToPush;
+
+        public SokobanXY dir;
     }
 }
