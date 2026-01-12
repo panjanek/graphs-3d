@@ -92,14 +92,14 @@ namespace Graphs3D.Models
             renderer.UploadGraph();
         }
 
-        public void ExpandAll()
+        public void ExpandAll(bool stopOnWin = false)
         {
             ExpandMany(10);
             DispatcherTimer timer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(150) };
             timer.Tick += (s, e) =>
             {
                 ExpandMany(10);
-                if (simulation.graph.IsFinished())
+                if (simulation.graph.IsFinished() || (stopOnWin && simulation.nodes.Any(n => n.win > 0)))
                     timer.Stop();
             };
             timer.Start();

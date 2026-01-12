@@ -36,6 +36,10 @@ namespace Graphs3D.Graphs.Sokoban
 
         public override string Key => key;
 
+        public bool dead;
+
+        private double? distance;
+
         public SokobanNode(string startPosition)
         {
             (position, playerPos) = SokobanUtil.ReadPositionFromString(startPosition);
@@ -104,6 +108,54 @@ namespace Graphs3D.Graphs.Sokoban
             }
 
             playerPos = normalized;
+        }
+
+        public double GetHeuristicDistance()
+        {
+            if (distance.HasValue)
+                return distance.Value;
+
+            if (dead)
+                return double.MaxValue;
+
+            List<SokobanXY> boxes = new List<SokobanXY>();
+            List<SokobanXY> targets = new List<SokobanXY>();
+            int boxOnTargets = 0;
+            for(int y=0; y<position.GetLength(1); y++)
+                for(int x=0; x<position.GetLength(0); x++)
+                {
+                    if (position[x,y] == BOX)
+                    {
+                        if ((position[x + 1, y] == WALL && position[x, y+1] == WALL) ||
+                            (position[x + 1, y] == WALL && position[x, y - 1] == WALL) ||
+                            (position[x - 1, y] == WALL && position[x, y + 1] == WALL) ||
+                            (position[x - 1, y] == WALL && position[x, y - 1] == WALL))
+                        {
+                            dead = true;
+                            var a = key;
+                            return double.MaxValue;
+                        }
+                    }
+                        
+                    if (position[x, y] == TARGET || position[x, y] == BOXONTARGET)
+                        targets.Add(new SokobanXY(x, y));
+                    if (position[x, y] == BOX || position[x, y] == BOXONTARGET)
+                        boxes.Add(new SokobanXY(x, y));
+                       
+                    if (position[x, y] == BOXONTARGET)
+                        boxOnTargets++;
+
+                }
+
+            int dist = 0;
+            foreach (var box in boxes)
+                foreach (var target in targets)
+                    dist += Math.Abs(box.X - target.X) + Math.Abs(box.Y - target.Y);
+
+
+
+            return dist - boxOnTargets * 100;
+
         }
     }
 }

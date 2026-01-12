@@ -31,13 +31,36 @@ namespace Graphs3D.Graphs
 
         public int Expand()
         {
-            var parent = graphNodes.Where(n => !n.expanded).OrderBy(n => n.level).FirstOrDefault();
+            var parent = GetBestNodeToExpand();
             if (parent == null)
                 return 0;
 
             ExpandNode(parent.idx);
+
             PostExpandActions();
             return parent.idx;
+        }
+
+        public List<int> ExpandMany(int count)
+        {
+            var expanded = new List<int>();
+            for (int i = 0; i < count; i++)
+            {
+                var parent = GetBestNodeToExpand();
+                if (parent != null)
+                {
+                    ExpandNode(parent.idx);
+                    expanded.Add(parent.idx);
+                }
+            }
+
+            PostExpandActions();
+            return expanded;
+        }
+
+        protected virtual GraphNodeBase GetBestNodeToExpand()
+        {
+            return graphNodes.Where(n => !n.expanded).OrderBy(n => n.level).FirstOrDefault();
         }
 
         public bool IsFinished() => !graphNodes.Any(n => !n.expanded);

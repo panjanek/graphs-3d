@@ -150,7 +150,7 @@ vec3 repulsion_level4(uint idx, vec3 pos, float strength, float hopDecay)
 
             vec3 d2 = pos - inNodes[n2].position.xyz;
             force += repulsion_single(d2, strength * hopDecay);
-
+            
             // -------- depth 3 --------
             uint start3 = neighboursStart[n2];
             uint count3 = neighboursCount[n2];
@@ -162,7 +162,7 @@ vec3 repulsion_level4(uint idx, vec3 pos, float strength, float hopDecay)
 
                 vec3 d3 = pos - inNodes[n3].position.xyz;
                 force += repulsion_single(d3, strength * hopDecay * hopDecay);
-
+                /*
                 // -------- depth 4 --------
                 uint start4 = neighboursStart[n3];
                 uint count4 = neighboursCount[n3];
@@ -175,7 +175,9 @@ vec3 repulsion_level4(uint idx, vec3 pos, float strength, float hopDecay)
                     vec3 d4 = pos - inNodes[n4].position.xyz;
                     force += repulsion_single(d4, strength * hopDecay * hopDecay * hopDecay);
                 }
+                */
             }
+            
         }
     }
 

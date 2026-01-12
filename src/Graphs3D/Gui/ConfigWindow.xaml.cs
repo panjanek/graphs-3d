@@ -61,11 +61,13 @@ namespace Graphs3D.Gui
             expandMoreButton.PreviewKeyDown += (s, e) => e.Handled = true;
             expandAllButton.PreviewKeyDown += (s, e) => e.Handled = true;
             winButton.PreviewKeyDown += (s, e) => e.Handled = true;
+            expandWinButton.PreviewKeyDown += (s, e) => e.Handled = true;
             centerButton.Click += (s, e) => app.renderer.ResetOrigin();
             restartButton.Click += (s, e) => app.StartNewGraph(CreateGraphObject(app.simulation.graph.GetType().FullName));
             pathButton.Click += (s, e) => { app.SetupPathHighlight(); };
             expandMoreButton.Click += (s, e) => { app.ExpandMany(100); };
             expandAllButton.Click += (s, e) => { app.ExpandAll(); };
+            expandWinButton.Click += (s, e) => { app.ExpandAll(true); };
             winButton.Click += (s,e) => {
                 var winning = app.simulation.WinningPath();
                 if (winning.Count > 0)

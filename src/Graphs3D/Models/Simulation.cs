@@ -73,9 +73,9 @@ namespace Graphs3D.Models
                 int expandedCount = 0;
                 do
                 {
-                    var parentIdx = graph.Expand();
+                    graph.ExpandMany(wantNodesCount/2);
                     expandedCount = graph.Nodes.Count - nodes.Length;
-                    ExpandBuffers(parentIdx);
+                    ExpandBuffers();
                     generatedNodes += expandedCount;
                 } while (generatedNodes < wantNodesCount && !graph.IsFinished());
             }
@@ -87,7 +87,7 @@ namespace Graphs3D.Models
             {
                 if (graph.ExpandNode(idx))
                 {
-                    ExpandBuffers(idx);
+                    ExpandBuffers();
                     return true;
                 }
 
@@ -95,7 +95,7 @@ namespace Graphs3D.Models
             }
         }
 
-        private void ExpandBuffers(int centerIdx)
+        private void ExpandBuffers()
         {
             var newNodes = graph.Nodes.ToArray();
             var newEdges = graph.Edges.ToArray();
@@ -107,6 +107,7 @@ namespace Graphs3D.Models
                 Array.Copy(newNodes, nodes.Length, tmp, nodes.Length, newNodes.Length - nodes.Length);
                 for (int i = nodes.Length; i < newNodes.Length; i++)
                 {
+                    var centerIdx = tmp[i].parent;
                     tmp[i].position = tmp[centerIdx].position + new Vector4((float)(globalRandom.NextDouble() - 0.5f)*randomRadius, 
                                                                             (float)(globalRandom.NextDouble() - 0.5f)*randomRadius,
                                                                             (float)(globalRandom.NextDouble() - 0.5f)*randomRadius, 1);

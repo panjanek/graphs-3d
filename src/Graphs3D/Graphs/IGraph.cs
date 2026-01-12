@@ -14,6 +14,8 @@ namespace Graphs3D.Graphs
 
         bool ExpandNode(int parentIdx);
 
+        List<int> ExpandMany(int count);
+
         bool IsFinished();
 
         List<Node> Nodes { get; }
