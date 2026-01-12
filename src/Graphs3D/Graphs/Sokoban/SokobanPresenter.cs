@@ -11,6 +11,7 @@ using Brushes = System.Windows.Media.Brushes;
 using Rectangle = System.Windows.Shapes.Rectangle;
 using Color = System.Windows.Media.Color;
 using Colors = System.Windows.Media.Colors;
+using Point = System.Windows.Point;
 using System.Windows.Media;
 
 namespace Graphs3D.Graphs.Sokoban
@@ -26,6 +27,10 @@ namespace Graphs3D.Graphs.Sokoban
         private List<Rectangle> boxes;
 
         private List<Rectangle> targets;
+
+        private List<Line> arrowLines;
+
+        private List<Polygon> arrowPointers;
 
         private double cellWidth;
 
@@ -62,7 +67,36 @@ namespace Graphs3D.Graphs.Sokoban
 
             player.SetValue(Canvas.LeftProperty, marginLeft + node.playerVisualPos.X * cellWidth + cellWidth * 0.15);
             player.SetValue(Canvas.TopProperty, marginTop + node.playerVisualPos.Y * cellHeight + cellHeight * 0.15);
+
+            arrowLines.ForEach(l=>l.Visibility = System.Windows.Visibility.Collapsed);
+            arrowPointers.ForEach(l => l.Visibility = System.Windows.Visibility.Collapsed);
+            var transitions = graph.GetAvailableTransitions(node);
+            int arrowsCount = 0;
+            foreach (var trans in transitions)
+                PositionNextArrow(ref arrowsCount, trans);
+
             return true;
+        }
+
+        private void PositionNextArrow(ref int arrowsCount, SokobanTransition trans)
+        {
+            var offsetY = trans.move.dir.Y * cellWidth * 0.2;
+            var offsetX = trans.move.dir.X * cellWidth * 0.2;
+            arrowLines[arrowsCount].X1 = marginLeft+trans.move.boxToPush.X * cellWidth + cellWidth / 2 + offsetX;
+            arrowLines[arrowsCount].Y1 = marginTop+trans.move.boxToPush.Y * cellHeight + cellHeight / 2 + offsetY;
+            arrowLines[arrowsCount].X2 = marginLeft+(trans.move.boxToPush.X + trans.move.dir.X) * cellWidth + cellWidth / 2 - offsetX*2;
+            arrowLines[arrowsCount].Y2 = marginTop+(trans.move.boxToPush.Y + trans.move.dir.Y) * cellHeight + cellHeight / 2 - offsetY*2;
+            arrowLines[arrowsCount].Visibility = System.Windows.Visibility.Visible;
+            arrowLines[arrowsCount].Tag = trans.node.idx.ToString();
+
+            arrowPointers[arrowsCount].Points[0] = new Point(arrowLines[arrowsCount].X2 + offsetX * 1.5, arrowLines[arrowsCount].Y2 + offsetY * 1.5);
+            arrowPointers[arrowsCount].Points[1] = new Point(arrowLines[arrowsCount].X2 - offsetY * 1.5, arrowLines[arrowsCount].Y2 - offsetX * 1.5);
+            arrowPointers[arrowsCount].Points[2] = new Point(arrowLines[arrowsCount].X2 + offsetY * 1.5, arrowLines[arrowsCount].Y2 + offsetX * 1.5);
+            arrowPointers[arrowsCount].Visibility = System.Windows.Visibility.Visible;
+            arrowPointers[arrowsCount].Tag = trans.node.idx.ToString();
+
+            arrowsCount++;
+
         }
 
         private void PositionNexWall(ref int wallNr, int x, int y)
@@ -94,6 +128,8 @@ namespace Graphs3D.Graphs.Sokoban
             walls = new List<Rectangle>();
             boxes = new List<Rectangle>();
             targets = new List<Rectangle>();
+            arrowLines = new List<Line>();
+            arrowPointers = new List<Polygon>();
 
             var size = Math.Max(map.GetLength(0), map.GetLength(1));
             cellWidth = canv.Width / size;
@@ -104,6 +140,7 @@ namespace Graphs3D.Graphs.Sokoban
             var boxBrush = CanvasUtil.CreateDiagonalStripeBrush(Colors.SandyBrown, Colors.Yellow, 5, 45);
             var targetBrush = new SolidColorBrush(Color.FromArgb(96, 0, 255, 0));
             var brickBrush = CanvasUtil.CreateBrickBrush(Colors.LightGray, Colors.DarkGray, cellWidth * 0.6, cellHeight * 0.25, cellWidth*0.05);
+            var arrowBrush = new SolidColorBrush(Color.FromArgb(128, 160, 160, 160));
 
             player = CanvasUtil.AddEllipse(canvas, 0, 0, cellWidth*0.7, cellHeight*0.7, 5, Brushes.Cyan, Brushes.Yellow, null, 100);
             for (int y=0; y< map.GetLength(1); y++)
@@ -116,6 +153,16 @@ namespace Graphs3D.Graphs.Sokoban
                     else if (map[x, y] == SokobanNode.TARGET)
                         targets.Add(CanvasUtil.AddRect(canvas, 0, 0, cellWidth*0.9, cellHeight*0.9, 0, Brushes.Transparent, targetBrush, null, 0));
 
+                    if (map[x, y] == SokobanNode.BOX)
+                        for (int b = 0; b < 4; b++)
+                        {
+                            var line = CanvasUtil.AddLine(canvas, 0, 0, 0, 0, 10, arrowBrush, null, 200);
+                            line.MouseDown += (s, e) => { graph.NavigateTo(int.Parse(WpfUtil.GetTagAsString(s))); };
+                            arrowLines.Add(line);
+                            var poly = CanvasUtil.AddPoly(canvas, [new Point(), new Point(), new Point()], 0, Brushes.Transparent, arrowBrush, null, 200);
+                            poly.MouseDown += (s, e) => { graph.NavigateTo(int.Parse(WpfUtil.GetTagAsString(s))); };
+                            arrowPointers.Add(poly);
+                        }
                 }
         }
     }

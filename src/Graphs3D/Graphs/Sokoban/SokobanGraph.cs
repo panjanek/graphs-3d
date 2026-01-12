@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Graphs3D.Graphs.TicTacToe;
+using Graphs3D.Models;
 using Graphs3D.Utils;
 using Microsoft.VisualBasic;
 using MS.WindowsAPICodePack.Internal;
@@ -120,6 +121,22 @@ namespace Graphs3D.Graphs.Sokoban
             }
         }
 
+        public List<SokobanTransition> GetAvailableTransitions(SokobanNode parent)
+        {
+            var moves = GenerateMoves(parent);
+            var result = new List<SokobanTransition>();
+            foreach (var move in moves)
+            {
+                var next = new SokobanNode(parent, move);
+                if (keyedNodes.ContainsKey(next.Key))
+                {
+                    result.Add(new SokobanTransition() { move = move, node = keyedNodes[next.Key] });
+                }
+            }
+
+            return result;
+        }
+
         private List<SokobanMove> GenerateMoves(SokobanNode parent)
         {
             List<SokobanMove> moves = new List<SokobanMove>();
@@ -172,5 +189,12 @@ namespace Graphs3D.Graphs.Sokoban
         public SokobanXY boxToPush;
 
         public SokobanXY dir;
+    }
+
+    public class SokobanTransition
+    {
+        public SokobanMove move;
+
+        public SokobanNode node;
     }
 }

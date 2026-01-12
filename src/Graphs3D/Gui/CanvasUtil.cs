@@ -11,6 +11,7 @@ using System.Windows.Shapes;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brush;
 using Color = System.Windows.Media.Color;
+using Point = System.Windows.Point;
 using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace Graphs3D.Gui
@@ -26,6 +27,15 @@ namespace Graphs3D.Gui
                 line.Tag = tag;
             canvas.Children.Add(line);
             return line;
+        }
+
+        public static Polygon AddPoly(Canvas canvas, Point[] points, double thickness, Brush stroke, Brush fill, object tag = null, int? zIndex = null)
+        {
+            Polygon poly = new Polygon() { StrokeThickness = thickness, Stroke = stroke, Fill = fill, Tag = tag, Points = new PointCollection(points) };
+            if (zIndex.HasValue)
+                poly.SetValue(Canvas.ZIndexProperty, zIndex.Value);
+            canvas.Children.Add(poly);
+            return poly;
         }
 
         public static Ellipse AddEllipse(Canvas canvas, double left, double top, double width, double height, double thickness, Brush stroke, Brush fill, object tag = null, int? zIndex = null)
