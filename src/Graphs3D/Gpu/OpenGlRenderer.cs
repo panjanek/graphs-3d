@@ -242,8 +242,8 @@ namespace Graphs3D.Gpu
                     WpfUtil.DispatchRender(placeholder.Dispatcher, () => { app.SetupPathHighlight(currPos); });
                 }
 
-                if (counter % 5 == 0)
-                    app.DrawPosition(currPos);
+                //if (counter % 5 == 0)
+                //    app.DrawPosition(currPos);
 
                 app.simulation.config.marker1 = path[nr];
                 app.simulation.config.marker2 = path[nr + 1];

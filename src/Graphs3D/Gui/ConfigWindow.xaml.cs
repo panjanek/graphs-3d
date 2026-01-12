@@ -82,7 +82,8 @@ namespace Graphs3D.Gui
  
         private void ConfigWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban", Tag = new Func<IGraph>(() => new SokobanGraph()) });
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban level 1", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban4.txt")) });
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban easy", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban3.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Tic Tac Toe 3x3", Tag = new Func<IGraph>(()=>new TicTacToeGraph(3)) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Cylinder 10x20", Tag = new Func<IGraph>(() => new LatticeGraph(20,20,true,false)) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Torus 30x60", Tag = new Func<IGraph>(() => new LatticeGraph(30, 60, true, true)) });

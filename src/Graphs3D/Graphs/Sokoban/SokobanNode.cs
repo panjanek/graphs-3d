@@ -110,7 +110,7 @@ namespace Graphs3D.Graphs.Sokoban
             playerPos = normalized;
         }
 
-        public double GetHeuristicDistance()
+        public double GetHeuristicDistance() //slow
         {
             if (distance.HasValue)
                 return distance.Value;
@@ -127,7 +127,7 @@ namespace Graphs3D.Graphs.Sokoban
                     if (DeadlockUtil.IsDeadlock(position))
                     { 
                         dead = true;
-                        var a = key;
+                        distance = double.MaxValue;
                         return double.MaxValue;
                     }
                         
@@ -148,8 +148,9 @@ namespace Graphs3D.Graphs.Sokoban
 
 
 
-            return dist - boxOnTargets * 100;
-
+            var result = dist - boxOnTargets * 100;
+            distance = result;
+            return distance.Value;
         }
     }
 }

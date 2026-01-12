@@ -46,7 +46,6 @@ namespace Graphs3D
         private void parent_Loaded(object sender, RoutedEventArgs e)
         {
             app = new AppContext(this);
-            //app.StartNewGraph(new SokobanGraph());
             app.configWindow.SelectGraph(0);
             KeyDown += MainWindow_KeyDown;
             System.Timers.Timer systemTimer = new System.Timers.Timer() { Interval = 10 };

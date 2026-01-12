@@ -13,6 +13,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace Graphs3D.Graphs.Sokoban
 {
+    //https://borgar.net/programs/sokoban/#Sokoban
     public class SokobanGraph : GraphBase<SokobanNode>, IGraph
     {
         public const int ColorOk = 4;
@@ -31,9 +32,9 @@ namespace Graphs3D.Graphs.Sokoban
 
         private SokobanPresenter presenter;
 
-        public SokobanGraph()
+        public SokobanGraph(string resourceName)
         {
-            var root = new SokobanNode(ResourceUtil.LoadStringFromResource("maps.sokoban4.txt"));
+            var root = new SokobanNode(ResourceUtil.LoadStringFromResource(resourceName));
             width = root.position.GetLength(0);
             height = root.position.GetLength(1);
             visited = new bool[width, height];
@@ -54,9 +55,7 @@ namespace Graphs3D.Graphs.Sokoban
 
         protected override GraphNodeBase GetBestNodeToExpand()
         {
-            //return graphNodes.Where(n => !n.expanded).OrderByDescending(n => n.level).FirstOrDefault();
-            var best = graphNodes.Where(n => !n.expanded && !n.dead).OrderBy(n => n.GetHeuristicDistance()).FirstOrDefault();
-            var h = best.GetHeuristicDistance();
+            var best = graphNodes.Where(n => !n.expanded).OrderBy(n => n.GetHeuristicDistance()).FirstOrDefault();
             return best;
         }
 
@@ -112,10 +111,7 @@ namespace Graphs3D.Graphs.Sokoban
 
                 for (int i = 0; i < graphNodes.Count; i++)
                     SetInternalNodeAttributes(i, graphNodes[i].player);
-
-                for (int e = 0; e < internalEdges.Count; e++)
-                    SetInternalEdgeAttributes(e, internalNodes[(int)(internalEdges[e].a)].player == 3 || internalNodes[(int)(internalEdges[e].b)].player == ColorDeadend ? ColorDeadend : ColorOk);
-            }
+             }
             else
             {
                 for (int i = 0; i < graphNodes.Count; i++)
@@ -123,10 +119,11 @@ namespace Graphs3D.Graphs.Sokoban
                     graphNodes[i].player = graphNodes[i].dead ? ColorDeadend : ColorOk;
                     SetInternalNodeAttributes(i, graphNodes[i].player);
                 }
-
-                for (int e = 0; e < internalEdges.Count; e++)
-                    SetInternalEdgeAttributes(e, ColorOk);
             }
+
+            for (int e = 0; e < internalEdges.Count; e++)
+                SetInternalEdgeAttributes(e, internalNodes[(int)(internalEdges[e].a)].player == 3 || internalNodes[(int)(internalEdges[e].b)].player == ColorDeadend ? ColorDeadend : ColorOk);
+
         }
 
         public List<SokobanTransition> GetAvailableTransitions(SokobanNode parent)
