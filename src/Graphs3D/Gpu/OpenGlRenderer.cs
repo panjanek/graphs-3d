@@ -352,6 +352,7 @@ namespace Graphs3D.Gpu
             xzAngle = 0;
             yAngle = 0;
             StartRotating();
+            GlControl_SizeChanged(this, null);
         }
 
         public void UploadGraph()

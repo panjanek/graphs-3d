@@ -11,6 +11,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using Graphs3D.Gpu;
+using Graphs3D.Graphs.Sokoban;
 using Graphs3D.Graphs.TicTacToe;
 using Graphs3D.Gui;
 using Graphs3D.Models;
@@ -44,6 +45,8 @@ namespace Graphs3D
         private void parent_Loaded(object sender, RoutedEventArgs e)
         {
             app = new AppContext(this);
+            //app.StartNewGraph(new SokobanGraph());
+            app.configWindow.SelectGraph(0);
             KeyDown += MainWindow_KeyDown;
             System.Timers.Timer systemTimer = new System.Timers.Timer() { Interval = 10 };
             systemTimer.Elapsed += SystemTimer_Elapsed;

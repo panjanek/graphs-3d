@@ -49,34 +49,37 @@ namespace Graphs3D.Graphs.Sokoban
 
         public bool Draw(Canvas canv, SokobanNode node)
         {
-            if (this.canvas == null)
-                Initialize(canv, node.position);
+            lock (this)
+            {
+                if (this.canvas == null)
+                    Initialize(canv, node.position);
 
-            int wallNr = 0;
-            int boxNr = 0;
-            int targetNr = 0;
-            for (int y = 0; y < node.position.GetLength(1); y++)
-                for (int x = 0; x < node.position.GetLength(0); x++)
-                {
-                    if (node.position[x, y] == SokobanNode.WALL)
-                        PositionNexWall(ref wallNr, x, y);
-                    if (node.position[x, y] == SokobanNode.BOX || node.position[x, y] == SokobanNode.BOXONTARGET)
-                        PositionNextBox(ref boxNr, x, y);
-                    if (node.position[x, y] == SokobanNode.TARGET || node.position[x, y] == SokobanNode.BOXONTARGET)
-                        PositionNextTarget(ref targetNr, x, y);
-                }
+                int wallNr = 0;
+                int boxNr = 0;
+                int targetNr = 0;
+                for (int y = 0; y < node.position.GetLength(1); y++)
+                    for (int x = 0; x < node.position.GetLength(0); x++)
+                    {
+                        if (node.position[x, y] == SokobanNode.WALL)
+                            PositionNexWall(ref wallNr, x, y);
+                        if (node.position[x, y] == SokobanNode.BOX || node.position[x, y] == SokobanNode.BOXONTARGET)
+                            PositionNextBox(ref boxNr, x, y);
+                        if (node.position[x, y] == SokobanNode.TARGET || node.position[x, y] == SokobanNode.BOXONTARGET)
+                            PositionNextTarget(ref targetNr, x, y);
+                    }
 
-            player.SetValue(Canvas.LeftProperty, marginLeft + node.playerVisualPos.X * cellWidth + cellWidth * 0.15);
-            player.SetValue(Canvas.TopProperty, marginTop + node.playerVisualPos.Y * cellHeight + cellHeight * 0.15);
+                player.SetValue(Canvas.LeftProperty, marginLeft + node.playerVisualPos.X * cellWidth + cellWidth * 0.15);
+                player.SetValue(Canvas.TopProperty, marginTop + node.playerVisualPos.Y * cellHeight + cellHeight * 0.15);
 
-            arrowLines.ForEach(l=>l.Visibility = System.Windows.Visibility.Collapsed);
-            arrowPointers.ForEach(l => l.Visibility = System.Windows.Visibility.Collapsed);
-            var transitions = graph.GetAvailableTransitions(node);
-            int arrowsCount = 0;
-            foreach (var trans in transitions)
-                PositionNextArrow(ref arrowsCount, trans);
+                arrowLines.ForEach(l => l.Visibility = System.Windows.Visibility.Collapsed);
+                arrowPointers.ForEach(l => l.Visibility = System.Windows.Visibility.Collapsed);
+                var transitions = graph.GetAvailableTransitions(node);
+                int arrowsCount = 0;
+                foreach (var trans in transitions)
+                    PositionNextArrow(ref arrowsCount, trans);
 
-            return true;
+                return true;
+            }
         }
 
         public void Click(double x, double y)
@@ -98,9 +101,9 @@ namespace Graphs3D.Graphs.Sokoban
                 var boxRect = WpfUtil.FindVisualChildren<Rectangle>(canvas)
                                       .Where(r=>r.Tag!=null && r.Tag is SokobanXY)
                                       .FirstOrDefault(r => ((SokobanXY)r.Tag).X == transition.move.boxToPush.X && ((SokobanXY)r.Tag).Y == transition.move.boxToPush.Y);
-                if (boxRect != null)
-                    AnimateRectangleTo(boxRect, marginLeft + (transition.move.boxToPush.X + transition.move.dir.X) * cellWidth + 0.1 * cellWidth,
-                                                marginTop + (transition.move.boxToPush.Y + transition.move.dir.Y) * cellHeight + 0.1 * cellWidth, 100);
+                //if (boxRect != null)
+                //    CanvasUtil.AnimateRectangleTo(boxRect, marginLeft + (transition.move.boxToPush.X + transition.move.dir.X) * cellWidth + 0.1 * cellWidth,
+                //                                marginTop + (transition.move.boxToPush.Y + transition.move.dir.Y) * cellHeight + 0.1 * cellWidth, 100);
                 if (graph.NavigateTo != null)
                     graph.NavigateTo(transition.node.idx);
             }
@@ -193,48 +196,6 @@ namespace Graphs3D.Graphs.Sokoban
                             arrowPointers.Add(poly);
                         }
                 }
-        }
-
-        public static void AnimateRectangleTo(
-            Rectangle rect,
-            double targetX,
-            double targetY,
-            double durationMs = 300,
-            IEasingFunction easing = null)
-        {
-            if (rect == null)
-                throw new ArgumentNullException(nameof(rect));
-
-            easing ??= new CubicEase { EasingMode = EasingMode.EaseInOut };
-
-            var duration = TimeSpan.FromMilliseconds(durationMs);
-
-            double fromX = Canvas.GetLeft(rect);
-            double fromY = Canvas.GetTop(rect);
-
-            if (double.IsNaN(fromX)) fromX = 0;
-            if (double.IsNaN(fromY)) fromY = 0;
-
-            var animX = new DoubleAnimation
-            {
-                From = fromX,
-                To = targetX,
-                Duration = duration,
-                EasingFunction = easing,
-                FillBehavior = FillBehavior.HoldEnd
-            };
-
-            var animY = new DoubleAnimation
-            {
-                From = fromY,
-                To = targetY,
-                Duration = duration,
-                EasingFunction = easing,
-                FillBehavior = FillBehavior.HoldEnd
-            };
-
-            rect.BeginAnimation(Canvas.LeftProperty, animX);
-            rect.BeginAnimation(Canvas.TopProperty, animY);
         }
     }
 

@@ -16,6 +16,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Graphs3D.Graphs;
 using Graphs3D.Graphs.Geometry;
+using Graphs3D.Graphs.Sokoban;
+using Graphs3D.Graphs.TicTacToe;
 using Graphs3D.Models;
 using Graphs3D.Utils;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -50,7 +52,7 @@ namespace Graphs3D.Gui
             minimizeButton.Click += (s, e) => WindowState = WindowState.Minimized;
             Closing += (s, e) => { e.Cancel = true; WindowState = WindowState.Minimized; };
             ContentRendered += (s, e) => { UpdateActiveControls(); UpdatePassiveControls(); };
-            Loaded += (x, e) => { };
+            Loaded += ConfigWindow_Loaded; ;
             restartButton.PreviewKeyDown += (s, e) => e.Handled = true;
             recordButton.PreviewKeyDown += (s, e) => e.Handled = true;
             centerButton.PreviewKeyDown += (s, e) => e.Handled = true;
@@ -65,6 +67,30 @@ namespace Graphs3D.Gui
             KeyDown += (s, e) => app.mainWindow.MainWindow_KeyDown(s, e);
         }
 
+        private void ConfigWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban", Tag = new Func<IGraph>(() => new SokobanGraph()) });
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Tic Tac Toe 3x3", Tag = new Func<IGraph>(()=>new TicTacToeGraph(3)) });
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Cylinder 10x20", Tag = new Func<IGraph>(() => new LatticeGraph(20,20,true,false)) });
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Torus 30x60", Tag = new Func<IGraph>(() => new LatticeGraph(30, 60, true, true)) });
+        }
+
+        private void global_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (graphCombo != null && !updating && app.renderer!=null)
+            {
+                app.renderer.Paused = false;
+                var grapthFactory = WpfUtil.GetTagAsObject<Func<IGraph>>(graphCombo.SelectedItem);
+                app.StartNewGraph(grapthFactory());
+                UpdateActiveControls();
+                UpdatePassiveControls();
+            }
+        }
+
+        public void SelectGraph(int nr)
+        {
+            graphCombo.SelectedIndex = nr;
+        }
 
         private void Record_Click(object sender, RoutedEventArgs e)
         {
@@ -82,31 +108,6 @@ namespace Graphs3D.Gui
             }
 
             e.Handled = true;
-        }
-
-        private void global_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (graphCombo != null && !updating)
-            {
-                var newGraphTypeName = WpfUtil.GetTagAsString(graphCombo.SelectedItem);
-                string currentType = app.simulation.graph?.GetType().FullName;
-                if (!string.IsNullOrWhiteSpace(newGraphTypeName))
-                {
-                    if (newGraphTypeName != currentType)
-                    {
-                        app.StartNewGraph(CreateGraphObject(newGraphTypeName));
-                        UpdateActiveControls();
-                        UpdatePassiveControls();
-                        if (app.renderer.Paused)
-                        {
-                            app.renderer.Paused = false;
-                            app.renderer.Step();
-                            app.renderer.Paused = true;
-                        }
-                    }
-                }
-
-            }
         }
 
         public IGraph CreateGraphObject(string typeName)
@@ -140,8 +141,6 @@ namespace Graphs3D.Gui
         public void UpdateActiveControls()
         {
             updating = true;
-            string currentGrapthTypeName = app.simulation.graph?.GetType().FullName;
-            WpfUtil.SetComboStringSelection(graphCombo, currentGrapthTypeName, true);
             foreach (var slider in WpfUtil.FindVisualChildren<Slider>(this))
             {
                 var tag = WpfUtil.GetTagAsString(slider);

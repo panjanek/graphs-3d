@@ -45,8 +45,6 @@ namespace Graphs3D.Models
             simulation = new Simulation();
             configWindow = new ConfigWindow(this);
             renderer = new OpenGlRenderer(mainWindow.placeholder, this);
-            //StartNewGraph(new TicTacToeGraph3x3());
-            StartNewGraph(new SokobanGraph());
             configWindow.Show();
             configWindow.Activate();
         }

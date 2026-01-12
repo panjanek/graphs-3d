@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Brush = System.Windows.Media.Brush;
@@ -212,6 +213,60 @@ namespace Graphs3D.Gui
                 pixels[i * 4 + 0] = pixels[i * 4 + 2];
                 pixels[i * 4 + 2] = r;
             }
+        }
+
+        public static void StopAllCanvasAnimations(Canvas canvas)
+        {
+            if (canvas == null)
+                throw new ArgumentNullException(nameof(canvas));
+
+            foreach (UIElement element in canvas.Children)
+            {
+                element.BeginAnimation(Canvas.LeftProperty, null);
+                element.BeginAnimation(Canvas.TopProperty, null);
+            }
+        }
+
+        public static void AnimateRectangleTo(
+    Rectangle rect,
+    double targetX,
+    double targetY,
+    double durationMs = 300,
+    IEasingFunction easing = null)
+        {
+            if (rect == null)
+                throw new ArgumentNullException(nameof(rect));
+
+            easing ??= new CubicEase { EasingMode = EasingMode.EaseInOut };
+
+            var duration = TimeSpan.FromMilliseconds(durationMs);
+
+            double fromX = Canvas.GetLeft(rect);
+            double fromY = Canvas.GetTop(rect);
+
+            if (double.IsNaN(fromX)) fromX = 0;
+            if (double.IsNaN(fromY)) fromY = 0;
+
+            var animX = new DoubleAnimation
+            {
+                From = fromX,
+                To = targetX,
+                Duration = duration,
+                EasingFunction = easing,
+                FillBehavior = FillBehavior.HoldEnd
+            };
+
+            var animY = new DoubleAnimation
+            {
+                From = fromY,
+                To = targetY,
+                Duration = duration,
+                EasingFunction = easing,
+                FillBehavior = FillBehavior.HoldEnd
+            };
+
+            rect.BeginAnimation(Canvas.LeftProperty, animX);
+            rect.BeginAnimation(Canvas.TopProperty, animY);
         }
     }
 }
