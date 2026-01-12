@@ -50,19 +50,17 @@ namespace Graphs3D.Graphs.Sokoban
 
         public static (int[,], SokobanXY) ReadPositionFromString(string str)
         {
-            var lines = str.Split('\n').Select(l=>l.Trim()).ToArray();
+            var lines = str.Split('\n').Select(l=>l.Trim('\r')).ToArray();
             var posLine = lines[0];
             var posSplit = posLine.Split(',');
             var playerPos = new SokobanXY(int.Parse(posSplit[0]), int.Parse(posSplit[1]));
             lines = lines.Skip(1).ToArray();
             int width = lines.Max(l => l.Length);
             int height = lines.Length;
-            if (!lines.All(l => l.Length == width))
-                throw new Exception("Lines are not of equal length!");
             var position = new int[width, height];
             for (int x = 0; x < width; x++)
                 for (int y = 0; y < height; y++)
-                    position[x, y] = SokobanUtil.CharToSymbol(lines[y][x]);
+                    position[x, y] = x < lines[y].Length ? SokobanUtil.CharToSymbol(lines[y][x]) : SokobanNode.EMPTY;
             return (position, playerPos);
         }
 

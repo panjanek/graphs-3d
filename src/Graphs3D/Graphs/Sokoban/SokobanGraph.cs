@@ -33,7 +33,7 @@ namespace Graphs3D.Graphs.Sokoban
 
         public SokobanGraph()
         {
-            var root = new SokobanNode(ResourceUtil.LoadStringFromResource("maps.sokoban3.txt"));
+            var root = new SokobanNode(ResourceUtil.LoadStringFromResource("maps.sokoban4.txt"));
             width = root.position.GetLength(0);
             height = root.position.GetLength(1);
             visited = new bool[width, height];
