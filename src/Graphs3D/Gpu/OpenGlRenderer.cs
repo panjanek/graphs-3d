@@ -229,7 +229,7 @@ namespace Graphs3D.Gpu
 
             var stageLen = 1.0 / (path.Count - 1);
             int currPos = path.First();
-            animation = new AnimationTimer(0.04, 500 + 200 * (path.Count - 1), progress =>
+            animation = new AnimationTimer(0.04, 500 + 200 * (path.Count - 1), (progress, counter) =>
             {
                 var nr = (int)Math.Floor(progress / stageLen);
                 if (nr < 0 || nr > path.Count - 2)
@@ -241,6 +241,10 @@ namespace Graphs3D.Gpu
                     app.DrawPosition(currPos);
                     WpfUtil.DispatchRender(placeholder.Dispatcher, () => { app.SetupPathHighlight(currPos); });
                 }
+
+                if (counter % 5 == 0)
+                    app.DrawPosition(currPos);
+
                 app.simulation.config.marker1 = path[nr];
                 app.simulation.config.marker2 = path[nr + 1];
                 app.simulation.config.markerT = (float)((progress - nr * stageLen) / stageLen);

@@ -38,9 +38,11 @@ namespace Graphs3D.Gui
         public bool PathHighlighed => pathButton.IsChecked == true;
 
         public Canvas PositionCanvas => positionCanvas;
+
         public ConfigWindow(AppContext app)
         {
             this.app = app;
+            
             InitializeComponent();
             positionCanvas.Width = AppContext.PosWidth;
             positionCanvas.Height = AppContext.PosHeight;
@@ -48,6 +50,7 @@ namespace Graphs3D.Gui
             minimizeButton.Click += (s, e) => WindowState = WindowState.Minimized;
             Closing += (s, e) => { e.Cancel = true; WindowState = WindowState.Minimized; };
             ContentRendered += (s, e) => { UpdateActiveControls(); UpdatePassiveControls(); };
+            Loaded += (x, e) => { };
             restartButton.PreviewKeyDown += (s, e) => e.Handled = true;
             recordButton.PreviewKeyDown += (s, e) => e.Handled = true;
             centerButton.PreviewKeyDown += (s, e) => e.Handled = true;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Graphs3D.Gui
     {
         private System.Timers.Timer timer;
 
-        private Action<double> step;
+        private Action<double, int> step;
 
         private Action finished;
 
@@ -18,7 +19,9 @@ namespace Graphs3D.Gui
 
         private DateTime end;
 
-        public AnimationTimer(double intervalMs, double totalMs, Action<double> step, Action finished)
+        private int stepCounter = 0;
+
+        public AnimationTimer(double intervalMs, double totalMs, Action<double, int> step, Action finished)
         {
             this.step = step;
             this.finished = finished;
@@ -44,9 +47,11 @@ namespace Graphs3D.Gui
                 if (timer != null)
                 {
                     double progress = (now - start).TotalMilliseconds / (end - now).TotalMilliseconds;
-                    step(progress);
+                    step(progress, stepCounter);
                 }
             }
+
+            stepCounter++;
         }
     }
 }

@@ -51,6 +51,7 @@ namespace Graphs3D.Graphs
                 {
                     InternalExpandNode(parent);
                     parent.expanded = true;
+                    PostExpandActions();
                     return true;
                 }
             }

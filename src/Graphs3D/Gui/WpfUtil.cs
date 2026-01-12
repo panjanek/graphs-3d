@@ -24,7 +24,7 @@ namespace Graphs3D.Gui
         public static void DispatchRender(Dispatcher dispatcher, Action action)
         {
             dispatcher.BeginInvoke(
-            DispatcherPriority.Render,
+            DispatcherPriority.Background,
             new Action(() => action()));
         }
 
