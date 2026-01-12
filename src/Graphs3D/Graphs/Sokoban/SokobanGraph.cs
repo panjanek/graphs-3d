@@ -182,6 +182,8 @@ namespace Graphs3D.Graphs.Sokoban
         }
 
         public override bool DrawPosition(int idx, Canvas canvas) => presenter.Draw(canvas, graphNodes[idx]);
+
+        public override void Click(double x, double y) => presenter.Click(x, y);
     }
 
     public class SokobanMove

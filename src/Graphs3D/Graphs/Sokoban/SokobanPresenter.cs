@@ -4,15 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Graphs3D.Gui;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
-using Rectangle = System.Windows.Shapes.Rectangle;
 using Color = System.Windows.Media.Color;
 using Colors = System.Windows.Media.Colors;
 using Point = System.Windows.Point;
-using System.Windows.Media;
+using Rectangle = System.Windows.Shapes.Rectangle;
 
 namespace Graphs3D.Graphs.Sokoban
 {
@@ -78,6 +79,33 @@ namespace Graphs3D.Graphs.Sokoban
             return true;
         }
 
+        public void Click(double x, double y)
+        {
+            foreach (var line in WpfUtil.FindVisualChildren<Line>(canvas))
+                if (WpfUtil.CheckIfHit(line, x, y))
+                    HandleClick(line);
+
+            foreach (var poly in WpfUtil.FindVisualChildren<Polygon>(canvas))
+                if (WpfUtil.CheckIfHit(poly, x, y))
+                    HandleClick(poly);
+        }
+
+        private void HandleClick(object sender)
+        {
+            var transition = WpfUtil.GetTagAsObject<SokobanTransition>(sender);
+            if (transition != null)
+            {
+                var boxRect = WpfUtil.FindVisualChildren<Rectangle>(canvas)
+                                      .Where(r=>r.Tag!=null && r.Tag is SokobanXY)
+                                      .FirstOrDefault(r => ((SokobanXY)r.Tag).X == transition.move.boxToPush.X && ((SokobanXY)r.Tag).Y == transition.move.boxToPush.Y);
+                if (boxRect != null)
+                    AnimateRectangleTo(boxRect, marginLeft + (transition.move.boxToPush.X + transition.move.dir.X) * cellWidth + 0.1 * cellWidth,
+                                                marginTop + (transition.move.boxToPush.Y + transition.move.dir.Y) * cellHeight + 0.1 * cellWidth, 100);
+                if (graph.NavigateTo != null)
+                    graph.NavigateTo(transition.node.idx);
+            }
+        }
+
         private void PositionNextArrow(ref int arrowsCount, SokobanTransition trans)
         {
             var offsetY = trans.move.dir.Y * cellWidth * 0.2;
@@ -87,13 +115,13 @@ namespace Graphs3D.Graphs.Sokoban
             arrowLines[arrowsCount].X2 = marginLeft+(trans.move.boxToPush.X + trans.move.dir.X) * cellWidth + cellWidth / 2 - offsetX*2;
             arrowLines[arrowsCount].Y2 = marginTop+(trans.move.boxToPush.Y + trans.move.dir.Y) * cellHeight + cellHeight / 2 - offsetY*2;
             arrowLines[arrowsCount].Visibility = System.Windows.Visibility.Visible;
-            arrowLines[arrowsCount].Tag = trans.node.idx.ToString();
+            arrowLines[arrowsCount].Tag = trans;
 
             arrowPointers[arrowsCount].Points[0] = new Point(arrowLines[arrowsCount].X2 + offsetX * 1.5, arrowLines[arrowsCount].Y2 + offsetY * 1.5);
             arrowPointers[arrowsCount].Points[1] = new Point(arrowLines[arrowsCount].X2 - offsetY * 1.5, arrowLines[arrowsCount].Y2 - offsetX * 1.5);
             arrowPointers[arrowsCount].Points[2] = new Point(arrowLines[arrowsCount].X2 + offsetY * 1.5, arrowLines[arrowsCount].Y2 + offsetX * 1.5);
             arrowPointers[arrowsCount].Visibility = System.Windows.Visibility.Visible;
-            arrowPointers[arrowsCount].Tag = trans.node.idx.ToString();
+            arrowPointers[arrowsCount].Tag = trans;
 
             arrowsCount++;
 
@@ -110,6 +138,7 @@ namespace Graphs3D.Graphs.Sokoban
         {
             boxes[boxNr].SetValue(Canvas.LeftProperty, marginLeft + x * cellWidth + 0.1*cellWidth);
             boxes[boxNr].SetValue(Canvas.TopProperty, marginTop + y * cellHeight + 0.1*cellHeight);
+            boxes[boxNr].Tag = new SokobanXY(x, y);
             boxNr++;
         }
 
@@ -157,13 +186,62 @@ namespace Graphs3D.Graphs.Sokoban
                         for (int b = 0; b < 4; b++)
                         {
                             var line = CanvasUtil.AddLine(canvas, 0, 0, 0, 0, 10, arrowBrush, null, 200);
-                            line.MouseDown += (s, e) => { graph.NavigateTo(int.Parse(WpfUtil.GetTagAsString(s))); };
+                            line.MouseDown += (s, e) => { HandleClick(s); e.Handled = true; };
                             arrowLines.Add(line);
                             var poly = CanvasUtil.AddPoly(canvas, [new Point(), new Point(), new Point()], 0, Brushes.Transparent, arrowBrush, null, 200);
-                            poly.MouseDown += (s, e) => { graph.NavigateTo(int.Parse(WpfUtil.GetTagAsString(s))); };
+                            poly.MouseDown += (s, e) => { HandleClick(s); e.Handled = true; };
                             arrowPointers.Add(poly);
                         }
                 }
         }
+
+        public static void AnimateRectangleTo(
+            Rectangle rect,
+            double targetX,
+            double targetY,
+            double durationMs = 300,
+            IEasingFunction easing = null)
+        {
+            if (rect == null)
+                throw new ArgumentNullException(nameof(rect));
+
+            easing ??= new CubicEase { EasingMode = EasingMode.EaseInOut };
+
+            var duration = TimeSpan.FromMilliseconds(durationMs);
+
+            double fromX = Canvas.GetLeft(rect);
+            double fromY = Canvas.GetTop(rect);
+
+            if (double.IsNaN(fromX)) fromX = 0;
+            if (double.IsNaN(fromY)) fromY = 0;
+
+            var animX = new DoubleAnimation
+            {
+                From = fromX,
+                To = targetX,
+                Duration = duration,
+                EasingFunction = easing,
+                FillBehavior = FillBehavior.HoldEnd
+            };
+
+            var animY = new DoubleAnimation
+            {
+                From = fromY,
+                To = targetY,
+                Duration = duration,
+                EasingFunction = easing,
+                FillBehavior = FillBehavior.HoldEnd
+            };
+
+            rect.BeginAnimation(Canvas.LeftProperty, animX);
+            rect.BeginAnimation(Canvas.TopProperty, animY);
+        }
+    }
+
+    public class PointerTag
+    {
+        public Rectangle rect;
+
+        public SokobanMove move;
     }
 }

@@ -119,7 +119,7 @@ namespace Graphs3D.Graphs.TicTacToe
         public override void Click(double x, double y)
         {
             foreach(var rect in WpfUtil.FindVisualChildren<Rectangle>(canvas))
-                if (WpfUtil.CheckIfHit(rect, x, y))
+                if (WpfUtil.CheckIfHitShape(rect, x, y))
                 {
                     var tag = WpfUtil.GetTagAsString(rect);
                     if (int.TryParse(tag, out var idx) && NavigateTo!= null)

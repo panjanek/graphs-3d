@@ -28,13 +28,31 @@ namespace Graphs3D.Gui
             new Action(() => action()));
         }
 
-        public static bool CheckIfHit(Shape shape, double x, double y)
+        public static bool CheckIfHitShape(Shape shape, double x, double y)
         {
             var left = (double)shape.GetValue(Canvas.LeftProperty);
             var top = (double)shape.GetValue(Canvas.TopProperty);
             var w = shape.Width;
             var h = shape.Height;
             return (x >= left && x <= left + w && y >= top && y <= top + h);
+        }
+
+        public static bool CheckIfHit(Line line, double x, double y)
+        {
+            var minX = line.X1 - line.StrokeThickness;
+            var minY = line.Y1 - line.StrokeThickness;
+            var maxX = line.X2 + line.StrokeThickness;
+            var maxY = line.Y2 + line.StrokeThickness;
+            return (x >= minX && x <= maxX && y >= minY && y <= maxY);
+        }
+
+        public static bool CheckIfHit(Polygon poly, double x, double y)
+        {
+            var minX = poly.Points.Min(p => p.X);
+            var minY = poly.Points.Min(p => p.Y);
+            var maxX = poly.Points.Max(p => p.X);
+            var maxY = poly.Points.Max(p => p.Y);
+            return (x >= minX && x <= maxX && y >= minY && y <= maxY);
         }
 
         public static string GetComboSelectionAsString(ComboBox combo)
@@ -73,6 +91,20 @@ namespace Graphs3D.Gui
                 var el = (FrameworkElement)element;
                 if (el.Tag is string)
                     return el.Tag as string;
+                else
+                    return null;
+            }
+            else
+                return null;
+        }
+
+        public static T GetTagAsObject<T>(object element) where T : class
+        {
+            if (element is FrameworkElement)
+            {
+                var el = (FrameworkElement)element;
+                if (el.Tag is T)
+                    return el.Tag as T;
                 else
                     return null;
             }
