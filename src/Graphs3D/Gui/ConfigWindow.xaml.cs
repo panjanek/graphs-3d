@@ -22,6 +22,7 @@ using Graphs3D.Models;
 using Graphs3D.Utils;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using AppContext = Graphs3D.Models.AppContext;
 
 namespace Graphs3D.Gui
@@ -59,14 +60,24 @@ namespace Graphs3D.Gui
             pathButton.PreviewKeyDown += (s, e) => e.Handled = true;
             expandMoreButton.PreviewKeyDown += (s, e) => e.Handled = true;
             expandAllButton.PreviewKeyDown += (s, e) => e.Handled = true;
+            winButton.PreviewKeyDown += (s, e) => e.Handled = true;
             centerButton.Click += (s, e) => app.renderer.ResetOrigin();
             restartButton.Click += (s, e) => app.StartNewGraph(CreateGraphObject(app.simulation.graph.GetType().FullName));
             pathButton.Click += (s, e) => { app.SetupPathHighlight(); };
             expandMoreButton.Click += (s, e) => { app.ExpandMany(100); };
             expandAllButton.Click += (s, e) => { app.ExpandAll(); };
+            winButton.Click += (s,e) => {
+                var winning = app.simulation.WinningPath();
+                if (winning.Count > 0)
+                {
+                    app.renderer.Select(0);
+                    app.renderer.AnimateTo(winning.Last());
+                }
+            };
             KeyDown += (s, e) => app.mainWindow.MainWindow_KeyDown(s, e);
         }
 
+ 
         private void ConfigWindow_Loaded(object sender, RoutedEventArgs e)
         {
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban", Tag = new Func<IGraph>(() => new SokobanGraph()) });

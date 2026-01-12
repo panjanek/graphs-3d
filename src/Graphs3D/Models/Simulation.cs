@@ -201,6 +201,23 @@ namespace Graphs3D.Models
             return result;
         }
 
+        public List<int> WinningPath()
+        {
+            int win = -1;
+            for (int i = 0; i < nodes.Length; i++)
+                if (nodes[i].win > 0)
+                    win = i;
+
+            if (win > 0)
+            {
+                var path = PathToRoot(win);
+                path.Reverse();
+                return path;
+            }
+
+            return [];
+        }
+
         private void Create2DGrid(uint rowSizeX, uint rowSizeY, bool wrapHoriz, bool wrapVert)
         {
             nodes = new Node[rowSizeX * rowSizeY];

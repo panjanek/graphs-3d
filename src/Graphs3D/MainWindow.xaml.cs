@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -73,7 +74,16 @@ namespace Graphs3D
                     break;
                 case Key.Up:
                     var selectedIdx = app.renderer.SelectedIdx;
-                    if (selectedIdx.HasValue)
+                    if (!selectedIdx.HasValue)
+                        return;
+
+                    var winning = app.simulation.WinningPath();
+                    var nr = winning.IndexOf(selectedIdx.Value);
+                    if (winning.Count > 0 && nr > -1 && nr < winning.Count - 1)
+                    { 
+                        app.renderer.AnimateTo(winning[nr+1]);
+                    }
+                    else
                     {
                         var children = app.simulation.GetChildren(selectedIdx.Value);
                         if (children.Count > 0)
