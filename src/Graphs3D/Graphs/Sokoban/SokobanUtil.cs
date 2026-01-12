@@ -93,6 +93,7 @@ namespace Graphs3D.Graphs.Sokoban
 
             return true;
         }
+
     }
 
     public struct SokobanXY

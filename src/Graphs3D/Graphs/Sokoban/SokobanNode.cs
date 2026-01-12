@@ -124,22 +124,16 @@ namespace Graphs3D.Graphs.Sokoban
             for(int y=0; y<position.GetLength(1); y++)
                 for(int x=0; x<position.GetLength(0); x++)
                 {
-                    if (position[x,y] == BOX)
-                    {
-                        if ((position[x + 1, y] == WALL && position[x, y+1] == WALL) ||
-                            (position[x + 1, y] == WALL && position[x, y - 1] == WALL) ||
-                            (position[x - 1, y] == WALL && position[x, y + 1] == WALL) ||
-                            (position[x - 1, y] == WALL && position[x, y - 1] == WALL))
-                        {
-                            dead = true;
-                            var a = key;
-                            return double.MaxValue;
-                        }
+                    if (DeadlockUtil.IsDeadlock(position))
+                    { 
+                        dead = true;
+                        var a = key;
+                        return double.MaxValue;
                     }
                         
-                    if (position[x, y] == TARGET || position[x, y] == BOXONTARGET)
+                    if (position[x, y] == TARGET)
                         targets.Add(new SokobanXY(x, y));
-                    if (position[x, y] == BOX || position[x, y] == BOXONTARGET)
+                    if (position[x, y] == BOX)
                         boxes.Add(new SokobanXY(x, y));
                        
                     if (position[x, y] == BOXONTARGET)

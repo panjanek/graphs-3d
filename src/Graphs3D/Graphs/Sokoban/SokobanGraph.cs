@@ -55,7 +55,7 @@ namespace Graphs3D.Graphs.Sokoban
         protected override GraphNodeBase GetBestNodeToExpand()
         {
             //return graphNodes.Where(n => !n.expanded).OrderByDescending(n => n.level).FirstOrDefault();
-            var best = graphNodes.Where(n => !n.expanded).OrderBy(n => n.GetHeuristicDistance()).FirstOrDefault();
+            var best = graphNodes.Where(n => !n.expanded && !n.dead).OrderBy(n => n.GetHeuristicDistance()).FirstOrDefault();
             var h = best.GetHeuristicDistance();
             return best;
         }
