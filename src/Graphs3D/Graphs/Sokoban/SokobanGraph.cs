@@ -84,16 +84,18 @@ namespace Graphs3D.Graphs.Sokoban
                 //for each dead node, mark all; it's successors as dead
                 for (int i = 0; i < graphNodes.Count; i++) //slow
                 {
-                    graphNodes[i].color = graphNodes[i].dead ? ColorDeadend : ColorOk;
-                    if (!graphNodes[i].dead)
+                    var start = graphNodes[i];
+                    start.color = graphNodes[i].dead ? ColorDeadend : ColorOk;
+                    if (!start.dead || start.deadSubgraphChecked) //run checking only for new dead nodes
                         continue;
 
-                    GraphUtil.SearchGraph(graphNodes[i], n => GenerateMoves(n)
+                    GraphUtil.SearchGraph(start, n => GenerateMoves(n)
                                                     .Select(move => new SokobanNode(n, move))
                                                     .Where(n=> keyedNodes.ContainsKey(n.Key) && !n.dead).ToList(), n =>
                                                     {
                                                         n.color = ColorDeadend;
                                                         n.dead = true;
+                                                        n.deadSubgraphChecked = true;
                                                     });
                 }
             }

@@ -38,6 +38,8 @@ namespace Graphs3D.Graphs.Sokoban
 
         public bool dead;
 
+        public bool deadSubgraphChecked;
+
         private double? distance;
 
         public SokobanNode(string startPosition)
