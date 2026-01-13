@@ -93,20 +93,9 @@
 
                     <Button Grid.Row="0" Grid.Column="0" Name="restartButton">Restart</Button>
                     <Button Grid.Row="0" Grid.Column="1" Name="centerButton">Center</Button>
-                    <ToggleButton Grid.Row="0" Grid.Column="2" IsChecked="False" Name="pathButton" ToolTip="Highligh path to root">
-                        <ToggleButton.Style>
-                            <Style TargetType="ToggleButton">
-                                <Setter Property="Content" Value="Highligh"/>
-                                <Style.Triggers>
-                                    <Trigger Property="IsChecked" Value="True">
-                                        <Setter Property="Content" Value="Normal"/>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </ToggleButton.Style>
-                    </ToggleButton>
-                    <Button Grid.Row="0" Grid.Column="3" Name="expandMoreButton">Expand+</Button>
-                    <Button Grid.Row="0" Grid.Column="4" Name="expandAllButton">Exp. All</Button>
+                    <Button Grid.Row="0" Grid.Column="2" Name="expandWinButton" ToolTip="Expands nodes till win position is found">Exp. win</Button>
+                    <Button Grid.Row="0" Grid.Column="3" Name="expandMoreButton" ToolTip="Expands 100 new nodes">Expand+</Button>
+                    <Button Grid.Row="0" Grid.Column="4" Name="expandAllButton" ToolTip="Expands nodes till full grapth is created">Exp. All</Button>
                     <ToggleButton Name="recordButton" Grid.Row="0" Grid.Column="5" ToolTip="Record frames as PNG files to given folder" Click="Record_Click">
                         <ToggleButton.Style>
                             <Style TargetType="ToggleButton">
@@ -135,8 +124,22 @@
                             </Style>
                         </ToggleButton.Style>
                     </ToggleButton>
-                    <Button Grid.Row="1" Grid.Column="0" Name="winButton">Win</Button>
-                    <Button Grid.Row="1" Grid.Column="2" Name="expandWinButton">Exp. win</Button>
+                    
+                    <Button Grid.Row="1" Grid.Column="0" Name="stopButton" ToolTip="Stops current animations">Stop</Button>
+                    <Button Grid.Row="1" Grid.Column="1" Name="winButton" ToolTip="Shows path to win position, if found">Win path</Button>
+                    <ToggleButton Grid.Row="1" Grid.Column="2" IsChecked="False" Name="pathButton" ToolTip="Highligh path from current node to root">
+                        <ToggleButton.Style>
+                            <Style TargetType="ToggleButton">
+                                <Setter Property="Content" Value="Highligh"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsChecked" Value="True">
+                                        <Setter Property="Content" Value="Normal"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ToggleButton.Style>
+                    </ToggleButton>
+
                 </Grid>
 
                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Graph" Grid.ColumnSpan="1" VerticalAlignment="Center" Margin="10,5,5,0" Foreground="White" TextWrapping="Wrap"/>

@@ -39,6 +39,8 @@ namespace Graphs3D.Models
 
         public bool positionDrawn;
 
+        public DispatcherAnimation animation = null;
+
         public AppContext(MainWindow mainWindow)
         {
             this.mainWindow = mainWindow;
@@ -94,16 +96,23 @@ namespace Graphs3D.Models
 
         public void ExpandAll(bool stopOnWin = false)
         {
-            ExpandMany(10);
-            DispatcherTimer timer = new DispatcherTimer() { Interval = TimeSpan.FromMilliseconds(150) };
-            timer.Tick += (s, e) =>
+            animation?.Stop();
+            animation = new DispatcherAnimation(150, () =>
             {
                 ExpandMany(10);
                 if (simulation.graph.IsFinished() || (stopOnWin && simulation.nodes.Any(n => n.win > 0)))
-                    timer.Stop();
-            };
-            timer.Start();
+                {
+                    animation?.Stop();
+                    animation = null;
+                    var msg = $"Finished after searching {simulation.nodes.Length} nodes.";
+                    msg += simulation.nodes.Any(n => n.win > 0) ? "\nWinning position found." : "\nWinning position not found.";
+                    msg += simulation.graph.IsFinished() ? "\nFull graph expanded" : "\nMore nodes exist that was not expanded";
+                    PopupMessage.Show(mainWindow, msg, 5000);
+                }
+            });
         }
+
+        public void StopAnimation() => animation?.Stop();
 
         public void SetupPathHighlight(int? explicitIdx = null)
         {

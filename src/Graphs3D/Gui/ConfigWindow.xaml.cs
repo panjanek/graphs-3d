@@ -24,6 +24,7 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Button;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 using AppContext = Graphs3D.Models.AppContext;
+using Button = System.Windows.Controls.Button;
 
 namespace Graphs3D.Gui
 {
@@ -53,21 +54,18 @@ namespace Graphs3D.Gui
             minimizeButton.Click += (s, e) => WindowState = WindowState.Minimized;
             Closing += (s, e) => { e.Cancel = true; WindowState = WindowState.Minimized; };
             ContentRendered += (s, e) => { UpdateActiveControls(); UpdatePassiveControls(); };
-            Loaded += ConfigWindow_Loaded; ;
-            restartButton.PreviewKeyDown += (s, e) => e.Handled = true;
-            recordButton.PreviewKeyDown += (s, e) => e.Handled = true;
-            centerButton.PreviewKeyDown += (s, e) => e.Handled = true;
-            pathButton.PreviewKeyDown += (s, e) => e.Handled = true;
-            expandMoreButton.PreviewKeyDown += (s, e) => e.Handled = true;
-            expandAllButton.PreviewKeyDown += (s, e) => e.Handled = true;
-            winButton.PreviewKeyDown += (s, e) => e.Handled = true;
-            expandWinButton.PreviewKeyDown += (s, e) => e.Handled = true;
+            Loaded += ConfigWindow_Loaded;
+
+            foreach(var button in WpfUtil.FindVisualChildren<Button>(this))
+                button.PreviewKeyDown += (s, e) => e.Handled = true;
+
             centerButton.Click += (s, e) => app.renderer.ResetOrigin();
             restartButton.Click += (s, e) => app.StartNewGraph(WpfUtil.GetTagAsObject<Func<IGraph>>(graphCombo.SelectedItem)());
             pathButton.Click += (s, e) => { app.SetupPathHighlight(); };
             expandMoreButton.Click += (s, e) => { app.ExpandMany(100); };
             expandAllButton.Click += (s, e) => { app.ExpandAll(); };
             expandWinButton.Click += (s, e) => { app.ExpandAll(true); };
+            stopButton.Click += (s, e) => { app.StopAnimation(); };
             winButton.Click += (s,e) => {
                 var winning = app.simulation.WinningPath();
                 if (winning.Count > 0)
