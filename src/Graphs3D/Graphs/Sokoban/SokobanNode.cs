@@ -74,6 +74,7 @@ namespace Graphs3D.Graphs.Sokoban
 
         private void NormalizePosition()
         {
+            dead = DeadlockUtil.IsDeadlock(position);
             Array.Clear(visited, 0, visited.Length);
             stack[0] = playerPos;
             visited[playerPos.X, playerPos.Y] = true;
@@ -110,7 +111,7 @@ namespace Graphs3D.Graphs.Sokoban
             playerPos = normalized;
         }
 
-        public double GetHeuristicDistance() //slow
+        public double GetHeuristicDistance() 
         {
             if (distance.HasValue)
                 return distance.Value;

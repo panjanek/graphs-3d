@@ -66,64 +66,48 @@ namespace Graphs3D.Graphs.Sokoban
                 for (int i = 0; i < graphNodes.Count; i++)
                     graphNodes[i].player = -1;
 
+                //for each node, if there is no legal path to win, mark as dead
                 for (int i = 0; i < graphNodes.Count; i++)
-                    if (graphNodes[i].player == -1)
+                    if (graphNodes[i].player == -1 && graphNodes[i].parentIdx.HasValue)
                     {
-                        var seed = graphNodes[i];
-                        if (!seed.parentIdx.HasValue)
-                        {
-                            seed.player = 0;
-                            continue;
-                        }
-
+                        var start = graphNodes[i];
                         var subgraph = new List<SokobanNode>();
-                        var keys = new HashSet<string>();
-                        var processing = new List<SokobanNode>();
-                        processing.Add(seed);
-                        subgraph.Add(seed);
-                        do
-                        {
-                            var node = processing[0];
-                            processing.RemoveAt(0);
-                            keys.Add(node.Key);
-
-                            var moves = GenerateMoves(node);
-                            foreach (var move in moves)
-                            {
-                                var next = new SokobanNode(node, move);
-                                if (!keys.Contains(next.Key))
-                                {
-                                    processing.Add(next);
-                                    subgraph.Add(next);
-
-                                }
-                            }
-
-                        }
-                        while (processing.Count > 0);
-
-                        if (!subgraph.Any(n => n.win >0 ))
+                        GraphUtil.SearchGraph(start, n => GenerateMoves(n).Select(move => new SokobanNode(n, move)).ToList(), n => subgraph.Add(n));
+                        if (!subgraph.Any(n => n.win > 0))
                             foreach (var n in subgraph)
+                            {
                                 n.player = ColorDeadend;
+                                n.dead = true;
+                            }
                         else
-                            seed.player = ColorOk;
+                            start.player = ColorOk;
                     }
-
-                for (int i = 0; i < graphNodes.Count; i++)
-                    SetInternalNodeAttributes(i, graphNodes[i].player);
-             }
+            }
             else
             {
+                //for each dead node, mark all; it's successors as dead
                 for (int i = 0; i < graphNodes.Count; i++)
                 {
                     graphNodes[i].player = graphNodes[i].dead ? ColorDeadend : ColorOk;
-                    SetInternalNodeAttributes(i, graphNodes[i].player);
+                    if (!graphNodes[i].dead)
+                        continue;
+
+                    GraphUtil.SearchGraph(graphNodes[i], n => GenerateMoves(n)
+                                                    .Select(move => new SokobanNode(n, move))
+                                                    .Where(n=> keyedNodes.ContainsKey(n.Key) && !n.dead).ToList(), n =>
+                                                    {
+                                                        n.player = ColorDeadend;
+                                                        n.dead = true;
+                                                    });
                 }
             }
 
+            graphNodes[0].player = 0;
+            for (int i = 0; i < graphNodes.Count; i++)
+                SetInternalNodeAttributes(i, graphNodes[i].player);
+
             for (int e = 0; e < internalEdges.Count; e++)
                 SetInternalEdgeAttributes(e, internalNodes[(int)(internalEdges[e].a)].player == 3 || internalNodes[(int)(internalEdges[e].b)].player == ColorDeadend ? ColorDeadend : ColorOk);
-
         }
 
         public List<SokobanTransition> GetAvailableTransitions(SokobanNode parent)

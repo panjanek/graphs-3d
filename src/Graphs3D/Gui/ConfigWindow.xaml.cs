@@ -63,7 +63,7 @@ namespace Graphs3D.Gui
             winButton.PreviewKeyDown += (s, e) => e.Handled = true;
             expandWinButton.PreviewKeyDown += (s, e) => e.Handled = true;
             centerButton.Click += (s, e) => app.renderer.ResetOrigin();
-            restartButton.Click += (s, e) => app.StartNewGraph(CreateGraphObject(app.simulation.graph.GetType().FullName));
+            restartButton.Click += (s, e) => app.StartNewGraph(WpfUtil.GetTagAsObject<Func<IGraph>>(graphCombo.SelectedItem)());
             pathButton.Click += (s, e) => { app.SetupPathHighlight(); };
             expandMoreButton.Click += (s, e) => { app.ExpandMany(100); };
             expandAllButton.Click += (s, e) => { app.ExpandAll(); };
@@ -95,8 +95,7 @@ namespace Graphs3D.Gui
             if (graphCombo != null && !updating && app.renderer!=null)
             {
                 app.renderer.Paused = false;
-                var grapthFactory = WpfUtil.GetTagAsObject<Func<IGraph>>(graphCombo.SelectedItem);
-                app.StartNewGraph(grapthFactory());
+                app.StartNewGraph(WpfUtil.GetTagAsObject<Func<IGraph>>(graphCombo.SelectedItem)());
                 UpdateActiveControls();
                 UpdatePassiveControls();
             }
@@ -123,13 +122,6 @@ namespace Graphs3D.Gui
             }
 
             e.Handled = true;
-        }
-
-        public IGraph CreateGraphObject(string typeName)
-        {
-            Type type = Assembly.GetExecutingAssembly().GetType(typeName, throwOnError: false, ignoreCase: false);
-            var newGraph = (IGraph)Activator.CreateInstance(type);
-            return newGraph;
         }
 
         private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

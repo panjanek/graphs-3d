@@ -17,5 +17,28 @@ namespace Graphs3D.Graphs
                 for (int x = 0; x < src.GetLength(0); x++)
                     dst[x, y] = src[x, y];
         }
+
+        public static void SearchGraph<TNode>(TNode start, Func<TNode, List<TNode>> generator, Action<TNode> action) where TNode : GraphNodeBase
+        {
+            var localVisited = new HashSet<string>();
+            var processing = new List<TNode>();
+            processing.Add(start);
+            action(start);
+            do
+            {
+                var node = processing[0];
+                processing.RemoveAt(0);
+                localVisited.Add(node.Key);
+                var children = generator(node);
+                foreach (var child in children)
+                    if (!localVisited.Contains(child.Key))
+                    {
+                        processing.Add(child);
+                        action(child);
+
+                    }
+            }
+            while (processing.Count > 0);
+        }
     }
 }
