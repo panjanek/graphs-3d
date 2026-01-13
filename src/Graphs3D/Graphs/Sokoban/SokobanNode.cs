@@ -50,6 +50,7 @@ namespace Graphs3D.Graphs.Sokoban
             stack = new SokobanXY[position.GetLength(0) * position.GetLength(1)];
             NormalizePosition();
             key = SokobanUtil.SerializePositionToString(position, playerPos);
+            InitializeHeuristics();
         }
 
         public SokobanNode(SokobanNode prev, SokobanMove move)
@@ -83,7 +84,6 @@ namespace Graphs3D.Graphs.Sokoban
             int stackTop = 0;
             SokobanXY p;
             SokobanXY normalized = new SokobanXY(int.MaxValue, int.MaxValue);
-            var debug = SokobanUtil.SerializePositionToString(position, playerPos);
             while (stackTop >= 0)
             {
                 p = stack[stackTop];
@@ -144,16 +144,126 @@ namespace Graphs3D.Graphs.Sokoban
 
                 }
 
+            /*
+            int dist = 0;
+            foreach (var target in targets)
+            {
+                int boxId = 0;
+                int boxDist = int.MaxValue;
+                for(int b=0; b<boxes.Count; b++)
+                    if (SokobanUtil.SimpleDistance(target, boxes[b]) < boxDist)
+                    {
+                        boxId = b;
+                        boxDist = SokobanUtil.SimpleDistance(target, boxes[b]);
+                    }
+                dist += boxDist;
+                boxes.RemoveAt(boxId);
+            }
+   
+            var result = dist - boxOnTargets * 1000;
+            distance = result;
+            return distance.Value;
+            */
+
+            
             int dist = 0;
             foreach (var box in boxes)
                 foreach (var target in targets)
                     dist += Math.Abs(box.X - target.X) + Math.Abs(box.Y - target.Y);
 
-
-
+            
             var result = dist - boxOnTargets * 100;
+
+            var hasUnreachable = HasUnreachableAreas();
+            if (hasUnreachable)
+                result += 10;
+
+
             distance = result;
             return distance.Value;
+            
         }
+
+
+        private static bool[,] walkable;
+
+        private static int walkableCount = 0;
+
+        private static int boxesCount = 0;
+        private void InitializeHeuristics()
+        {
+            walkable = new bool[position.GetLength(0), position.GetLength(1)];
+            stack[0] = playerPos;
+            walkable[playerPos.X, playerPos.Y] = true;
+            int stackTop = 0;
+            SokobanXY p;
+            walkableCount = 1;
+            while (stackTop >= 0)
+            {
+                p = stack[stackTop];
+                stackTop--;
+
+                //walk
+                for (int d = 0; d < SokobanGraph.dirs.Length; d++)
+                {
+                    var dir = SokobanGraph.dirs[d];
+                    var testWalk = new SokobanXY(p, dir, 1);
+                    if (!walkable[testWalk.X, testWalk.Y] && position[testWalk.X, testWalk.Y] != SokobanNode.WALL)
+                    {
+                        stackTop++;
+                        stack[stackTop] = testWalk;
+                        walkable[testWalk.X, testWalk.Y] = true;
+                        walkableCount++;
+                    }
+                }
+            }
+
+            boxesCount = 0;
+            for (int y = 0; y < position.GetLength(1); y++)
+                for (int x = 0; x < position.GetLength(0); x++)
+                    if (position[x, y] == BOX)
+                        boxesCount++;
+
+            //var a = SokobanUtil.BoolArray2DtoString(walkable);
+            var b = HasUnreachableAreas();
+        }
+
+        private bool HasUnreachableAreas()
+        {
+            Array.Clear(visited, 0, visited.Length);
+            stack[0] = playerPos;
+            visited[playerPos.X, playerPos.Y] = true;
+            int stackTop = 0;
+            SokobanXY p;
+            int reachableFields = 1;
+            while (stackTop >= 0)
+            {
+                p = stack[stackTop];
+                stackTop--;
+
+                //walk
+                for (int d = 0; d < SokobanGraph.dirs.Length; d++)
+                {
+                    var dir = SokobanGraph.dirs[d];
+                    var testWalk = new SokobanXY(p, dir, 1);
+                    if (!visited[testWalk.X, testWalk.Y] &&
+                        (position[testWalk.X, testWalk.Y] == SokobanNode.EMPTY || position[testWalk.X, testWalk.Y] == SokobanNode.TARGET))
+                    {
+                        stackTop++;
+                        stack[stackTop] = testWalk;
+                        visited[testWalk.X, testWalk.Y] = true;
+                        reachableFields++;
+                    }
+                }
+            }
+
+            var has = (reachableFields != walkableCount - boxesCount);
+            //if (has)
+            //    Console.WriteLine();
+            return has;
+        }
+
+
+
     }
 }

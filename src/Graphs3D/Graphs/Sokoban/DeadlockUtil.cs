@@ -8,6 +8,12 @@ namespace Graphs3D.Graphs.Sokoban
 {
     public static class DeadlockUtil
     {
+        public static bool HasAreaThatCannotBeReached(SokobanNode node)
+        {
+            return false;
+        }
+
+
         public static bool IsDeadlock(int[,] map)
         {
             int h = map.GetLength(0);

@@ -95,7 +95,9 @@ namespace Graphs3D.Gui
  
         private void ConfigWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban classic level 2", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-classic2.txt")) });
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban Junior 3", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-jr3.txt")) });
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban Junior 4", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-jr4.txt")) });
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban classic level 2", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-classic2a.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban classic level 1", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-classic1.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban easy", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-easy.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Tic Tac Toe 3x3", Tag = new Func<IGraph>(()=>new TicTacToeGraph(3)) });

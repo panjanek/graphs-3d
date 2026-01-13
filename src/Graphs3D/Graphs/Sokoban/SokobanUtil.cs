@@ -94,6 +94,23 @@ namespace Graphs3D.Graphs.Sokoban
             return true;
         }
 
+        public static int SimpleDistance(SokobanXY a, SokobanXY b) => Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
+
+        public static string BoolArray2DtoString(bool[,] arr)
+        {
+            var sb = new StringBuilder();
+            for (int y = 0; y < arr.GetLength(1); y++)
+            {
+                for (int x = 0; x < arr.GetLength(0); x++)
+                {
+                    sb.Append(arr[x, y] ? ' ' : 'X');
+                }
+                sb.Append("\n");
+            }
+
+            return sb.ToString();
+        }
+
     }
 
     public struct SokobanXY

@@ -135,8 +135,8 @@ namespace Graphs3D.Graphs.Sokoban
 
         private void PositionNextBox(ref int boxNr, int x, int y)
         {
-            boxes[boxNr].SetValue(Canvas.LeftProperty, marginLeft + x * cellWidth + 0.1*cellWidth);
-            boxes[boxNr].SetValue(Canvas.TopProperty, marginTop + y * cellHeight + 0.1*cellHeight);
+            boxes[boxNr].SetValue(Canvas.LeftProperty, marginLeft + x * cellWidth + 0.15*cellWidth);
+            boxes[boxNr].SetValue(Canvas.TopProperty, marginTop + y * cellHeight + 0.15*cellHeight);
             boxes[boxNr].Tag = new SokobanXY(x, y);
             boxNr++;
         }
@@ -176,12 +176,12 @@ namespace Graphs3D.Graphs.Sokoban
                 {
                     if (map[x, y] == SokobanNode.WALL)
                         walls.Add(CanvasUtil.AddRect(canvas, 0, 0, cellWidth+1, cellHeight+1, 0, Brushes.Brown, brickBrush));
-                    else if (map[x,y] == SokobanNode.BOX)
-                        boxes.Add(CanvasUtil.AddRect(canvas, 0, 0, cellWidth*0.8, cellHeight*0.8, 2, Brushes.SandyBrown, boxBrush, null, 50));
-                    else if (map[x, y] == SokobanNode.TARGET)
+                    if (map[x,y] == SokobanNode.BOX || map[x, y] == SokobanNode.BOXONTARGET)
+                        boxes.Add(CanvasUtil.AddRect(canvas, 0, 0, cellWidth*0.7, cellHeight*0.7, 2, Brushes.SandyBrown, boxBrush, null, 50));
+                    if (map[x, y] == SokobanNode.TARGET || map[x, y] == SokobanNode.BOXONTARGET)
                         targets.Add(CanvasUtil.AddRect(canvas, 0, 0, cellWidth*0.9, cellHeight*0.9, 0, Brushes.Transparent, targetBrush, null, 0));
 
-                    if (map[x, y] == SokobanNode.BOX)
+                    if (map[x, y] == SokobanNode.BOX || map[x, y] == SokobanNode.BOXONTARGET)
                         for (int b = 0; b < 4; b++)
                         {
                             var line = CanvasUtil.AddLine(canvas, 0, 0, 0, 0, 10, arrowBrush, null, 200);

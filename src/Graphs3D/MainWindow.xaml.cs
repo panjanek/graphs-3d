@@ -71,6 +71,10 @@ namespace Graphs3D
                     app.ExpandMany(50);
                     e.Handled = true;
                     break;
+                case Key.W:
+                    app.ExpandAll(true);
+                    e.Handled = true;
+                    break;
                 case Key.Up:
                     var selectedIdx = app.renderer.SelectedIdx;
                     if (!selectedIdx.HasValue)
