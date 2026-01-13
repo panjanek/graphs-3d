@@ -256,7 +256,7 @@ namespace Graphs3D.Gpu
             });
         }
 
-        public void Select(int idx)
+        public void Select(int idx, bool expandAndHighlight = true)
         {
             if (animation != null)
                 return; 
@@ -266,15 +266,18 @@ namespace Graphs3D.Gpu
             app.simulation.config.marker2 = SelectedIdx ?? -1;
             app.simulation.config.markerT = 1.0f;
             app.DrawPosition(idx);
-            
-            WpfUtil.DispatchRender(placeholder.Dispatcher, () =>
+
+            if (expandAndHighlight)
             {
-                lock (solverProgram)
+                WpfUtil.DispatchRender(placeholder.Dispatcher, () =>
                 {
-                    app.SetupPathHighlight();
-                    app.ExpandOne(idx);
-                }
-            });
+                    lock (solverProgram)
+                    {
+                        app.SetupPathHighlight();
+                        app.ExpandOne(idx);
+                    }
+                });
+            }
         }
 
         private void GlControl_MouseDoubleClick(object? sender, MouseEventArgs e)

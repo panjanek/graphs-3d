@@ -99,11 +99,28 @@ namespace Graphs3D.Models
             animation?.Stop();
             animation = new DispatcherAnimation(150, () =>
             {
-                ExpandMany(10);
-                if (simulation.graph.IsFinished() || (stopOnWin && simulation.nodes.Any(n => n.win > 0)))
+                ExpandMany(30);
+                if (stopOnWin)
+                {
+                    var bestIdx = simulation.graph.GetBestNode();
+                    if (bestIdx.HasValue)
+                        renderer.Select(bestIdx.Value, false);
+                }
+                    
+                if (simulation.graph.IsFinished() || (stopOnWin && simulation.GetWinningNode().HasValue))
                 {
                     animation?.Stop();
                     animation = null;
+                    var winIdx = simulation.GetWinningNode();
+                    if (winIdx.HasValue)
+                        renderer.Select(winIdx.Value, false);
+                    else
+                    {
+                        var bestIdx = simulation.graph.GetBestNode();
+                        if (bestIdx.HasValue)
+                            renderer.Select(bestIdx.Value, false);
+                    }
+
                     var msg = $"Finished after searching {simulation.nodes.Length} nodes.";
                     msg += simulation.nodes.Any(n => n.win > 0) ? "\nWinning position found." : "\nWinning position not found.";
                     msg += simulation.graph.IsFinished() ? "\nFull graph expanded" : "\nMore nodes exist that was not expanded";

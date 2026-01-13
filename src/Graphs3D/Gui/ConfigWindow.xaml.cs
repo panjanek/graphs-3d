@@ -67,20 +67,20 @@ namespace Graphs3D.Gui
             expandWinButton.Click += (s, e) => { app.ExpandAll(true); };
             stopButton.Click += (s, e) => { app.StopAnimation(); };
             winButton.Click += (s,e) => {
-                var winning = app.simulation.WinningPath();
-                if (winning.Count > 0)
+                var winningIdx = app.simulation.GetWinningNode();
+                if (winningIdx.HasValue)
                 {
                     app.renderer.Select(0);
-                    app.renderer.AnimateTo(winning.Last());
+                    app.renderer.AnimateTo(winningIdx.Value);
                 }
             };
             bestButton.Click += (s, e) =>
             {
                 app.animation?.Stop();
-                var winnng = app.simulation.WinningPath();
-                if (winnng.Count > 0)
+                var winnngIdx = app.simulation.GetWinningNode();
+                if (winnngIdx.HasValue)
                 {
-                    app.renderer.AnimateTo(winnng.Last());
+                    app.renderer.AnimateTo(winnngIdx.Value);
                     return;
                 }
 

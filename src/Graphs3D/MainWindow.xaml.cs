@@ -76,8 +76,9 @@ namespace Graphs3D
                     if (!selectedIdx.HasValue)
                         return;
 
-                    var winning = app.simulation.WinningPath();
+                    var winning = app.simulation.GetWinningPath();
                     var nr = winning.IndexOf(selectedIdx.Value);
+                    if (nr == -1) nr = 0;
                     if (winning.Count > 0 && nr > -1 && nr < winning.Count - 1)
                     { 
                         app.renderer.AnimateTo(winning[nr+1]);
