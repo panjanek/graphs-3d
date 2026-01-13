@@ -59,11 +59,9 @@ namespace Graphs3D.Graphs
             return expanded;
         }
 
-        protected virtual GraphNodeBase GetBestNodeToExpand()
-        {
-            return graphNodes.Where(n => !n.expanded).OrderBy(n => n.level).FirstOrDefault();
-        }
+        protected virtual GraphNodeBase GetBestNodeToExpand() => graphNodes.Where(n => !n.expanded).OrderBy(n => n.level).FirstOrDefault();
 
+        public int? GetBestNode() => GetBestNodeToExpand()?.idx;
         public bool IsFinished() => !graphNodes.Any(n => !n.expanded);
 
         public bool ExpandNode(int parentIdx)

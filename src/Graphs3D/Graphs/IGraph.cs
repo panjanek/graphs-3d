@@ -16,6 +16,8 @@ namespace Graphs3D.Graphs
 
         List<int> ExpandMany(int count);
 
+        int? GetBestNode();
+
         bool IsFinished();
 
         List<Node> Nodes { get; }

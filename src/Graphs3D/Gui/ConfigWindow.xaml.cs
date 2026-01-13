@@ -74,12 +74,28 @@ namespace Graphs3D.Gui
                     app.renderer.AnimateTo(winning.Last());
                 }
             };
+            bestButton.Click += (s, e) =>
+            {
+                app.animation?.Stop();
+                var winnng = app.simulation.WinningPath();
+                if (winnng.Count > 0)
+                {
+                    app.renderer.AnimateTo(winnng.Last());
+                    return;
+                }
+
+                var bestIdx = app.simulation.graph.GetBestNode();
+                if (bestIdx.HasValue)
+                    app.renderer.AnimateTo(bestIdx.Value);
+                
+            };
             KeyDown += (s, e) => app.mainWindow.MainWindow_KeyDown(s, e);
         }
 
  
         private void ConfigWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban classic level 2", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-classic2.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban classic level 1", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-classic1.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban easy", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-easy.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Tic Tac Toe 3x3", Tag = new Func<IGraph>(()=>new TicTacToeGraph(3)) });

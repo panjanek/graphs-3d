@@ -139,6 +139,7 @@
                             </Style>
                         </ToggleButton.Style>
                     </ToggleButton>
+                    <Button Grid.Row="1" Grid.Column="3" Name="bestButton" ToolTip="Go to the node that is currently closest to the solution">Best</Button>
 
                 </Grid>
 

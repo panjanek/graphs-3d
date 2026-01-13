@@ -53,11 +53,7 @@ namespace Graphs3D.Graphs.Sokoban
             }
         }
 
-        protected override GraphNodeBase GetBestNodeToExpand()
-        {
-            var best = graphNodes.Where(n => !n.expanded).OrderBy(n => n.GetHeuristicDistance()).FirstOrDefault();
-            return best;
-        }
+        protected override GraphNodeBase GetBestNodeToExpand() => graphNodes.Where(n => !n.expanded).OrderBy(n => n.GetHeuristicDistance()).FirstOrDefault();
 
         public override void PostExpandActions()
         {
@@ -86,7 +82,7 @@ namespace Graphs3D.Graphs.Sokoban
             else
             {
                 //for each dead node, mark all; it's successors as dead
-                for (int i = 0; i < graphNodes.Count; i++)
+                for (int i = 0; i < graphNodes.Count; i++) //slow
                 {
                     graphNodes[i].color = graphNodes[i].dead ? ColorDeadend : ColorOk;
                     if (!graphNodes[i].dead)
