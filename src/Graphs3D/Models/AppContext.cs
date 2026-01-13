@@ -23,9 +23,9 @@ namespace Graphs3D.Models
     {
         public static readonly Brush[] BrushesColors = [Brushes.Yellow, Brushes.Magenta, Brushes.Cyan, Brushes.Red, Brushes.Green, Brushes.Blue, Brushes.White, Brushes.Gray ];
 
-        public const int PosWidth = 300;
+        public const int PosWidth = 350;
 
-        public const int PosHeight = 300;
+        public const int PosHeight = 350;
 
         public Simulation simulation;
 

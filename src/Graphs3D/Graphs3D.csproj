@@ -15,10 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="maps\sokoban4.txt" />
-    <EmbeddedResource Include="maps\sokoban3.txt" />
-    <EmbeddedResource Include="maps\sokoban2.txt" />
-    <EmbeddedResource Include="maps\sokoban1.txt" />
+    <EmbeddedResource Include="maps\sokoban-classic1.txt" />
+    <EmbeddedResource Include="maps\sokoban-easy.txt" />
+    <EmbeddedResource Include="maps\sokoban-test2.txt" />
+    <EmbeddedResource Include="maps\sokoban-test1.txt" />
     <EmbeddedResource Include="shaders\image.frag" />
     <EmbeddedResource Include="shaders\image.vert" />
     <EmbeddedResource Include="shaders\edges.frag" />

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms.VisualStyles;
 using System.Windows.Media.Media3D;
 using System.Windows.Media.TextFormatting;
+using Graphs3D.Models;
 using Graphs3D.Utils;
 using OpenTK.GLControl;
 using OpenTK.Graphics.OpenGL;
@@ -209,7 +210,7 @@ namespace Graphs3D.Gpu
             {
                 GL.UseProgram(imageProgram);
                 GL.Uniform2(offsetImageLocation, new Vector2(0,0));
-                GL.Uniform2(sizeImageLocation, new Vector2(300.0f/viewportSize.X, 300 / viewportSize.Y));
+                GL.Uniform2(sizeImageLocation, new Vector2(1.0f*AppContext.PosWidth/viewportSize.X, 1.0f * AppContext.PosHeight / viewportSize.Y));
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, imageTex);
                 GL.Uniform1(texImageLocation, 0);

@@ -101,9 +101,6 @@ namespace Graphs3D.Graphs.Sokoban
                 var boxRect = WpfUtil.FindVisualChildren<Rectangle>(canvas)
                                       .Where(r=>r.Tag!=null && r.Tag is SokobanXY)
                                       .FirstOrDefault(r => ((SokobanXY)r.Tag).X == transition.move.boxToPush.X && ((SokobanXY)r.Tag).Y == transition.move.boxToPush.Y);
-                //if (boxRect != null)
-                //    CanvasUtil.AnimateRectangleTo(boxRect, marginLeft + (transition.move.boxToPush.X + transition.move.dir.X) * cellWidth + 0.1 * cellWidth,
-                //                                marginTop + (transition.move.boxToPush.Y + transition.move.dir.Y) * cellHeight + 0.1 * cellWidth, 100);
                 if (graph.NavigateTo != null)
                     graph.NavigateTo(transition.node.idx);
             }
@@ -127,7 +124,6 @@ namespace Graphs3D.Graphs.Sokoban
             arrowPointers[arrowsCount].Tag = trans;
 
             arrowsCount++;
-
         }
 
         private void PositionNexWall(ref int wallNr, int x, int y)
@@ -156,7 +152,7 @@ namespace Graphs3D.Graphs.Sokoban
         {
             this.canvas = canv;
             canvas.Children.Clear();
-            canvas.Background = Brushes.Black;
+            canvas.Background = new SolidColorBrush(Color.FromArgb(255, 32, 16, 16));
             walls = new List<Rectangle>();
             boxes = new List<Rectangle>();
             targets = new List<Rectangle>();
