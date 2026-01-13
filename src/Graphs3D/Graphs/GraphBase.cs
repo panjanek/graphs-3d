@@ -49,7 +49,8 @@ namespace Graphs3D.Graphs
                 var parent = GetBestNodeToExpand();
                 if (parent != null)
                 {
-                    ExpandNode(parent.idx);
+                    InternalExpandNode((TNode)parent);
+                    parent.expanded = true;
                     expanded.Add(parent.idx);
                 }
             }
