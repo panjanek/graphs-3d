@@ -32,13 +32,13 @@ struct Node
    vec4 position;
    vec4 velocity;
    vec4 prevForce;
-   int player;
+   int color;
    int flags;
    int  cellIndex;
    int level;
    int leaf;
    int win;
-   int _pad1;
+   int parent;
    int _pad2;
 };
 
@@ -47,7 +47,7 @@ struct Edge
     uint a;
     uint b;
     float restLength;
-    int player;
+    int color;
     int flags;
 };
 

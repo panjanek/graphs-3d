@@ -18,7 +18,7 @@ namespace Graphs3D.Graphs.TicTacToe
             for (int x = 0; x < board.GetLength(0); x++)
                 for (int y = 0; y < board.GetLength(1); y++)
                     board[x, y] = 2;
-            this.player = player;
+            this.color = player;
             key = GetKey(board);
         }
 
@@ -29,7 +29,7 @@ namespace Graphs3D.Graphs.TicTacToe
                 for (int j = 0; j < board.GetLength(1); j++)
                     board[i, j] = prev.board[i, j];
             board[x, y] = player;
-            this.player = player;
+            this.color = player;
             parentIdx = prev.idx;
             key = GetKey(board);
             var win = CheckForWin();

@@ -5,7 +5,7 @@ struct Node
    vec4 position;
    vec4 velocity;
    vec4 prevForce;
-   int player;
+   int color;
    int flags;
    int  cellIndex;
    int level;
@@ -44,7 +44,7 @@ void main()
     Node p = points[id];
     vSphereRadiusMult = 1.0;
 
-    // player coloring
+    //coloring
     const vec3 colors[] = vec3[](
         vec3(1.0, 1.0, 0.0), // yellow
         vec3(1.0, 0.0, 1.0), // magenta
@@ -55,7 +55,7 @@ void main()
         vec3(1.0, 1.0, 1.0), // white
         vec3(0.5, 0.5, 0.5)  // gray
     );
-    int colorIdx = p.leaf == 0 ? p.player : p.win;
+    int colorIdx = p.leaf == 0 ? p.color : p.win;
     vColor = colorIdx >= 0 ? colors[colorIdx % 8] : vec3(1.0, 0.0, 0.0);
     vFadingAlpha = 1.0;
     if (p.leaf == 1)

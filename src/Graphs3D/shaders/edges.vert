@@ -5,7 +5,7 @@ struct Node
    vec4 position;
    vec4 velocity;
    vec4 prevForce;
-   int player;
+   int color;
    int flags;
    int  cellIndex;
    int level;
@@ -20,7 +20,7 @@ struct Edge
     uint a;
     uint b;
     float restLength;
-    int player;
+    int color;
     int flags;
 };
 
@@ -106,7 +106,7 @@ void main()
     vEdgeDist = side * width;
 
     vFadingAlpha = 1.0;
-    vColor = colors[e.player % 8];
+    vColor = colors[e.color % 8];
     if (e.flags == 4)
         vFadingAlpha = 0.5;
 

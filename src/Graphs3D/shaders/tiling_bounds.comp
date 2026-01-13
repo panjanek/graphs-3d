@@ -32,7 +32,7 @@ struct Node
    vec4 position;
    vec4 velocity;
    vec4 prevForce;
-   int player;
+   int color;
    int flags;
    int  cellIndex;
    int level;

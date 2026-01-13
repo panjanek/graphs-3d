@@ -50,7 +50,7 @@ namespace Graphs3D.Graphs.Geometry
             if (nx >= sizeX) return;
             if (ny < 0) return;
             if (ny >= sizeY) return;
-            var newNode = new LatticeNode() { posX = nx, posY = ny, parentIdx = parent.idx, player = 1-parent.player };
+            var newNode = new LatticeNode() { posX = nx, posY = ny, parentIdx = parent.idx, color = 1-parent.color };
             AddNode(newNode);
         }
     }

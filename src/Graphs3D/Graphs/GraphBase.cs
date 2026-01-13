@@ -97,7 +97,7 @@ namespace Graphs3D.Graphs
         {
             if (!EdgeExists(parentIdx, childIdx))
             {
-                internalEdges.Add(new Edge() { a = (uint)parentIdx, b = (uint)childIdx, player = (uint)player });
+                internalEdges.Add(new Edge() { a = (uint)parentIdx, b = (uint)childIdx, color = (uint)player });
                 existingEdges.Add($"{parentIdx}-{childIdx}");
             }
         }
@@ -107,7 +107,7 @@ namespace Graphs3D.Graphs
             if (keyedNodes.TryGetValue(node.Key, out var existing))
             {
                 if (node.parentIdx.HasValue)
-                    AddEdge(node.parentIdx.Value, existing.idx, node.player);
+                    AddEdge(node.parentIdx.Value, existing.idx, node.color);
             }
             else
             {
@@ -118,21 +118,21 @@ namespace Graphs3D.Graphs
                 internalNodes.Add(node.ToInternalNode());
                 graphNodes.Add(node);
                 if (node.parentIdx.HasValue)
-                    AddEdge(node.parentIdx.Value, node.idx, node.player);
+                    AddEdge(node.parentIdx.Value, node.idx, node.color);
             }
         }
 
         protected void SetInternalNodeAttributes(int idx, int player)
         {
             var internalNode = internalNodes[idx];
-            internalNode.player = player;
+            internalNode.color = player;
             internalNodes[idx] = internalNode;
         }
 
         protected void SetInternalEdgeAttributes(int idx, int player)
         {
             var internalEdge = internalEdges[idx];
-            internalEdge.player = (uint)player;
+            internalEdge.color = (uint)player;
             internalEdges[idx] = internalEdge;
         }
 
@@ -144,7 +144,7 @@ namespace Graphs3D.Graphs
         public int idx;
         public int? parentIdx;
         public int level;
-        public int player;
+        public int color;
         public int win;
         public bool leaf;
         public bool expanded;
@@ -152,7 +152,7 @@ namespace Graphs3D.Graphs
 
         public Node ToInternalNode()
         {
-            return new Node() { level = level, player = player, win = win, leaf = leaf ? 1 : 0, parent = parentIdx ?? -1 };
+            return new Node() { level = level, color = color, win = win, leaf = leaf ? 1 : 0, parent = parentIdx ?? -1 };
         }
     }
 }

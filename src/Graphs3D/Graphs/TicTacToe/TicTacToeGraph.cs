@@ -47,7 +47,7 @@ namespace Graphs3D.Graphs.TicTacToe
 
         private TicTacToeNode CreateNextMove(TicTacToeNode parent, int x, int y)
         {
-            var newNode = new TicTacToeNode(parent, x, y, 1 - parent.player);
+            var newNode = new TicTacToeNode(parent, x, y, 1 - parent.color);
             newNode.level = parent.level + 1;
             var exist = CheckSymmetry(newNode.board);
             if (exist != null)

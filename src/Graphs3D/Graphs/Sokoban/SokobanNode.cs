@@ -68,7 +68,7 @@ namespace Graphs3D.Graphs.Sokoban
             {
                 leaf = true;
                 win = SokobanGraph.ColorOk;
-                player = SokobanGraph.ColorOk;
+                color = SokobanGraph.ColorOk;
             }
         }
 

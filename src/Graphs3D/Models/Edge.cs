@@ -14,7 +14,7 @@ namespace Graphs3D.Models
         public uint a;
         public uint b;
         public float restLength = 10;
-        public uint player;
+        public uint color;
         public int flags;
     }
 }

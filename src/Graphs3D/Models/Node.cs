@@ -14,7 +14,7 @@ namespace Graphs3D.Models
         public Vector4 position; // xyz = position
         public Vector4 velocity; // xyz = velocity
         public Vector4 prevForce;
-        public int player;
+        public int color;
         public int flags;
         public int cellIndex;
         public int level;
