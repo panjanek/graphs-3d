@@ -66,6 +66,7 @@ namespace Graphs3D.Gui
             expandAllButton.Click += (s, e) => { app.ExpandAll(); };
             expandWinButton.Click += (s, e) => { app.ExpandAll(true); };
             stopButton.Click += (s, e) => { app.StopAnimation(); };
+            rootButton.Click += (s, e) => { app.renderer.AnimateTo(0); };
             winButton.Click += (s,e) => {
                 var winningIdx = app.simulation.GetWinningNode();
                 if (winningIdx.HasValue)
