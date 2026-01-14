@@ -131,6 +131,16 @@ namespace Graphs3D.Models
 
         public void StopAnimation() => animation?.Stop();
 
+        public void AnimateToWinningNode()
+        {
+            var winningIdx = simulation.GetWinningNode();
+            if (winningIdx.HasValue)
+            {
+                renderer.Select(0);
+                renderer.AnimateTo(winningIdx.Value);
+            }
+        }
+
         public void SetupPathHighlight(int? explicitIdx = null)
         {
             int? nodeIdx = configWindow.PathHighlighed ? (explicitIdx.HasValue ? explicitIdx.Value : renderer.SelectedIdx) : null;

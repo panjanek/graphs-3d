@@ -71,8 +71,20 @@ namespace Graphs3D
                     app.ExpandMany(50);
                     e.Handled = true;
                     break;
-                case Key.W:
+                case Key.E:
                     app.ExpandAll(true);
+                    e.Handled = true;
+                    break;
+                case Key.W:
+                    app.AnimateToWinningNode();
+                    e.Handled = true;
+                    break;
+                case Key.R:
+                    app.renderer.AnimateTo(0);
+                    e.Handled = true;
+                    break;
+                case Key.H:
+                    app.configWindow.TogglePathHighlight();
                     e.Handled = true;
                     break;
                 case Key.Up:

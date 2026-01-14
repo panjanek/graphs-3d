@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Linq.Expressions;
@@ -42,6 +43,12 @@ namespace Graphs3D.Gui
 
         public bool PathHighlighed => pathButton.IsChecked == true;
 
+        public void TogglePathHighlight()
+        {
+            pathButton.IsChecked = !(pathButton.IsChecked == true);
+            app.SetupPathHighlight();
+        }
+
         public Canvas PositionCanvas => positionCanvas;
 
         public ConfigWindow(AppContext app)
@@ -62,20 +69,13 @@ namespace Graphs3D.Gui
 
             centerButton.Click += (s, e) => app.renderer.ResetOrigin();
             restartButton.Click += (s, e) => app.StartNewGraph(WpfUtil.GetTagAsObject<Func<IGraph>>(graphCombo.SelectedItem)());
-            pathButton.Click += (s, e) => { app.SetupPathHighlight(); };
-            expandMoreButton.Click += (s, e) => { app.ExpandMany(100); };
-            expandAllButton.Click += (s, e) => { app.ExpandAll(); };
-            expandWinButton.Click += (s, e) => { app.ExpandAll(true); };
-            stopButton.Click += (s, e) => { app.StopAnimation(); };
-            rootButton.Click += (s, e) => { app.renderer.AnimateTo(0); };
-            winButton.Click += (s,e) => {
-                var winningIdx = app.simulation.GetWinningNode();
-                if (winningIdx.HasValue)
-                {
-                    app.renderer.Select(0);
-                    app.renderer.AnimateTo(winningIdx.Value);
-                }
-            };
+            pathButton.Click += (s, e) => app.SetupPathHighlight();
+            expandMoreButton.Click += (s, e) => app.ExpandMany(100);
+            expandAllButton.Click += (s, e) => app.ExpandAll();
+            expandWinButton.Click += (s, e) => app.ExpandAll(true);
+            stopButton.Click += (s, e) => app.StopAnimation();
+            rootButton.Click += (s, e) => app.renderer.AnimateTo(0);
+            winButton.Click += (s, e) => app.AnimateToWinningNode();
             bestButton.Click += (s, e) =>
             {
                 app.animation?.Stop();

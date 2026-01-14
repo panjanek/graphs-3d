@@ -104,5 +104,21 @@ namespace Graphs3D.Gpu
                 bmp.Save(fileName, ImageFormat.Png);
             }
         }
+
+        public static void FlipVertical(byte[] buffer, int width, int height)
+        {
+            int stride = width * 4;
+            byte[] tempRow = new byte[stride];
+
+            for (int y = 0; y < height / 2; y++)
+            {
+                int top = y * stride;
+                int bottom = (height - 1 - y) * stride;
+
+                System.Buffer.BlockCopy(buffer, top, tempRow, 0, stride);
+                System.Buffer.BlockCopy(buffer, bottom, buffer, top, stride);
+                System.Buffer.BlockCopy(tempRow, 0, buffer, bottom, stride);
+            }
+        }
     }
 }
