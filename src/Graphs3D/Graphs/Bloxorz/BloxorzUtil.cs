@@ -115,12 +115,12 @@ namespace Graphs3D.Graphs.Bloxorz
             if (orient == BloxorzNode.ORIENT_VERTICAL)
                 return pos.X >= 0 && pos.Y >= 0 && pos.X < w && pos.Y < h && map[pos.X, pos.Y] != BloxorzNode.MAP_VOID;
 
-            var dir = orient == BloxorzNode.MOVE_RIGHT ? new BloxorzCoord(1, 0) : new BloxorzCoord(0, 1);
+            var dir = orient == BloxorzNode.ORIENT_RIGHT ? new BloxorzCoord(1, 0) : new BloxorzCoord(0, 1);
             for (int i = 0; i < len; i++)
             {
                 int occupyX = pos.X + dir.X * i;
                 int occupyY = pos.Y + dir.Y * i;
-                if (occupyX < 0 || occupyX >= w || occupyY < 0 || occupyY >= h || map[pos.X, pos.Y] == BloxorzNode.MAP_VOID)
+                if (occupyX < 0 || occupyX >= w || occupyY < 0 || occupyY >= h || map[occupyX, occupyY] == BloxorzNode.MAP_VOID)
                     return false;
             }
 

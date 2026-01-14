@@ -22,14 +22,6 @@ namespace Graphs3D.Graphs.Bloxorz
 
         public const int ORIENT_DOWN = 2;
 
-        public const int MOVE_LEFT = 1;
-
-        public const int MOVE_UP = 2;
-
-        public const int MOVE_RIGHT = 3;
-
-        public const int MOVE_DOWN= 4;
-
         public override string Key => key;
 
         private string key;
@@ -56,6 +48,7 @@ namespace Graphs3D.Graphs.Bloxorz
             GraphUtil.Copy2D(prev.map, map);
             (playerPos, playerOrientation) = BloxorzUtil.NewCoord(prev.playerPos, prev.playerOrientation, move, prev.playerLen);
             playerLen = prev.playerLen;
+            targetPos = prev.targetPos;
             parentIdx = prev.idx;
             key = BloxorzUtil.SerializePositionToString(this);
             if (IsWin())
@@ -99,5 +92,12 @@ namespace Graphs3D.Graphs.Bloxorz
         public int X;
 
         public int Y;
+    }
+
+    public class BloxorzTransition
+    {
+        public BloxorzCoord move;
+
+        public BloxorzNode node;
     }
 }
