@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using Graphs3D.Graphs.Sokoban;
@@ -74,6 +75,56 @@ namespace Graphs3D.Graphs.Bloxorz
             }
 
             return sb.ToString();
+        }
+
+        public static (BloxorzCoord, int) NewCoord(BloxorzCoord currentCoord, int currentOrientation, BloxorzCoord move, int len)
+        {
+            if (currentOrientation == BloxorzNode.ORIENT_VERTICAL)
+            {
+                return
+                    (
+                        new BloxorzCoord(currentCoord.X + ((move.X <= 0) ? len * move.X : 1), 
+                                         currentCoord.Y + ((move.Y <= 0) ? len * move.Y : 1)),
+                        (move.X != 0) ? BloxorzNode.ORIENT_RIGHT : BloxorzNode.ORIENT_DOWN
+                    );
+            }
+            else if (currentOrientation == BloxorzNode.ORIENT_RIGHT)
+            {
+                return
+                    (
+                        new BloxorzCoord(currentCoord.X + ((move.X >= 0) ? move.X * len : move.X), 
+                                         currentCoord.Y + ((move.X == 0) ? move.Y : 0)),
+                        (move.X != 0) ? BloxorzNode.ORIENT_VERTICAL : BloxorzNode.ORIENT_RIGHT
+                    );
+            }
+            else //down
+            {
+                return
+                    (
+                        new BloxorzCoord(currentCoord.X + ((move.Y == 0) ? move.X : 0),
+                                         currentCoord.Y + ((move.Y >= 0) ? move.Y * len : move.Y)),
+                        (move.Y != 0 ? BloxorzNode.ORIENT_VERTICAL : BloxorzNode.ORIENT_DOWN)
+                    );
+            }
+        }
+
+        public static bool IsAllowed(int[,] map, BloxorzCoord pos, int orient, int len)
+        {
+            var w = map.GetLength(0);
+            var h = map.GetLength(1);
+            if (orient == BloxorzNode.ORIENT_VERTICAL)
+                return pos.X >= 0 && pos.Y >= 0 && pos.X < w && pos.Y < h && map[pos.X, pos.Y] != BloxorzNode.MAP_VOID;
+
+            var dir = orient == BloxorzNode.MOVE_RIGHT ? new BloxorzCoord(1, 0) : new BloxorzCoord(0, 1);
+            for (int i = 0; i < len; i++)
+            {
+                int occupyX = pos.X + dir.X * i;
+                int occupyY = pos.Y + dir.Y * i;
+                if (occupyX < 0 || occupyX >= w || occupyY < 0 || occupyY >= h || map[pos.X, pos.Y] == BloxorzNode.MAP_VOID)
+                    return false;
+            }
+
+            return true;
         }
     }
 }

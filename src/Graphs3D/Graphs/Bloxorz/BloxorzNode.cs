@@ -20,7 +20,7 @@ namespace Graphs3D.Graphs.Bloxorz
 
         public const int ORIENT_RIGHT = 1;
 
-        public const int ORIENT_LEFT = 2;
+        public const int ORIENT_DOWN = 2;
 
         public const int MOVE_LEFT = 1;
 
@@ -54,8 +54,8 @@ namespace Graphs3D.Graphs.Bloxorz
         {
             map = new int[prev.map.GetLength(0), prev.map.GetLength(1)];
             GraphUtil.Copy2D(prev.map, map);
-            //TODO: updae x,y,orient
-
+            (playerPos, playerOrientation) = BloxorzUtil.NewCoord(prev.playerPos, prev.playerOrientation, move, prev.playerLen);
+            playerLen = prev.playerLen;
             parentIdx = prev.idx;
             key = BloxorzUtil.SerializePositionToString(this);
             if (IsWin())
@@ -69,12 +69,20 @@ namespace Graphs3D.Graphs.Bloxorz
         public List<BloxorzCoord> GenerateMoves()
         {
             List<BloxorzCoord> moves = new List<BloxorzCoord>();
+            if (IsWin())
+                return moves;
+
             foreach(var move in BloxorzGraph.PossibleMoves)
             {
-                //TODO
+                (var newPosition, var newOrientation) = BloxorzUtil.NewCoord(playerPos, playerOrientation, move, playerLen);
+                if (BloxorzUtil.IsAllowed(map, newPosition, newOrientation, playerLen))
+                    moves.Add(move);
+
             }
             return moves;
         }
+
+
 
         public bool IsWin()
         {

@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Graphs3D.Graphs;
+using Graphs3D.Graphs.Bloxorz;
 using Graphs3D.Graphs.Geometry;
 using Graphs3D.Graphs.Sokoban;
 using Graphs3D.Graphs.TicTacToe;
@@ -96,6 +97,7 @@ namespace Graphs3D.Gui
  
         private void ConfigWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Bloxorx 1", Tag = new Func<IGraph>(() => new BloxorzGraph("maps.bloksorz1.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban Junior 3", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-jr3.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban Junior 4", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-jr4.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban classic level 2", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-classic2a.txt")) });
