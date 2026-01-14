@@ -15,7 +15,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="maps\bloksorz1.txt" />
+    <EmbeddedResource Include="maps\bloxorz3.txt" />
+    <EmbeddedResource Include="maps\bloxorz1.txt" />
     <EmbeddedResource Include="maps\sokoban-jr4.txt" />
     <EmbeddedResource Include="maps\sokoban-jr3.txt" />
     <EmbeddedResource Include="maps\sokoban-jr2.txt" />
