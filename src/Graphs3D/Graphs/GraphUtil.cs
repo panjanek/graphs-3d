@@ -21,24 +21,26 @@ namespace Graphs3D.Graphs
         public static void SearchGraph<TNode>(TNode start, Func<TNode, List<TNode>> generator, Action<TNode> action) where TNode : GraphNodeBase
         {
             var localVisited = new HashSet<string>();
-            var processing = new List<TNode>();
-            processing.Add(start);
-            action(start);
-            do
-            {
-                var node = processing[0];
-                processing.RemoveAt(0);
-                localVisited.Add(node.Key);
-                var children = generator(node);
-                foreach (var child in children)
-                    if (!localVisited.Contains(child.Key))
-                    {
-                        processing.Add(child);
-                        action(child);
+            var processing = new Queue<TNode>();
 
+            processing.Enqueue(start);
+            localVisited.Add(start.Key);
+            action(start);
+
+            while (processing.Count > 0)
+            {
+                var node = processing.Dequeue();
+                var children = generator(node);
+
+                foreach (var child in children)
+                {
+                    if (localVisited.Add(child.Key)) // atomic check + add
+                    {
+                        processing.Enqueue(child);
+                        action(child);
                     }
+                }
             }
-            while (processing.Count > 0);
         }
     }
 }
