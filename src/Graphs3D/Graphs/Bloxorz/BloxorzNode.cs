@@ -40,6 +40,7 @@ namespace Graphs3D.Graphs.Bloxorz
         {
             (map, playerPos, playerLen, playerOrientation, targetPos) = BloxorzUtil.ReadPositionFromString(startPosition);
             key = BloxorzUtil.SerializePositionToString(this);
+            color = BloxorzGraph.ColorOk;
         }
 
         public BloxorzNode(BloxorzNode prev, BloxorzCoord move)
@@ -51,11 +52,12 @@ namespace Graphs3D.Graphs.Bloxorz
             targetPos = prev.targetPos;
             parentIdx = prev.idx;
             key = BloxorzUtil.SerializePositionToString(this);
+            color = BloxorzGraph.ColorOk;
             if (IsWin())
             {
                 leaf = true;
-                win = BloxorzGraph.ColorOk;
-                color = BloxorzGraph.ColorOk;
+                win = BloxorzGraph.ColorWin;
+                color = BloxorzGraph.ColorWin;
             }
         }
 

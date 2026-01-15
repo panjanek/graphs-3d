@@ -442,7 +442,7 @@ namespace Graphs3D.Gpu
                 trackedPos,
                 (int)app.simulation.config.edgesCount,
                 app.simulation.lineWidth,
-                app.positionDrawn);
+                app.positionDrawn && app.configWindow.ImageVisible);
             glControl.SwapBuffers();
             frameCounter++;
             Capture();

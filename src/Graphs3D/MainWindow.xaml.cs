@@ -87,6 +87,10 @@ namespace Graphs3D
                     app.configWindow.TogglePathHighlight();
                     e.Handled = true;
                     break;
+                case Key.I:
+                    app.configWindow.ToggleImageVisible();
+                    e.Handled = true;
+                    break;
                 case Key.Up:
                     var selectedIdx = app.renderer.SelectedIdx;
                     if (!selectedIdx.HasValue)

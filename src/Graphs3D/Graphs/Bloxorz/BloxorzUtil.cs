@@ -18,6 +18,8 @@ namespace Graphs3D.Graphs.Bloxorz
                     return BloxorzNode.MAP_VOID;
                 case '#':
                     return BloxorzNode.MAP_SPACE;
+                case '.':
+                    return BloxorzNode.MAP_SPACE;
                 default:
                     return SokobanNode.EMPTY;
 
@@ -48,16 +50,17 @@ namespace Graphs3D.Graphs.Bloxorz
             var playerLen = int.Parse(posSplit[2]);
             var playerOrient = int.Parse(posSplit[3]);
             BloxorzCoord targetPos = new BloxorzCoord();
-            targetPos.X = int.Parse(posSplit[4]);
-            targetPos.Y = int.Parse(posSplit[5]);
-
             lines = lines.Skip(1).ToArray();
             int width = lines.Max(l => l.Length);
             int height = lines.Length;
             var map = new int[width, height];
             for (int x = 0; x < width; x++)
                 for (int y = 0; y < height; y++)
-                    map[x, y] = x < lines[y].Length ? BloxorzUtil.CharToSymbol(lines[y][x]) : BloxorzNode.MAP_VOID;
+                {
+                    var c = x < lines[y].Length ? lines[y][x] : ' ';
+                    if (c == '.') targetPos = new BloxorzCoord(x, y);
+                    map[x, y] = BloxorzUtil.CharToSymbol(c);
+                }
             return (map, playerPos, playerLen, playerOrient, targetPos);
         }
 

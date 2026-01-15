@@ -90,6 +90,13 @@ namespace Graphs3D.Models
         {
             renderer.DownloadNodes();
             simulation.Expand(count);
+            if (simulation.graph.IsFinished())
+            {
+                var msg = $"Finished after searching {simulation.nodes.Length} nodes.";
+                msg += simulation.nodes.Any(n => n.win > 0) ? "\nWinning position found." : "\nWinning position not found.";
+                PopupMessage.Show(mainWindow, msg, 3500);
+            }
+
             SetupPathHighlight();
             renderer.UploadGraph();
         }

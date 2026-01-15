@@ -14,7 +14,9 @@ namespace Graphs3D.Graphs.Bloxorz
     //https://www.crazygames.pl/gra/bloxorz
     public class BloxorzGraph : GraphBase<BloxorzNode>, IGraph
     {
-        public const int ColorOk = 4;
+        public const int ColorOk = 2;
+
+        public const int ColorWin = 1;
 
         public static BloxorzCoord[] PossibleMoves = new BloxorzCoord[4] { new BloxorzCoord(-1,0), new BloxorzCoord(0, -1), new BloxorzCoord(1, 0), new BloxorzCoord(0, 1) };
 

@@ -43,12 +43,16 @@ namespace Graphs3D.Gui
 
         public bool PathHighlighed => pathButton.IsChecked == true;
 
+        public bool ImageVisible => imgButton.IsChecked == true;
+
         public void TogglePathHighlight()
         {
             pathButton.IsChecked = !(pathButton.IsChecked == true);
             app.SetupPathHighlight();
         }
 
+        public void ToggleImageVisible() => imgButton.IsChecked = !(imgButton.IsChecked == true);
+        
         public Canvas PositionCanvas => positionCanvas;
 
         public ConfigWindow(AppContext app)
@@ -94,9 +98,10 @@ namespace Graphs3D.Gui
             KeyDown += (s, e) => app.mainWindow.MainWindow_KeyDown(s, e);
         }
 
- 
         private void ConfigWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Bloxorz custom", Tag = new Func<IGraph>(() => new BloxorzGraph("maps.bloxorz-custom.txt")) });
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Bloxorz flat", Tag = new Func<IGraph>(() => new BloxorzGraph("maps.bloxorz-flat.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Bloxorz 3", Tag = new Func<IGraph>(() => new BloxorzGraph("maps.bloxorz3.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Bloxorz 1", Tag = new Func<IGraph>(() => new BloxorzGraph("maps.bloxorz1.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban Junior 3", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-jr3.txt")) });
@@ -104,8 +109,8 @@ namespace Graphs3D.Gui
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban classic level 2", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-classic2a.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban classic level 1", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-classic1.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban easy", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-easy.txt")) });
-            graphCombo.Items.Add(new ComboBoxItem() { Content = "Tic Tac Toe 3x3", Tag = new Func<IGraph>(()=>new TicTacToeGraph(3)) });
-            graphCombo.Items.Add(new ComboBoxItem() { Content = "Cylinder 10x20", Tag = new Func<IGraph>(() => new LatticeGraph(20,20,true,false)) });
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Tic Tac Toe 3x3", Tag = new Func<IGraph>(() => new TicTacToeGraph(3)) });
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Cylinder 10x20", Tag = new Func<IGraph>(() => new LatticeGraph(20, 20, true, false)) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Torus 30x60", Tag = new Func<IGraph>(() => new LatticeGraph(30, 60, true, true)) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Torus 100x200", Tag = new Func<IGraph>(() => new LatticeGraph(100, 200, true, true)) });
         }
