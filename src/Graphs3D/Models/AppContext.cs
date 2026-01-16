@@ -86,10 +86,10 @@ namespace Graphs3D.Models
             }
         }
 
-        public void ExpandMany(int count)
+        public void ExpandMany()
         {
             renderer.DownloadNodes();
-            simulation.Expand(count);
+            simulation.Expand();
             if (simulation.graph.IsFinished())
             {
                 var msg = $"Finished after searching {simulation.nodes.Length} nodes.";
@@ -106,7 +106,7 @@ namespace Graphs3D.Models
             animation?.Stop();
             animation = new DispatcherAnimation(150, () =>
             {
-                ExpandMany(30);
+                ExpandMany();
                 if (stopOnWin)
                 {
                     var bestIdx = simulation.graph.GetBestNode();

@@ -68,7 +68,7 @@ namespace Graphs3D
                     e.Handled = true;
                     break;
                 case Key.Z:
-                    app.ExpandMany(50);
+                    app.ExpandMany();
                     e.Handled = true;
                     break;
                 case Key.E:

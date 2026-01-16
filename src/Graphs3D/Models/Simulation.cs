@@ -29,6 +29,8 @@ namespace Graphs3D.Models
 
         public float lineWidth = 300f;
 
+        public float expansionSpeed = 100;
+
         public Node[] nodes = new Node[0];
 
         public Edge[] edges = new Edge[0];
@@ -59,16 +61,17 @@ namespace Graphs3D.Models
             config.edgesCount = edges.Length;
             nodes[0].position = new Vector4(config.fieldSize / 2, config.fieldSize / 2, config.fieldSize / 2, 1.0f);
             config.marker1 = 0;
-            Expand(30);
+            Expand();
         }
 
-        public void Expand(int wantNodesCount)
+        public void Expand()
         {
             lock (this)
             {
                 if (graph.IsFinished())
                     return;
 
+                int wantNodesCount = (int)expansionSpeed;
                 int generatedNodes = 0;
                 int expandedCount = 0;
                 do

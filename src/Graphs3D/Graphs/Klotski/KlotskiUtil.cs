@@ -97,6 +97,8 @@ namespace Graphs3D.Graphs.Klotski
             {
                 var normalized = pc.Value.Select(p => new KlotskiXY(p.X - corners[pc.Key].X, p.Y - corners[pc.Key].Y)).OrderBy(p => p.X).ThenBy(p => p.Y).ToList();
                 subkeys[pc.Key] = string.Join(",", normalized.Select(n => n.X + "-" + n.Y));
+                if ((pc.Key < 33 || pc.Key > 41) && (pc.Key < 48 || pc.Key > 57))
+                    subkeys[pc.Key] += ":" + pc.Key;
             }
 
             Dictionary<int, int> same = new Dictionary<int, int>();
