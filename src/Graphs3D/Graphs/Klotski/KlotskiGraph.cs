@@ -13,11 +13,17 @@ namespace Graphs3D.Graphs.Klotski
     {
         public const int NormalColor = 2;
 
+        public const int WinColor = 1;
+
         private int width;
 
         private int height;
 
-        public static KlotskiXY[] Directions = new KlotskiXY[4] { new KlotskiXY(-1, 0), new KlotskiXY(0, -1), new KlotskiXY(1, 0), new KlotskiXY(0, 1) };
+        public static KlotskiXY[] AllDirections = new KlotskiXY[4] { new KlotskiXY(-1, 0), new KlotskiXY(0, -1), new KlotskiXY(1, 0), new KlotskiXY(0, 1) };
+
+        public static KlotskiXY[] VerticalDirections = new KlotskiXY[2] { new KlotskiXY(0, -1), new KlotskiXY(0, 1) };
+
+        public static KlotskiXY[] HorizontalDirections = new KlotskiXY[2] { new KlotskiXY(-1, 0), new KlotskiXY(1, 0) };
 
         private KlotskiPresenter presenter;
 

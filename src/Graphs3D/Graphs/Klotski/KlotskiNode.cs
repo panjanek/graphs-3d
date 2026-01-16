@@ -19,11 +19,13 @@ namespace Graphs3D.Graphs.Klotski
 
         public Dictionary<int, List<KlotskiXY>> pieces;
 
+        public Dictionary<int, List<KlotskiXY>> winCondition;
+
         private string key;
 
         public KlotskiNode(string startPosition)
         {
-            (map, pieces) = KlotskiUtil.ReadPositionFromString(startPosition);
+            (map, pieces, winCondition) = KlotskiUtil.ReadPositionFromString(startPosition);
             key = KlotskiUtil.SerializePositionToString(this);
             color = KlotskiGraph.NormalColor;
 
@@ -51,15 +53,15 @@ namespace Graphs3D.Graphs.Klotski
 
 
             parentIdx = prev.idx;
+            winCondition = prev.winCondition;
             key = KlotskiUtil.SerializePositionToString(this);
             color = BloxorzGraph.ColorOk;
-            /*
             if (IsWin())
             {
                 leaf = true;
-                win = BloxorzGraph.ColorWin;
-                color = BloxorzGraph.ColorWin;
-            }*/
+                win = KlotskiGraph.WinColor;
+                color = KlotskiGraph.WinColor;
+            }
         }
 
         public List<KlotskiMove> GenerateMoves()
@@ -68,7 +70,12 @@ namespace Graphs3D.Graphs.Klotski
             foreach(var pieceId in pieces.Keys.OrderBy(i=>i).ToList())
             {
                 var piece = pieces[pieceId];
-                foreach (var dir in KlotskiGraph.Directions)
+                var dirs = KlotskiGraph.AllDirections;
+                if (pieceId >= (int)'a' && pieceId <= (int)'z')
+                    dirs = KlotskiGraph.HorizontalDirections;
+                if (pieceId >= (int)'A' && pieceId <= (int)'Z')
+                    dirs = KlotskiGraph.VerticalDirections;
+                foreach (var dir in dirs)
                 {
                     bool canMove = true;
                     foreach (var currPos in piece)
@@ -88,6 +95,21 @@ namespace Graphs3D.Graphs.Klotski
 
 
             return moves;
+        }
+
+        public bool IsWin()
+        {
+            if (winCondition.Count == 0)
+                return false;
+
+            foreach(var pieceId in winCondition.Keys.OrderBy(i => i).ToList())
+            {
+                foreach (var pos in winCondition[pieceId])
+                    if (map[pos.X, pos.Y] != pieceId)
+                        return false;
+            }
+
+            return true;
         }
     }
 
