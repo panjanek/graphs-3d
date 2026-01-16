@@ -18,6 +18,7 @@ using System.Windows.Shapes;
 using Graphs3D.Graphs;
 using Graphs3D.Graphs.Bloxorz;
 using Graphs3D.Graphs.Geometry;
+using Graphs3D.Graphs.Klotski;
 using Graphs3D.Graphs.Sokoban;
 using Graphs3D.Graphs.TicTacToe;
 using Graphs3D.Models;
@@ -100,6 +101,7 @@ namespace Graphs3D.Gui
 
         private void ConfigWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Klotski 1", Tag = new Func<IGraph>(() => new KlotskiGraph("maps.klotski-test.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Bloxorz custom", Tag = new Func<IGraph>(() => new BloxorzGraph("maps.bloxorz-custom.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Bloxorz flat", Tag = new Func<IGraph>(() => new BloxorzGraph("maps.bloxorz-flat.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Bloxorz 3", Tag = new Func<IGraph>(() => new BloxorzGraph("maps.bloxorz3.txt")) });
