@@ -101,8 +101,9 @@ namespace Graphs3D.Gui
 
         private void ConfigWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            graphCombo.Items.Add(new ComboBoxItem() { Content = "Sliding puzzle", Tag = new Func<IGraph>(() => new KlotskiGraph("maps.klotski-sliding.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Klotski canon", Tag = new Func<IGraph>(() => new KlotskiGraph("maps.klotski-canon.txt")) });
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Sliding puzzle", Tag = new Func<IGraph>(() => new KlotskiGraph("maps.klotski-sliding.txt")) });
+            
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Klotski test", Tag = new Func<IGraph>(() => new KlotskiGraph("maps.klotski-test.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Bloxorz custom", Tag = new Func<IGraph>(() => new BloxorzGraph("maps.bloxorz-custom.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Bloxorz flat", Tag = new Func<IGraph>(() => new BloxorzGraph("maps.bloxorz-flat.txt")) });

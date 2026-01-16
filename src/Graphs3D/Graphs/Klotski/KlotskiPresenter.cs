@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using Graphs3D.Graphs.Bloxorz;
 using Graphs3D.Gui;
+using OpenTK.Graphics.ES20;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
 using Color = System.Windows.Media.Color;
@@ -20,6 +22,8 @@ namespace Graphs3D.Graphs.Klotski
     public class KlotskiPresenter
     {
         public static readonly Brush[] BrushesColors = [Brushes.Yellow, Brushes.Magenta, Brushes.Cyan, Brushes.Red, Brushes.Green, Brushes.Blue, Brushes.White, Brushes.Gray];
+
+        private const double Spacing = 0.1;
 
         private KlotskiGraph graph;
 
@@ -35,9 +39,13 @@ namespace Graphs3D.Graphs.Klotski
 
         private List<Rectangle> boxes;
 
+        private List<Line> connectors;
+
         private List<Line> arrowLines;
 
         private List<Polygon> arrowPointers;
+
+        private Dictionary<int, int> colors;
 
         private Brush brickBrush;
 
@@ -51,14 +59,28 @@ namespace Graphs3D.Graphs.Klotski
             lock (this)
             {
                 if (this.canvas == null)
-                    Initialize(canv, node.map, node.pieces);
+                    Initialize(canv, node.map, node.pieces, node.same);
 
                 int boxNr = 0;
+                int connectorNr = 0;
                 for (int y = 0; y < node.map.GetLength(1); y++)
                     for (int x = 0; x < node.map.GetLength(0); x++)
                     {
                         if (node.map[x, y] != KlotskiNode.MAP_SPACE)
-                            PositionNexBox(ref boxNr, x, y, node.map[x, y]);
+                        {
+                            int sameNr = node.map[x, y] == KlotskiNode.MAP_WALL ? 0 : node.same[node.map[x, y]];
+                            PositionNexBox(ref boxNr, x, y, node.map[x, y], sameNr);
+                            if (node.map[x, y] != KlotskiNode.MAP_WALL)
+                            {
+                                var pieceId = node.map[x, y];
+                                foreach(var dir in KlotskiGraph.AllDirections)
+                                {
+                                    var test = new KlotskiXY(x+dir.X, y+dir.Y);
+                                    if (node.map[test.X, test.Y] == pieceId)
+                                        PositionNextConnector(ref connectorNr, x, y, dir.X, dir.Y, sameNr);
+                                }
+                            }
+                        }
                     }
 
                 arrowLines.ForEach(l => l.Visibility = System.Windows.Visibility.Collapsed);
@@ -94,7 +116,7 @@ namespace Graphs3D.Graphs.Klotski
             arrowsCount++;
         }
 
-        private void PositionNexBox(ref int nr, int x, int y, int type)
+        private void PositionNexBox(ref int nr, int x, int y, int type, int pieceNr)
         {
             boxes[nr].SetValue(Canvas.LeftProperty, marginLeft + x * cellWidth);
             boxes[nr].SetValue(Canvas.TopProperty, marginTop + y * cellHeight);
@@ -106,20 +128,42 @@ namespace Graphs3D.Graphs.Klotski
             }
             else
             {
-                boxes[nr].Fill = BrushesColors[type % BrushesColors.Length];
-                boxes[nr].StrokeThickness = 2;
+                boxes[nr].Fill = BrushesColors[colors[pieceNr] % BrushesColors.Length];
+                boxes[nr].StrokeThickness = cellWidth*0.1;
                 boxes[nr].Stroke = Brushes.Transparent;
             }
 
             nr++;
         }
 
-        private void Initialize(Canvas canv, int[,] map, Dictionary<int, List<KlotskiXY>> pieces)
+        private void PositionNextConnector(ref int nr, int x, int y, int dx, int dy, int pieceNr)
+        {
+            connectors[nr].Stroke = BrushesColors[colors[pieceNr] % BrushesColors.Length];
+            if (dy == 0)
+            {
+                connectors[nr].X1 = marginLeft + ((dx == -1) ? x * cellWidth-1 : x * cellWidth + cellWidth*(1 - Spacing))+2;
+                connectors[nr].X2 = connectors[nr].X1;
+                connectors[nr].Y1 = marginTop + y * cellHeight + cellHeight * Spacing*0.5+0.2;
+                connectors[nr].Y2 = marginTop + y * cellHeight + cellHeight * (1-Spacing * 0.5)+0.6;
+            }
+
+            if (dx == 0)
+            {
+                connectors[nr].Y1 = marginTop + ((dy == -1) ? y * cellHeight-1 : y * cellHeight + cellHeight * (1 - Spacing))+2;
+                connectors[nr].Y2 = connectors[nr].Y1;
+                connectors[nr].X1 = marginLeft + x * cellWidth + cellWidth * Spacing*0.5+0.2;
+                connectors[nr].X2 = marginLeft + x * cellWidth + cellHeight * (1 - Spacing * 0.5)+0.6;
+            }
+            nr++;
+        }
+
+        private void Initialize(Canvas canv, int[,] map, Dictionary<int, List<KlotskiXY>> pieces, Dictionary<int, int> same)
         {
             this.canvas = canv;
             canvas.Children.Clear();
             canvas.Background = CanvasUtil.CreateDiagonalStripeBrush(Color.FromArgb(128, 32, 32, 32), Color.FromArgb(128, 64, 64, 64), 5, 45);
             boxes = new List<Rectangle>();
+            connectors = new List<Line>();
             var size = Math.Max(map.GetLength(0), map.GetLength(1));
             cellWidth = canv.Width / size;
             cellHeight = canv.Height / size;
@@ -130,6 +174,10 @@ namespace Graphs3D.Graphs.Klotski
                 {
                     if (map[x, y] != KlotskiNode.MAP_SPACE)
                         boxes.Add(CanvasUtil.AddRect(canvas, 0, 0, cellWidth + 1, cellHeight + 1, 2, Brushes.Black, Brushes.Brown));
+                    for (int c=0; c<4; c++)
+                    {
+                        connectors.Add(CanvasUtil.AddLine(canvas, 0, 0, 0, 0, cellWidth * Spacing, Brushes.Transparent, null, 100));
+                    }
                 }
 
             brickBrush = CanvasUtil.CreateBrickBrush(Colors.LightGray, Colors.DarkGray, cellWidth * 0.6, cellHeight * 0.25, cellWidth * 0.05);
@@ -144,6 +192,15 @@ namespace Graphs3D.Graphs.Klotski
                 var poly = CanvasUtil.AddPoly(canvas, [new Point(), new Point(), new Point()], 0, Brushes.Transparent, arrowBrush, null, 200);
                 poly.MouseDown += (s, e) => { HandleClick(s); e.Handled = true; };
                 arrowPointers.Add(poly);
+            }
+
+            colors = new Dictionary<int, int>();
+            int colorNr = 0;
+            foreach(var piece in pieces.OrderBy(p=>p.Key))
+            {
+                int pieceNr = same[piece.Key];
+                colors[pieceNr] = colorNr;
+                colorNr++;
             }
         }
 
