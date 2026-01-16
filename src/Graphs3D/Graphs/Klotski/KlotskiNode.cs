@@ -21,11 +21,13 @@ namespace Graphs3D.Graphs.Klotski
 
         public Dictionary<int, List<KlotskiXY>> winCondition;
 
+        public Dictionary<int, int> same;
+
         private string key;
 
         public KlotskiNode(string startPosition)
         {
-            (map, pieces, winCondition) = KlotskiUtil.ReadPositionFromString(startPosition);
+            (map, pieces, winCondition, same) = KlotskiUtil.ReadPositionFromString(startPosition);
             key = KlotskiUtil.SerializePositionToString(this);
             color = KlotskiGraph.NormalColor;
 
@@ -54,6 +56,7 @@ namespace Graphs3D.Graphs.Klotski
 
             parentIdx = prev.idx;
             winCondition = prev.winCondition;
+            same = prev.same;
             key = KlotskiUtil.SerializePositionToString(this);
             color = BloxorzGraph.ColorOk;
             if (IsWin())

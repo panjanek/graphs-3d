@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Graphs3D.Graphs.Bloxorz;
+using Graphs3D.Models;
 
 namespace Graphs3D.Graphs.Klotski
 {
     public static class KlotskiUtil
     {
-        public static (int[,], Dictionary<int, List<KlotskiXY>>, Dictionary<int, List<KlotskiXY>>) ReadPositionFromString(string str)
+        public static (int[,], Dictionary<int, List<KlotskiXY>>, Dictionary<int, List<KlotskiXY>>, Dictionary<int, int>) ReadPositionFromString(string str)
         {
             var lines = str.Split('\n').Select(l => l.Trim('\r').Trim(' ')).ToArray();
             var mapLines = lines;
@@ -61,7 +62,8 @@ namespace Graphs3D.Graphs.Klotski
                     }
             }
 
-            return (map, pieces, winCondition);
+            var same = SameShapePieces(pieces);
+            return (map, pieces, winCondition, same);
         }
 
         public static string SerializePositionToString(KlotskiNode node)
@@ -76,12 +78,32 @@ namespace Graphs3D.Graphs.Klotski
                     else if (node.map[x, y] == KlotskiNode.MAP_SPACE)
                         sb.Append(' ');
                     else
-                        sb.Append((char)(node.map[x,y]));
+                        sb.Append((char)(node.same[node.map[x,y]]));
                 }
                 sb.Append("\n");
             }
 
-            return sb.ToString();
+            var res = sb.ToString();
+            return res;
+        }
+
+        public static Dictionary<int, int> SameShapePieces(Dictionary<int, List<KlotskiXY>> pieces)
+        {
+            Dictionary<int, KlotskiXY> corners = new Dictionary<int, KlotskiXY>();
+            foreach (var piece in pieces)
+                corners[piece.Key] = new KlotskiXY(piece.Value.Min(p=>p.X), piece.Value.Min(p => p.Y));
+            var subkeys = new Dictionary<int, string>();
+            foreach (var pc in pieces)
+            {
+                var normalized = pc.Value.Select(p => new KlotskiXY(p.X - corners[pc.Key].X, p.Y - corners[pc.Key].Y)).OrderBy(p => p.X).ThenBy(p => p.Y).ToList();
+                subkeys[pc.Key] = string.Join(",", normalized.Select(n => n.X + "-" + n.Y));
+            }
+
+            Dictionary<int, int> same = new Dictionary<int, int>();
+            foreach (var pieceId in pieces.Keys.OrderBy(i => i))
+                same[pieceId] = subkeys.Where(s => subkeys[s.Key] == subkeys[pieceId]).OrderBy(s => s.Key).First().Key;
+
+            return same;
         }
 
     }
