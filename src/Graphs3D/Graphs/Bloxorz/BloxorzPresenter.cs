@@ -152,7 +152,6 @@ namespace Graphs3D.Graphs.Bloxorz
 
             arrowLines = new List<Line>();
             arrowPointers = new List<Polygon>();
-
             var arrowBrush = new SolidColorBrush(Color.FromArgb(128, 160, 160, 160));
             for (int a=0; a<4; a++)
             {

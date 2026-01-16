@@ -110,4 +110,11 @@ namespace Graphs3D.Graphs.Klotski
 
         public KlotskiXY dir;
     }
+
+    public class KlotskiTransition
+    {
+        public KlotskiMove move;
+
+        public KlotskiNode node;
+    }
 }

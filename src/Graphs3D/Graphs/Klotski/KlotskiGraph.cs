@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using Graphs3D.Graphs.Bloxorz;
 using Graphs3D.Utils;
 
@@ -18,13 +19,15 @@ namespace Graphs3D.Graphs.Klotski
 
         public static KlotskiXY[] Directions = new KlotskiXY[4] { new KlotskiXY(-1, 0), new KlotskiXY(0, -1), new KlotskiXY(1, 0), new KlotskiXY(0, 1) };
 
+        private KlotskiPresenter presenter;
+
         public KlotskiGraph(string resourceName)
         {
             var root = new KlotskiNode(ResourceUtil.LoadStringFromResource(resourceName));
             width = root.map.GetLength(0);
             height = root.map.GetLength(1);
             AddNode(root);
-            //presenter = new BloxorzPresenter(this);
+            presenter = new KlotskiPresenter(this);
         }
 
         protected override void InternalExpandNode(KlotskiNode parent)
@@ -36,5 +39,25 @@ namespace Graphs3D.Graphs.Klotski
                 AddNode(next);
             }
         }
+
+        public List<KlotskiTransition> GetAvailableTransitions(KlotskiNode parent)
+        {
+            var moves = parent.GenerateMoves();
+            var result = new List<KlotskiTransition>();
+            foreach (var move in moves)
+            {
+                var next = new KlotskiNode(parent, move);
+                if (keyedNodes.ContainsKey(next.Key))
+                {
+                    result.Add(new KlotskiTransition() { move = move, node = keyedNodes[next.Key] });
+                }
+            }
+
+            return result;
+        }
+
+        public override bool DrawPosition(int idx, Canvas canvas) => presenter.Draw(canvas, graphNodes[idx]);
+
+        public override void Click(double x, double y) => presenter.Click(x, y);
     }
 }
