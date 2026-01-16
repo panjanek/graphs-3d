@@ -163,6 +163,10 @@ namespace Graphs3D.Models
 
         public List<int> FindPath(int startIdx, int targetIdx)
         {
+            for (int i = 0; i < edges.Length; i++)
+                if ((edges[i].a == startIdx && edges[i].b == targetIdx) || (edges[i].b == startIdx && edges[i].a == targetIdx))
+                    return [startIdx, targetIdx];
+
             var startPath = PathToRoot(startIdx);
             startPath.Reverse();
             var targetPath = PathToRoot(targetIdx);
