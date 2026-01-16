@@ -264,6 +264,19 @@ void update_one(uint idx)
     vec3 vel = p.velocity.xyz;
     vec3 force = vec3(0.0);
 
+
+
+    // Repulsion
+    if (config.useCells == 0)
+        force += repulsion_level4(idx, pos, uRepulsionK, uHopDecay);
+    else
+        force += repulsion_cells(idx, pos, uRepulsionK);
+
+    //float forceMag = dot(force , force);
+    //float restLengthMult = forceMag < 10000000 ? 1.0 : 10;
+    float restLengthMult = 1.0;
+
+    // spring force
     uint neighStart = neighboursStart[idx];
     uint neighCount = neighboursCount[idx];
     for (uint i = 0; i < neighCount; i++)
@@ -273,16 +286,9 @@ void update_one(uint idx)
 
         vec3 d = inNodes[otherIdx].position.xyz - pos;
         float dist = length(d) + 1e-6;
-        float delta = dist - restLengths[neighIdx];
+        float delta = dist - restLengthMult * restLengths[neighIdx];
         force += (d / dist) * (uSpringK * delta);
     }
-
-    // Repulsion
-    if (config.useCells == 0)
-        force += repulsion_level4(idx, pos, uRepulsionK, uHopDecay);
-    else
-        force += repulsion_cells(idx, pos, uRepulsionK);
-
 
     //flattening
     force += flatten_force(idx, pos, uFlatteningK);
