@@ -435,14 +435,11 @@ namespace Graphs3D.Gpu
                 solverProgram.edgesBuffer, 
                 solverProgram.nodeFlagsBuffer,
                 GetProjectionMatrix(),
-                app.simulation.config.nodesCount,
-                app.simulation.particleSize,
                 new Vector2(glControl.Width, glControl.Height),
                 GetViewMatrix(),
                 trackedPos,
-                (int)app.simulation.config.edgesCount,
-                app.simulation.lineWidth,
-                app.positionDrawn && app.configWindow.ImageVisible, app.simulation.fogDensity, app.simulation.unhighlightedAlpha);
+                app.positionDrawn && app.configWindow.ImageVisible,
+                app.simulation);
             glControl.SwapBuffers();
             frameCounter++;
             Capture();

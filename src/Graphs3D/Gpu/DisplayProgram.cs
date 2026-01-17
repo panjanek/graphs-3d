@@ -165,20 +165,15 @@ namespace Graphs3D.Gpu
             );
         }
 
-        public void Run(int nodesBuffer, 
-                        int edgesBuffer, 
+        public void Run(int nodesBuffer,
+                        int edgesBuffer,
                         int nodeFlagsBuffer,
-                        Matrix4 projectionMatrix, 
-                        int particlesCount, 
-                        float particleSize, 
-                        Vector2 viewportSize, 
-                        Matrix4 view, 
-                        Vector4 trackedPos, 
-                        int edgesCount,
-                        float lineWidth,
+                        Matrix4 projectionMatrix,
+                        Vector2 viewportSize,
+                        Matrix4 view,
+                        Vector4 trackedPos,
                         bool showImage,
-                        float fogDensity,
-                        float unhighlightedAlpha)
+                        Simulation sim)
         {
             GL.Clear(
                 ClearBufferMask.ColorBufferBit |
@@ -191,18 +186,18 @@ namespace Graphs3D.Gpu
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 14, nodeFlagsBuffer);
             GL.BindVertexArray(quadVao);
             GL.UniformMatrix4(projNodesLocation, false, ref projectionMatrix);
-            GL.Uniform1(particleSizeLocation, particleSize);
+            GL.Uniform1(particleSizeLocation, sim.particleSize);
             GL.Uniform2(viewportSizeNodesLocation, viewportSize);
             GL.UniformMatrix4(viewNodesLocation, false, ref view);
-            GL.Uniform1(fogDensityNodesLocation, fogDensity);
-            GL.Uniform1(unhighlightedNodesAlphaLocation, (float)MathUtil.Amplify(unhighlightedAlpha, 3));
+            GL.Uniform1(fogDensityNodesLocation, sim.fogDensity);
+            GL.Uniform1(unhighlightedNodesAlphaLocation, (float)MathUtil.Amplify(sim.unhighlightedAlpha, 3));
 
             GL.DrawElementsInstanced(
                 PrimitiveType.Triangles,
                 6,
                 DrawElementsType.UnsignedInt,
                 IntPtr.Zero,
-                particlesCount + 1
+                sim.config.nodesCount + 1
             );
 
             // edges as quads (x6)
@@ -219,10 +214,10 @@ namespace Graphs3D.Gpu
             GL.UniformMatrix4(projEdgesLocation, false, ref projection);
             GL.UniformMatrix4(viewEdgesLocation, false, ref view);
             GL.Uniform2(viewportSizeEdgesLocation, ref viewportSize);
-            GL.Uniform1(lineWidthLocation, lineWidth);
-            GL.Uniform1(fogDensityEdgeLocation, fogDensity);
-            GL.Uniform1(unhighlightedEdgeAlphaLocation, unhighlightedAlpha);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, edgesCount * 6);
+            GL.Uniform1(lineWidthLocation, sim.lineWidth);
+            GL.Uniform1(fogDensityEdgeLocation, sim.fogDensity);
+            GL.Uniform1(unhighlightedEdgeAlphaLocation, sim.unhighlightedAlpha);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, sim.edges.Length * 6);
             
             //image
             if (showImage)
