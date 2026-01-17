@@ -165,7 +165,7 @@ namespace Graphs3D.Gpu
             glControl.MouseWheel += (s, e) =>
             {
                 var delta = e.Delta * ForwardSpeed;
-                if (app.configWindow.NatigationMode == 2)
+                if (app.configWindow.NavigationMode == 2)
                 {
                     //free navigation: moving forward/backward current camera direction
                     center += GetCameraDirection() * delta;
@@ -173,6 +173,7 @@ namespace Graphs3D.Gpu
                 else
                 {
                     //locked on some node: only change follow distance
+                    app.configWindow.SetAutomaticDistance(false);
                     app.simulation.followDistance -= delta;
                     if (app.simulation.followDistance < 10)
                         app.simulation.followDistance = 10;
@@ -238,8 +239,8 @@ namespace Graphs3D.Gpu
                 var nextPos = path[nr + 1];
                 if (nextPos != currPos)
                 {
-                    AnimatingIdx = currPos;
                     currPos = nextPos;
+                    AnimatingIdx = currPos;
                     app.DrawPosition(currPos);
                     StartCameraMovement();
                     WpfUtil.DispatchRender(placeholder.Dispatcher, () => { app.SetupPathHighlight(currPos); });
@@ -327,7 +328,7 @@ namespace Graphs3D.Gpu
 
         private void AutomaticCameraMovement()
         {
-            if (app.configWindow.NatigationMode == 0) //center
+            if (app.configWindow.NavigationMode == 0) //center
             {
                 if (frameCounter % 100 == 0)
                     AdaptCameraDistanceToGraphSize();
@@ -342,30 +343,38 @@ namespace Graphs3D.Gpu
                 PositionCameraTo(currentCenterOfMass);
                 prevCenterOfMass = currentCenterOfMass;
             }
-            else if (app.configWindow.NatigationMode == 1) //selected node
+            else if (app.configWindow.NavigationMode == 1) //selected node
             {
-                
                 PositionCameraTo(solverProgram.GetTrackedParticle().position);
             }
         }
 
+        private float lastAnimationDelta = 0;
+
         private void PositionCameraTo(Vector4 target)
         {
-            if (app.configWindow.NatigationMode <= 1 && app.configWindow.Rotation)
-                xzAngle -= 0.001;
-
-            float t = (frameCounter - cameraMovementStartTime) / 100.0f;
-            t = Math.Clamp(t, 0f, 1f);
-            var smoothTarget = cameraMovementStartPosition * (1 - t) + target * t;
+            if (app.configWindow.NavigationMode <= 1)
+                xzAngle -= app.simulation.rotationSpeed;
 
             var distance = GetCameraDirection() * app.simulation.followDistance;
-            center = smoothTarget - distance;
+            if ((AnimatingIdx.HasValue && app.configWindow.NavigationMode == 1) || lastAnimationDelta > 0.0000001)
+            {
+                var delta = (target - distance) - center;
+                center += delta / app.simulation.cameraPeriod;
+                lastAnimationDelta = delta.Length;
+            }
+            else
+            {
+                float t = (frameCounter - cameraMovementStartTime) / app.simulation.cameraPeriod;
+                t = MathUtil.SmootherStep(Math.Clamp(t, 0f, 1f));
+                var smoothTarget = cameraMovementStartPosition * (1 - t) + target * t;
+                center = smoothTarget - distance;
+            }
         }
 
         public void AdaptCameraDistanceToGraphSize()
-        {
-            
-            if (app.configWindow.NatigationMode == 0)
+        {          
+            if (app.configWindow.NavigationMode == 0 && app.configWindow.AutomaticDistance)
             {
                 var currDist = app.simulation.followDistance;
                 app.simulation.followDistance = 100;

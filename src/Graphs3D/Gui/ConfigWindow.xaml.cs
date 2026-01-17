@@ -46,9 +46,9 @@ namespace Graphs3D.Gui
 
         public bool ImageVisible =>  showImageCheckbox.IsChecked == true;
 
-        public bool Rotation => rotateCheckbox.IsChecked == true;
+        public bool AutomaticDistance => autoDistCheckbox.IsChecked == true;
 
-        public int NatigationMode => navigationCombo.SelectedIndex == -1 ? 0 : navigationCombo.SelectedIndex;
+        public int NavigationMode => navigationCombo.SelectedIndex == -1 ? 0 : navigationCombo.SelectedIndex;
 
         public void TogglePathHighlight()
         {
@@ -57,7 +57,9 @@ namespace Graphs3D.Gui
         }
 
         public void ToggleImageVisible() => showImageCheckbox.IsChecked = !(showImageCheckbox.IsChecked == true);
-        
+
+        public void SetAutomaticDistance(bool enabled) => autoDistCheckbox.IsChecked = enabled;
+
         public Canvas PositionCanvas => positionCanvas;
 
         public ConfigWindow(AppContext app)
@@ -92,6 +94,8 @@ namespace Graphs3D.Gui
             navigationCombo.SelectionChanged += (s, e) =>
             {
                 app.renderer.StartCameraMovement();
+                if (NavigationMode == 0)
+                    SetAutomaticDistance(true);
             };
 
             expandBtn.Click += (s, e) =>

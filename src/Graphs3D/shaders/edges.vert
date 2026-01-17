@@ -67,11 +67,19 @@ void main()
 
     Edge e = edges[edgeIndex];
 
+    vColor = colors[e.color % 8];
     vWidthMult = 1.0;
-    if (e.flags == 4)
+    vFadingAlpha = 1.0;
+    if (e.flags == 4) //un-highlighted
+    {
         vWidthMult = 0.75;
-    if (e.flags == 3)
+        vFadingAlpha = unhighlightedAlpha;
+    }
+    else if (e.flags == 3)
+    {
         vWidthMult = 2;
+        vColor = vec3(1,1,1); 
+    }   
 
     vec3 p0 = nodes[e.a].position.xyz;
     vec3 p1 = nodes[e.b].position.xyz;
@@ -105,11 +113,6 @@ void main()
 
     float side = (isTop ? 1.0 : -1.0);
     vEdgeDist = side * width;
-
-    vFadingAlpha = 1.0;
-    vColor = colors[e.color % 8];
-    if (e.flags == 4)
-        vFadingAlpha = unhighlightedAlpha;
 
     vec2 screen0 = (ndc0 * 0.5 + 0.5) * viewportSize;
     vec2 screen1 = (ndc1 * 0.5 + 0.5) * viewportSize;

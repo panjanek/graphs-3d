@@ -24,8 +24,6 @@ namespace Graphs3D
 {
     //TODO:
     // - restLength adaptation (to movements of biggest block?)
-    // - smooth camera follow move : sigmoid curve
-    // - automatic distance checkbox
     // - highlight -> different color
     public partial class MainWindow : Window
     {

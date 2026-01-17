@@ -12,6 +12,16 @@ namespace Graphs3D.Utils
 {
     public static class MathUtil
     {
+        public static float SmoothStep(float t)
+        {
+            return t * t * (3f - 2f * t);
+        }
+
+        public static float SmootherStep(float t)
+        {
+            return t * t * t * (t * (6f * t - 15f) + 10f);
+        }
+
         public static double GetTorusDistance(double d1, double d2, double size)
         {
             double d = d2 - d1;

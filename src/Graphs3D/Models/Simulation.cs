@@ -43,6 +43,10 @@ namespace Graphs3D.Models
 
         public float followDistance = 100;
 
+        public float rotationSpeed = 0.001f;
+
+        public float cameraPeriod = 100f;
+
         public static Random globalRandom = new Random(1);
 
         public IGraph graph;
