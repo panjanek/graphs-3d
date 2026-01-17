@@ -89,6 +89,11 @@ namespace Graphs3D.Gui
 
             stopButton.Click += (s, e) => app.StopAnimation();
 
+            navigationCombo.SelectionChanged += (s, e) =>
+            {
+                app.renderer.StartCameraMovement();
+            };
+
             expandBtn.Click += (s, e) =>
             {
                 if (expandCombo.SelectedIndex == 0)

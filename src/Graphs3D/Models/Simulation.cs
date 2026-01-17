@@ -23,8 +23,6 @@ namespace Graphs3D.Models
 
         public ShaderConfig config;
 
-        public float cameraFollowSpeed = 0.02f;
-
         public float particleSize = 0.3f;
 
         public float lineWidth = 300f;
