@@ -388,8 +388,8 @@ namespace Graphs3D.Gpu
                                       (app.simulation.nodes[i].position.Z - massCenter.Z) * (app.simulation.nodes[i].position.Z - massCenter.Z));
                     if (d > maxD) maxD = (float)d;
                 }
-                if (maxD * 1.25f > app.simulation.followDistance)
-                    app.simulation.followDistance = maxD * 1.25f;
+                if (maxD * 1.3f > app.simulation.followDistance)
+                    app.simulation.followDistance = maxD * 1.3f;
 
                 if (app.simulation.followDistance != currDist)
                     StartCameraMovement();

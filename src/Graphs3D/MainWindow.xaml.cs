@@ -24,7 +24,7 @@ namespace Graphs3D
 {
     //TODO:
     // - restLength adaptation (to movements of biggest block?)
-    // - highlight -> different color
+    // - zooming: linear?
     public partial class MainWindow : Window
     {
         private bool uiPending;
