@@ -42,17 +42,21 @@ namespace Graphs3D.Gui
 
         public string recordDir;
 
-        public bool PathHighlighed => pathButton.IsChecked == true;
+        public bool PathHighlighed => highlightCheckbox.IsChecked == true;
 
-        public bool ImageVisible => imgButton.IsChecked == true;
+        public bool ImageVisible =>  showImageCheckbox.IsChecked == true;
+
+        public bool Rotation => rotateCheckbox.IsChecked == true;
+
+        public int NatigationMode => navigationCombo.SelectedIndex == -1 ? 0 : navigationCombo.SelectedIndex;
 
         public void TogglePathHighlight()
         {
-            pathButton.IsChecked = !(pathButton.IsChecked == true);
+            highlightCheckbox.IsChecked = !(highlightCheckbox.IsChecked == true);
             app.SetupPathHighlight();
         }
 
-        public void ToggleImageVisible() => imgButton.IsChecked = !(imgButton.IsChecked == true);
+        public void ToggleImageVisible() => showImageCheckbox.IsChecked = !(showImageCheckbox.IsChecked == true);
         
         public Canvas PositionCanvas => positionCanvas;
 
@@ -72,32 +76,51 @@ namespace Graphs3D.Gui
             foreach(var button in WpfUtil.FindVisualChildren<Button>(this))
                 button.PreviewKeyDown += (s, e) => e.Handled = true;
 
-            centerButton.Click += (s, e) => app.renderer.ResetOrigin();
+            centerButton.Click += (s, e) => { 
+                navigationCombo.SelectedIndex = 0;
+                app.renderer.AdaptCameraDistanceToGraphSize(); 
+            };
             restartButton.Click += (s, e) => app.StartNewGraph(WpfUtil.GetTagAsObject<Func<IGraph>>(graphCombo.SelectedItem)());
-            pathButton.Click += (s, e) => app.SetupPathHighlight();
-            expandMoreButton.Click += (s, e) => app.ExpandMany();
-            expandAllButton.Click += (s, e) => app.ExpandAll();
-            expandWinButton.Click += (s, e) => app.ExpandAll(true);
+            highlightCheckbox.Click += (s, e) => app.SetupPathHighlight();
             stopButton.Click += (s, e) => app.StopAnimation();
-            rootButton.Click += (s, e) => app.renderer.AnimateTo(0);
-            winButton.Click += (s, e) => app.AnimateToWinningNode();
-            bestButton.Click += (s, e) =>
+
+            expandBtn.Click += (s, e) =>
             {
-                app.animation?.Stop();
-                var winnngIdx = app.simulation.GetWinningNode();
-                if (winnngIdx.HasValue)
+                if (expandCombo.SelectedIndex == 0)
+                    app.ExpandMany();
+                else if (expandCombo.SelectedIndex == 1)
+                    app.ExpandAll(true);
+                else if (expandCombo.SelectedIndex == 2)
+                    app.ExpandAll(false);
+
+            };
+
+            animateToBtn.Click += (s, e) =>
+            {
+                if (animateToCombo.SelectedIndex == 0)
+                    app.renderer.AnimateTo(0);
+                else if (animateToCombo.SelectedIndex == 1)
+                    app.AnimateToWinningNode();
+                else if (animateToCombo.SelectedIndex == 2)
                 {
-                    app.renderer.AnimateTo(winnngIdx.Value);
-                    return;
+                    app.animation?.Stop();
+                    var winnngIdx = app.simulation.GetWinningNode();
+                    if (winnngIdx.HasValue)
+                    {
+                        app.renderer.AnimateTo(winnngIdx.Value);
+                        return;
+                    }
+
+                    var bestIdx = app.simulation.graph.GetBestNode();
+                    if (bestIdx.HasValue)
+                        app.renderer.AnimateTo(bestIdx.Value);
                 }
 
-                var bestIdx = app.simulation.graph.GetBestNode();
-                if (bestIdx.HasValue)
-                    app.renderer.AnimateTo(bestIdx.Value);
-                
             };
+
             KeyDown += (s, e) => app.mainWindow.MainWindow_KeyDown(s, e);
         }
+
 
         private void ConfigWindow_Loaded(object sender, RoutedEventArgs e)
         {
@@ -194,6 +217,10 @@ namespace Graphs3D.Gui
         {
             foreach (var text in WpfUtil.FindVisualChildren<TextBlock>(this))
                     WpfUtil.UpdateTextBlockForSlider(this, text, app.simulation);
+
+            var itemExpand = (ComboBoxItem)expandCombo.Items[0];
+            itemExpand.Content = $"Next {(int)app.simulation.expansionSpeed} nodes";
+
         }
     }
 }

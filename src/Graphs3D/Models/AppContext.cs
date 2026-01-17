@@ -99,6 +99,7 @@ namespace Graphs3D.Models
 
             SetupPathHighlight();
             renderer.UploadGraph();
+            renderer.AdaptCameraDistanceToGraphSize();
         }
 
         public void ExpandAll(bool stopOnWin = false)

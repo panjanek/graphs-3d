@@ -43,7 +43,7 @@ namespace Graphs3D.Models
 
         public int seed = 11;
 
-        public float followDistance = 10;
+        public float followDistance = 100;
 
         public static Random globalRandom = new Random(1);
 

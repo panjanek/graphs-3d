@@ -46,6 +46,23 @@ namespace Graphs3D.Graphs.Klotski
             }
         }
 
+        public override void PostExpandActions()
+        {
+            for(int i=0; i<internalEdges.Count; i++)
+            {
+                var n1 = graphNodes[(int)internalEdges[i].a];
+                var n2 = graphNodes[(int)internalEdges[i].b];
+                var n1_moves = n1.GenerateMoves();
+                var n2_moves = n2.GenerateMoves();
+                var c = n1_moves.Count + n2_moves.Count;
+
+                var restLen = 10f;
+                if (c <= 4 && n1.expanded && n2.expanded && n1_moves.Count > 1 && n2_moves.Count > 1)
+                    restLen = 100.0f;
+                SetInternalEdgeAttributes(i, (int)internalEdges[i].color, restLen);
+            }
+        }
+
         public List<KlotskiTransition> GetAvailableTransitions(KlotskiNode parent)
         {
             var moves = parent.GenerateMoves();

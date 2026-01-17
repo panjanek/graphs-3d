@@ -23,9 +23,9 @@ using Application = System.Windows.Application;
 namespace Graphs3D
 {
     //TODO:
-    // - restLength adaptation (to movements of biggest
-    // - checkboxes
-    // - camera follow adapring to growing graph
+    // - restLength adaptation (to movements of biggest block?)
+    // - smooth camera follow move
+    // - highlight -> different color
     public partial class MainWindow : Window
     {
         private bool uiPending;
@@ -65,7 +65,7 @@ namespace Graphs3D
                     e.Handled = true;
                     break;
                 case Key.Escape:
-                    app.renderer.StopTracking();
+
                     e.Handled = true;
                     break;
                 case Key.Z:

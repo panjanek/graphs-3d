@@ -161,7 +161,7 @@ namespace Graphs3D.Graphs.Klotski
         {
             this.canvas = canv;
             canvas.Children.Clear();
-            canvas.Background = CanvasUtil.CreateDiagonalStripeBrush(Color.FromArgb(128, 32, 32, 32), Color.FromArgb(128, 64, 64, 64), 5, 45);
+            canvas.Background = Brushes.Black;
             boxes = new List<Rectangle>();
             connectors = new List<Line>();
             var size = Math.Max(map.GetLength(0), map.GetLength(1));
@@ -180,7 +180,7 @@ namespace Graphs3D.Graphs.Klotski
                     }
                 }
 
-            brickBrush = CanvasUtil.CreateBrickBrush(Colors.LightGray, Colors.DarkGray, cellWidth * 0.6, cellHeight * 0.25, cellWidth * 0.05);
+            brickBrush = CanvasUtil.CreateBrickBrush(Color.FromArgb(255, 32, 32, 32), Color.FromArgb(255, 48, 48, 48), cellWidth * 0.6, cellHeight * 0.25, cellWidth * 0.05);
             arrowLines = new List<Line>();
             arrowPointers = new List<Polygon>();
             var arrowBrush = new SolidColorBrush(Color.FromArgb(128, 160, 160, 160));

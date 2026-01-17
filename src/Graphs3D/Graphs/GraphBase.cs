@@ -128,10 +128,12 @@ namespace Graphs3D.Graphs
             internalNodes[idx] = internalNode;
         }
 
-        protected void SetInternalEdgeAttributes(int idx, int player)
+        protected void SetInternalEdgeAttributes(int idx, int color, float? restLength = null)
         {
             var internalEdge = internalEdges[idx];
-            internalEdge.color = (uint)player;
+            internalEdge.color = (uint)color;
+            if (restLength.HasValue)
+                internalEdge.restLength = restLength.Value;
             internalEdges[idx] = internalEdge;
         }
 

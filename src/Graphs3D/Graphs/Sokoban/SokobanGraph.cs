@@ -53,7 +53,19 @@ namespace Graphs3D.Graphs.Sokoban
             }
         }
 
-        protected override GraphNodeBase GetBestNodeToExpand() => graphNodes.Where(n => !n.expanded).OrderBy(n => n.GetHeuristicDistance()).FirstOrDefault();
+        protected override GraphNodeBase GetBestNodeToExpand()
+        {
+            var notExpanded = graphNodes.Where(n => !n.expanded);
+            if (!graphNodes.Any(g => g.win > 0))
+                return notExpanded.OrderBy(n => n.GetHeuristicDistance()).FirstOrDefault();
+
+            var notDead = notExpanded.Where(g => !g.dead).ToList();
+            if (notDead.Any())
+                return notDead[Simulation.globalRandom.Next(notDead.Count)];
+
+            var notExpandedList = notExpanded.ToList();
+            return notExpandedList[Simulation.globalRandom.Next(notExpandedList.Count)];
+        }
 
         public override void PostExpandActions()
         {
