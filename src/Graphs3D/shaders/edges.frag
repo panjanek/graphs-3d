@@ -9,6 +9,7 @@ in float vFadingAlpha;
 in float vWidthMult;
 
 uniform float lineWidth;
+uniform float fogDensity;
 
 out vec4 FragColor;
 
@@ -34,7 +35,6 @@ void main()
     float alphaEdge = coverage * 0.8;
 
     // ---- fog (correct) ----
-    float fogDensity = 0.0005;
     float fog = exp(-fogDensity * vDepth);
     fog = clamp(fog, 0.0, 1.0);
 

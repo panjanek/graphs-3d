@@ -33,6 +33,14 @@ namespace Graphs3D.Gpu
 
         private int lineWidthLocation;
 
+        private int fogDensityNodesLocation;
+
+        private int unhighlightedNodesAlphaLocation;
+
+        private int fogDensityEdgeLocation;
+
+        private int unhighlightedEdgeAlphaLocation;
+
         //private int trackedPosLocation;
 
         private int quadVao;
@@ -72,8 +80,10 @@ namespace Graphs3D.Gpu
             if (viewportSizeNodesLocation == -1) throw new Exception("Uniform 'viewportSize' not found. Shader optimized it out?");
             viewNodesLocation = GL.GetUniformLocation(nodesProgram, "view");
             if (viewNodesLocation == -1) throw new Exception("Uniform 'view' not found. Shader optimized it out?");
-            //trackedPosLocation = GL.GetUniformLocation(nodesProgram, "trackedPos");
-            //if (trackedPosLocation == -1) throw new Exception("Uniform 'trackedPos' not found. Shader optimized it out?");
+            fogDensityNodesLocation = GL.GetUniformLocation(nodesProgram, "fogDensity");
+            if (fogDensityNodesLocation == -1) throw new Exception("Uniform 'fogDensity' not found. Shader optimized it out?");
+            unhighlightedNodesAlphaLocation = GL.GetUniformLocation(nodesProgram, "unhighlightedAlpha");
+            if (unhighlightedNodesAlphaLocation == -1) throw new Exception("Uniform 'unhighlightedAlpha' not found. Shader optimized it out?");
 
             edgesProgram = ShaderUtil.CompileAndLinkRenderShader("edges.vert", "edges.frag");
             projEdgesLocation = GL.GetUniformLocation(edgesProgram, "projection");
@@ -84,6 +94,10 @@ namespace Graphs3D.Gpu
             if (viewEdgesLocation == -1) throw new Exception("Uniform 'view' not found. Shader optimized it out?");
             lineWidthLocation = GL.GetUniformLocation(edgesProgram, "lineWidth");
             if (lineWidthLocation == -1) throw new Exception("Uniform 'lineWidth' not found. Shader optimized it out?");
+            fogDensityEdgeLocation = GL.GetUniformLocation(edgesProgram, "fogDensity");
+            if (fogDensityEdgeLocation == -1) throw new Exception("Uniform 'fogDensity' not found. Shader optimized it out?");
+            unhighlightedEdgeAlphaLocation = GL.GetUniformLocation(edgesProgram, "unhighlightedAlpha");
+            if (unhighlightedEdgeAlphaLocation == -1) throw new Exception("Uniform 'unhighlightedAlpha' not found. Shader optimized it out?");
 
             imageTex = TextureUtil.CreateByteTexture(AppContext.PosWidth, AppContext.PosHeight);
             imageProgram = ShaderUtil.CompileAndLinkRenderShader("image.vert", "image.frag");
@@ -162,7 +176,9 @@ namespace Graphs3D.Gpu
                         Vector4 trackedPos, 
                         int edgesCount,
                         float lineWidth,
-                        bool showImage)
+                        bool showImage,
+                        float fogDensity,
+                        float unhighlightedAlpha)
         {
             GL.Clear(
                 ClearBufferMask.ColorBufferBit |
@@ -178,7 +194,8 @@ namespace Graphs3D.Gpu
             GL.Uniform1(particleSizeLocation, particleSize);
             GL.Uniform2(viewportSizeNodesLocation, viewportSize);
             GL.UniformMatrix4(viewNodesLocation, false, ref view);
-            //GL.Uniform4(trackedPosLocation, ref trackedPos);
+            GL.Uniform1(fogDensityNodesLocation, fogDensity);
+            GL.Uniform1(unhighlightedNodesAlphaLocation, (float)MathUtil.Amplify(unhighlightedAlpha, 3));
 
             GL.DrawElementsInstanced(
                 PrimitiveType.Triangles,
@@ -203,6 +220,8 @@ namespace Graphs3D.Gpu
             GL.UniformMatrix4(viewEdgesLocation, false, ref view);
             GL.Uniform2(viewportSizeEdgesLocation, ref viewportSize);
             GL.Uniform1(lineWidthLocation, lineWidth);
+            GL.Uniform1(fogDensityEdgeLocation, fogDensity);
+            GL.Uniform1(unhighlightedEdgeAlphaLocation, unhighlightedAlpha);
             GL.DrawArrays(PrimitiveType.Triangles, 0, edgesCount * 6);
             
             //image

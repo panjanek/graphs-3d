@@ -27,6 +27,7 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform float paricleSize;
 uniform vec2 viewportSize;
+uniform float unhighlightedAlpha;
 
 layout(location = 0) out vec3 vColor;
 layout(location = 1) out float vDepth;
@@ -61,16 +62,15 @@ void main()
     if (p.leaf == 1)
         vSphereRadiusMult = 2.5;
 
-    //marker
-    if (p.flags == 1) 
+    if (p.flags == 1) //marker
     {
         vSphereRadiusMult = 3;
         vColor = vec3(1.0, 1.0, 1.0);
     }
     else
     {
-        if (nodeFlags[id] == 3)
-            vFadingAlpha = 0.5;
+        if (nodeFlags[id] == 3)  //unhighlighted
+            vFadingAlpha = unhighlightedAlpha;
     }
 
     sphereRadius *= vSphereRadiusMult;

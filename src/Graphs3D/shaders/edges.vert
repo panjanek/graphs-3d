@@ -36,6 +36,7 @@ uniform mat4 projection;
 uniform mat4 view;
 uniform vec2 viewportSize;
 uniform float lineWidth;
+uniform float unhighlightedAlpha;
 
 out float vDepth;
 out vec3 vColor;
@@ -108,7 +109,7 @@ void main()
     vFadingAlpha = 1.0;
     vColor = colors[e.color % 8];
     if (e.flags == 4)
-        vFadingAlpha = 0.5;
+        vFadingAlpha = unhighlightedAlpha;
 
     vec2 screen0 = (ndc0 * 0.5 + 0.5) * viewportSize;
     vec2 screen1 = (ndc1 * 0.5 + 0.5) * viewportSize;

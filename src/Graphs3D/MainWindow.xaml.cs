@@ -22,9 +22,10 @@ using Application = System.Windows.Application;
 
 namespace Graphs3D
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    //TODO:
+    // - restLength adaptation (to movements of biggest
+    // - checkboxes
+    // - camera follow adapring to growing graph
     public partial class MainWindow : Window
     {
         private bool uiPending;

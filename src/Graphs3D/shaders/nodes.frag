@@ -13,6 +13,7 @@ out vec4 outputColor;
 uniform vec3 lightDir = normalize(vec3(0.3, 0.5, 1.0));
 uniform mat4 projection;
 uniform float paricleSize;
+uniform float fogDensity;
 
 void main()
 {
@@ -48,7 +49,6 @@ void main()
 
     // fog
     float depth = -hit.z;
-    float fogDensity = 0.0005;
     float fog = exp(-fogDensity * depth);
     fog = clamp(fog, 0.0, 1.0);
 
