@@ -41,8 +41,6 @@ namespace Graphs3D.Gpu
 
         private int unhighlightedEdgeAlphaLocation;
 
-        //private int trackedPosLocation;
-
         private int quadVao;
 
         private int quadVbo;
@@ -66,6 +64,12 @@ namespace Graphs3D.Gpu
         private int sizeImageLocation;
 
         private int dummyVao;
+
+        private float startingUnhighlitedAlpha = 1.0f;
+
+        private int highlightChange = 0;
+
+        private int counter = 0;
 
 
         public DisplayProgram()
@@ -149,6 +153,12 @@ namespace Graphs3D.Gpu
             );
         }
 
+        public void ResetHighlighting(float alpha)
+        {
+            startingUnhighlitedAlpha = alpha;
+            highlightChange = counter;
+        }
+
         public void UploadImage(byte[] pixels)
         {
             GL.BindTexture(TextureTarget.Texture2D, imageTex);
@@ -179,7 +189,11 @@ namespace Graphs3D.Gpu
                 ClearBufferMask.ColorBufferBit |
                 ClearBufferMask.DepthBufferBit
             );
-            
+
+            int t = counter - highlightChange;
+            float unhighlightAlpha = (t > 100) ? sim.unhighlightedAlpha
+                                               : (startingUnhighlitedAlpha * (100 - t)) / 100.0f + (sim.unhighlightedAlpha * t) / 100.0f;
+
             //nodes as points
             GL.UseProgram(nodesProgram);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 2, nodesBuffer);
@@ -190,7 +204,7 @@ namespace Graphs3D.Gpu
             GL.Uniform2(viewportSizeNodesLocation, viewportSize);
             GL.UniformMatrix4(viewNodesLocation, false, ref view);
             GL.Uniform1(fogDensityNodesLocation, sim.fogDensity);
-            GL.Uniform1(unhighlightedNodesAlphaLocation, (float)MathUtil.Amplify(sim.unhighlightedAlpha, 3));
+            GL.Uniform1(unhighlightedNodesAlphaLocation, (float)MathUtil.Amplify(unhighlightAlpha, 3));
 
             GL.DrawElementsInstanced(
                 PrimitiveType.Triangles,
@@ -216,7 +230,9 @@ namespace Graphs3D.Gpu
             GL.Uniform2(viewportSizeEdgesLocation, ref viewportSize);
             GL.Uniform1(lineWidthLocation, sim.lineWidth);
             GL.Uniform1(fogDensityEdgeLocation, sim.fogDensity);
-            GL.Uniform1(unhighlightedEdgeAlphaLocation, sim.unhighlightedAlpha);
+
+                                                                        
+            GL.Uniform1(unhighlightedEdgeAlphaLocation, unhighlightAlpha);
             GL.DrawArrays(PrimitiveType.Triangles, 0, sim.edges.Length * 6);
             
             //image
@@ -233,6 +249,8 @@ namespace Graphs3D.Gpu
                 GL.BindVertexArray(dummyVao);
                 GL.DrawArrays(PrimitiveType.Triangles, 0, 6);
             }
+
+            counter++;
         }
     }
 }

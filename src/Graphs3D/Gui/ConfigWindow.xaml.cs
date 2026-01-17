@@ -81,7 +81,12 @@ namespace Graphs3D.Gui
                 app.renderer.AdaptCameraDistanceToGraphSize(); 
             };
             restartButton.Click += (s, e) => app.StartNewGraph(WpfUtil.GetTagAsObject<Func<IGraph>>(graphCombo.SelectedItem)());
-            highlightCheckbox.Click += (s, e) => app.SetupPathHighlight();
+            
+            highlightCheckbox.Click += (s, e) => {
+                app.renderer.ResetHighlighting(highlightCheckbox.IsChecked == true ? 1.0f : app.simulation.unhighlightedAlpha);
+                app.SetupPathHighlight();
+            };
+
             stopButton.Click += (s, e) => app.StopAnimation();
 
             expandBtn.Click += (s, e) =>

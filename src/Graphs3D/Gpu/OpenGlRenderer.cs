@@ -344,6 +344,8 @@ namespace Graphs3D.Gpu
                 app.DrawPosition(SelectedIdx.Value);
         }
 
+        public void ResetHighlighting(float alpha) => displayProgram.ResetHighlighting(alpha);
+
         public void UploadFlags() => solverProgram.UploadFlags(app.simulation.edges, app.simulation.nodeFlags);
 
         public void UploadImage(byte[] pixels) => displayProgram.UploadImage(pixels);
