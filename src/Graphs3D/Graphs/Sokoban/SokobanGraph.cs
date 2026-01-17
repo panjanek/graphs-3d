@@ -64,7 +64,10 @@ namespace Graphs3D.Graphs.Sokoban
                 return notDead[Simulation.globalRandom.Next(notDead.Count)];
 
             var notExpandedList = notExpanded.ToList();
-            return notExpandedList[Simulation.globalRandom.Next(notExpandedList.Count)];
+            if (notExpandedList.Count > 0)
+                return notExpandedList[Simulation.globalRandom.Next(notExpandedList.Count)];
+
+            return null;
         }
 
         public override void PostExpandActions()
