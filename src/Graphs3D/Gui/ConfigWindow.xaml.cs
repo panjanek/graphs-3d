@@ -93,7 +93,6 @@ namespace Graphs3D.Gui
 
             navigationCombo.SelectionChanged += (s, e) =>
             {
-                app.renderer.StartCameraMovement();
                 if (NavigationMode == 0)
                     SetAutomaticDistance(true);
             };

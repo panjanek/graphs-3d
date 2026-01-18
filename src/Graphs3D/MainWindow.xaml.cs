@@ -25,6 +25,8 @@ namespace Graphs3D
     //TODO:
     // - restLength adaptation (to movements of biggest block?)
     // - zooming: linear?
+    // - fullscreen
+
     public partial class MainWindow : Window
     {
         private bool uiPending;
@@ -64,7 +66,6 @@ namespace Graphs3D
                     e.Handled = true;
                     break;
                 case Key.Escape:
-
                     e.Handled = true;
                     break;
                 case Key.Z:

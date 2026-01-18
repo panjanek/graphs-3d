@@ -29,7 +29,7 @@ namespace Graphs3D.Models
 
         public float expansionSpeed = 100;
 
-        public float fogDensity = 0.0005f;
+        public float fogDensity = 0.0002f;
 
         public float unhighlightedAlpha = 0.5f;
 

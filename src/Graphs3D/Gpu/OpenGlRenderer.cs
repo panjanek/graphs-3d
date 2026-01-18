@@ -56,7 +56,11 @@ namespace Graphs3D.Gpu
 
         private DisplayProgram displayProgram;
 
-        private Vector4 center;
+        private float cameraDist;
+
+        private Vector4 targetPos;
+
+        private Vector4 cameraPos;
 
         private Vector4 prevCenterOfMass;
 
@@ -71,10 +75,6 @@ namespace Graphs3D.Gpu
         private int? recFrameNr;
 
         private AnimationTimer animation;
-
-        private int cameraMovementStartTime;
-
-        private Vector4 cameraMovementStartPosition; 
 
         public OpenGlRenderer(Panel placeholder, AppContext app)
         {
@@ -137,7 +137,7 @@ namespace Graphs3D.Gpu
                         //translate dragged node by world coorditanes translation
                         Vector3 planeNormal = GetCameraDirection().Xyz;
                         planeNormal.Normalize();;
-                        Vector3 camPos = center.Xyz;
+                        Vector3 camPos = cameraPos.Xyz;
                         Vector3 planePoint = app.simulation.nodes[dragged.Value].position.Xyz;
                         Vector3 ray0 = GpuUtil.ScreenToWorldRay(new Vector2(prev.X, prev.Y), GetViewMatrix(), GetProjectionMatrix(), glControl.Width, glControl.Height);
                         Vector3 ray1 = GpuUtil.ScreenToWorldRay(new Vector2(curr.X, curr.Y), GetViewMatrix(), GetProjectionMatrix(), glControl.Width, glControl.Height);
@@ -156,7 +156,7 @@ namespace Graphs3D.Gpu
                         Vector3 right = Vector3.Normalize(Vector3.Cross(forward.Xyz, Vector3.UnitY));
                         Vector3 up = Vector3.Cross(right, forward.Xyz);
                         var translation = -right * delta.X + up * delta.Y;
-                        center += new Vector4(translation.X, translation.Y, translation.Z, 0);
+                        cameraPos += new Vector4(translation.X, translation.Y, translation.Z, 0);
                     }
                 }
 
@@ -168,7 +168,7 @@ namespace Graphs3D.Gpu
                 if (app.configWindow.NavigationMode == 2)
                 {
                     //free navigation: moving forward/backward current camera direction
-                    center += GetCameraDirection() * delta;
+                    cameraPos += GetCameraDirection() * delta;
                 }
                 else
                 {
@@ -177,14 +177,13 @@ namespace Graphs3D.Gpu
                     app.simulation.followDistance -= delta;
                     if (app.simulation.followDistance < 10)
                         app.simulation.followDistance = 10;
-                    StartCameraMovement();
                 }
             };
 
-            center = new Vector4(app.simulation.config.fieldSize/2f, app.simulation.config.fieldSize / 2f, app.simulation.config.fieldSize / 2f - 100, 0);
-            prevCenterOfMass = center;
-            StartCameraMovement();
-
+            cameraDist = app.simulation.followDistance;
+            targetPos = new Vector4(app.simulation.config.fieldSize / 2f, app.simulation.config.fieldSize / 2f, app.simulation.config.fieldSize / 2f, 0);
+            cameraPos = new Vector4(app.simulation.config.fieldSize/2f, app.simulation.config.fieldSize / 2f, app.simulation.config.fieldSize / 2f - cameraDist, 0);
+            prevCenterOfMass = cameraPos;
             glControl.MouseDown += GlControl_Clicked;
             glControl.Paint += GlControl_Paint;
             glControl.SizeChanged += GlControl_SizeChanged;
@@ -242,7 +241,6 @@ namespace Graphs3D.Gpu
                     currPos = nextPos;
                     AnimatingIdx = currPos;
                     app.DrawPosition(currPos);
-                    StartCameraMovement();
                     WpfUtil.DispatchRender(placeholder.Dispatcher, () => { app.SetupPathHighlight(currPos); });
                 }
 
@@ -255,7 +253,6 @@ namespace Graphs3D.Gpu
                 AnimatingIdx = null;
                 animation = null;
                 Select(path.Last());
-                StartCameraMovement();
             });
         }
 
@@ -313,18 +310,11 @@ namespace Graphs3D.Gpu
 
         private Vector4 GetCameraDirection() => new Vector4((float)(Math.Cos(yAngle) * Math.Sin(xzAngle)), (float)(Math.Sin(yAngle)), (float)(Math.Cos(yAngle) * Math.Cos(xzAngle)), 0);
 
-        private Matrix4 GetViewMatrix() => Matrix4.LookAt(center.Xyz, (center + GetCameraDirection()).Xyz, Vector3.UnitY);
+        private Matrix4 GetViewMatrix() => Matrix4.LookAt(cameraPos.Xyz, (cameraPos + GetCameraDirection()).Xyz, Vector3.UnitY);
 
         private Matrix4 GetProjectionMatrix() => Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(60f), glControl.Width / (float)glControl.Height, 0.1f, 5000f);
 
         private Matrix4 GetCombinedProjectionMatrix() => GetViewMatrix() * GetProjectionMatrix();
-
-        public void StartCameraMovement()
-        {
-            var distance = GetCameraDirection() * app.simulation.followDistance;
-            cameraMovementStartPosition = center + distance;
-            cameraMovementStartTime = frameCounter;
-        }
 
         private void AutomaticCameraMovement()
         {
@@ -334,12 +324,6 @@ namespace Graphs3D.Gpu
                     AdaptCameraDistanceToGraphSize();
 
                 var currentCenterOfMass = solverProgram.GetCenterOfMass();
-                
-                if (Math.Abs(prevCenterOfMass.X - currentCenterOfMass.X) > 2 ||
-                    Math.Abs(prevCenterOfMass.Y - currentCenterOfMass.Y) > 2 ||
-                    Math.Abs(prevCenterOfMass.Z - currentCenterOfMass.Z) > 2)
-                    StartCameraMovement();
-                
                 PositionCameraTo(currentCenterOfMass);
                 prevCenterOfMass = currentCenterOfMass;
             }
@@ -349,27 +333,15 @@ namespace Graphs3D.Gpu
             }
         }
 
-        private float lastAnimationDelta = 0;
-
-        private void PositionCameraTo(Vector4 target)
+        private void PositionCameraTo(Vector4 toTarget)
         {
             if (app.configWindow.NavigationMode <= 1)
                 xzAngle -= app.simulation.rotationSpeed;
 
-            var distance = GetCameraDirection() * app.simulation.followDistance;
-            if ((AnimatingIdx.HasValue && app.configWindow.NavigationMode == 1) || lastAnimationDelta > 0.0000001)
-            {
-                var delta = (target - distance) - center;
-                center += delta / app.simulation.cameraPeriod;
-                lastAnimationDelta = delta.Length;
-            }
-            else
-            {
-                float t = (frameCounter - cameraMovementStartTime) / app.simulation.cameraPeriod;
-                t = MathUtil.SmootherStep(Math.Clamp(t, 0f, 1f));
-                var smoothTarget = cameraMovementStartPosition * (1 - t) + target * t;
-                center = smoothTarget - distance;
-            }
+            targetPos = targetPos * 0.99f + toTarget * 0.01f;
+            cameraDist = cameraDist * 0.99f + app.simulation.followDistance * 0.01f;
+
+            cameraPos = targetPos - GetCameraDirection() * cameraDist;
         }
 
         public void AdaptCameraDistanceToGraphSize()
@@ -390,17 +362,12 @@ namespace Graphs3D.Gpu
                 }
                 if (maxD * 1.3f > app.simulation.followDistance)
                     app.simulation.followDistance = maxD * 1.3f;
-
-                if (app.simulation.followDistance != currDist)
-                    StartCameraMovement();
             }
         }
 
-
-
         public void ResetOrigin()
         {
-            center = new Vector4(app.simulation.config.fieldSize / 2, app.simulation.config.fieldSize / 2, -1.5f*app.simulation.config.fieldSize, 1.0f);
+            cameraPos = new Vector4(app.simulation.config.fieldSize / 2, app.simulation.config.fieldSize / 2, -1.5f*app.simulation.config.fieldSize, 1.0f);
             xzAngle = 0;
             yAngle = 0;
             GlControl_SizeChanged(this, null);
