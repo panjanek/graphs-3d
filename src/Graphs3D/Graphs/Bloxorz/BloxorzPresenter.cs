@@ -70,10 +70,10 @@ namespace Graphs3D.Graphs.Bloxorz
                 playerOutside.SetValue(Canvas.TopProperty, top);
                 playerOutside.Width = w;
                 playerOutside.Height = h;
-                playerInside.SetValue(Canvas.LeftProperty, left+0.25*cellWidth);
-                playerInside.SetValue(Canvas.TopProperty, top+0.25*cellHeight);
-                playerInside.Width = w - 0.5 * cellWidth;
-                playerInside.Height = h - 0.5 * cellHeight;
+                playerInside.SetValue(Canvas.LeftProperty, left+0.2*cellWidth);
+                playerInside.SetValue(Canvas.TopProperty, top+0.2*cellHeight);
+                playerInside.Width = w - 0.4 * cellWidth;
+                playerInside.Height = h - 0.4 * cellHeight;
 
                 arrowLines.ForEach(l => l.Visibility = System.Windows.Visibility.Collapsed);
                 arrowPointers.ForEach(l => l.Visibility = System.Windows.Visibility.Collapsed);
@@ -141,8 +141,8 @@ namespace Graphs3D.Graphs.Bloxorz
             cellHeight = canv.Height / size;
             marginLeft = (canv.Width - map.GetLength(0) * cellWidth) / 2;
             marginTop = (canv.Height - map.GetLength(1) * cellHeight) / 2;
-            playerOutside = CanvasUtil.AddRect(canvas, 0, 0, 0, 0, 2, Brushes.Yellow, Brushes.LightGray, null, 10);
-            playerInside = CanvasUtil.AddRect(canvas, 0, 0, 0, 0, 0, Brushes.Transparent, Brushes.Black, null, 20);
+            playerOutside = CanvasUtil.AddRect(canvas, 0, 0, 0, 0, 2, Brushes.Yellow, Brushes.Cyan, null, 10);
+            playerInside = CanvasUtil.AddRect(canvas, 0, 0, 0, 0, 0, Brushes.Transparent, new SolidColorBrush(Color.FromArgb(255, 64, 192, 192)), null, 20);
             for (int y = 0; y < map.GetLength(1); y++)
                 for (int x = 0; x < map.GetLength(0); x++)
                 {

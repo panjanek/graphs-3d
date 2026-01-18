@@ -16,7 +16,7 @@ namespace Graphs3D.Graphs.Bloxorz
     {
         public const int ColorOk = 2;
 
-        public const int ColorWin = 1;
+        public const int ColorWin = 4;
 
         public static BloxorzCoord[] PossibleMoves = new BloxorzCoord[4] { new BloxorzCoord(-1,0), new BloxorzCoord(0, -1), new BloxorzCoord(1, 0), new BloxorzCoord(0, 1) };
 

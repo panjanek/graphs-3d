@@ -31,7 +31,7 @@ namespace Graphs3D.Models
 
         public float fogDensity = 0.0002f;
 
-        public float unhighlightedAlpha = 0.5f;
+        public float unhighlightedAlpha = 0.25f;
 
         public Node[] nodes = new Node[0];
 
