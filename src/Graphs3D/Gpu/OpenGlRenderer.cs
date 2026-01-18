@@ -62,6 +62,8 @@ namespace Graphs3D.Gpu
 
         private Vector4 cameraPos;
 
+        private Vector4 freePos;
+
         private Vector4 prevCenterOfMass;
 
         private double xzAngle = 0;
@@ -156,7 +158,8 @@ namespace Graphs3D.Gpu
                         Vector3 right = Vector3.Normalize(Vector3.Cross(forward.Xyz, Vector3.UnitY));
                         Vector3 up = Vector3.Cross(right, forward.Xyz);
                         var translation = -right * delta.X + up * delta.Y;
-                        cameraPos += new Vector4(translation.X, translation.Y, translation.Z, 0);
+                        //cameraPos += new Vector4(translation.X, translation.Y, translation.Z, 0);
+                        freePos += new Vector4(translation.X, translation.Y, translation.Z, 0);
                     }
                 }
 
@@ -168,7 +171,8 @@ namespace Graphs3D.Gpu
                 if (app.configWindow.NavigationMode == 2)
                 {
                     //free navigation: moving forward/backward current camera direction
-                    cameraPos += GetCameraDirection() * delta;
+                    //cameraPos += GetCameraDirection() * delta;
+                    freePos += GetCameraDirection() * delta;
                 }
                 else
                 {
@@ -331,6 +335,16 @@ namespace Graphs3D.Gpu
             {
                 PositionCameraTo(solverProgram.GetTrackedParticle().position);
             }
+            else //free navigation
+            {
+                float step = 1f / app.simulation.cameraPeriod;
+                cameraPos = cameraPos * (1-step) + freePos * step;
+            }
+        }
+
+        public void StartFreeNavigation()
+        {
+            freePos = cameraPos;
         }
 
         private void PositionCameraTo(Vector4 toTarget)
@@ -338,8 +352,9 @@ namespace Graphs3D.Gpu
             if (app.configWindow.NavigationMode <= 1)
                 xzAngle -= app.simulation.rotationSpeed;
 
-            targetPos = targetPos * 0.99f + toTarget * 0.01f;
-            cameraDist = cameraDist * 0.99f + app.simulation.followDistance * 0.01f;
+            float step = 1f / app.simulation.cameraPeriod;
+            targetPos = targetPos * (1-step) + toTarget * step;
+            cameraDist = cameraDist * (1-step) + app.simulation.followDistance * step;
 
             cameraPos = targetPos - GetCameraDirection() * cameraDist;
         }

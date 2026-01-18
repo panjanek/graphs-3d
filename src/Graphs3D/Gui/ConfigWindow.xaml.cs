@@ -95,6 +95,8 @@ namespace Graphs3D.Gui
             {
                 if (NavigationMode == 0)
                     SetAutomaticDistance(true);
+                if (NavigationMode == 2)
+                    app.renderer.StartFreeNavigation();
             };
 
             expandBtn.Click += (s, e) =>
