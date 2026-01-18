@@ -39,6 +39,8 @@ namespace Graphs3D
 
         private Random rnd = new Random(1);
 
+        private FullscreenWindow fullscreen;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -66,6 +68,12 @@ namespace Graphs3D
                     e.Handled = true;
                     break;
                 case Key.Escape:
+                    if (fullscreen != null)
+                        ToggleFullscreen();
+                    e.Handled = true;
+                    break;
+                case Key.F:
+                    ToggleFullscreen();
                     e.Handled = true;
                     break;
                 case Key.Z:
@@ -123,6 +131,25 @@ namespace Graphs3D
 
                     e.Handled = true;
                     break;
+            }
+        }
+
+        public void ToggleFullscreen()
+        {
+            if (fullscreen == null)
+            {
+                parent.Children.Remove(placeholder);
+                fullscreen = new FullscreenWindow();
+                fullscreen.KeyDown += MainWindow_KeyDown;
+                fullscreen.ContentHost.Content = placeholder;
+                fullscreen.ShowDialog();
+            }
+            else
+            {
+                fullscreen.ContentHost.Content = null;
+                parent.Children.Add(placeholder);
+                fullscreen.Close();
+                fullscreen = null;
             }
         }
 
