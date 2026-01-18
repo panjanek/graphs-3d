@@ -108,7 +108,7 @@ namespace Graphs3D.Models
         {
             var newNodes = graph.Nodes.ToArray();
             var newEdges = graph.Edges.ToArray();
-            float randomRadius = 1.0f;
+            float randomRadius = 0.1f;
             if (newNodes.Length > nodes.Length)
             {
                 var tmp = new Node[newNodes.Length];

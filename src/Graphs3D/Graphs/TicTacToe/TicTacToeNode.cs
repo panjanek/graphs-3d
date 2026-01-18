@@ -17,7 +17,7 @@ namespace Graphs3D.Graphs.TicTacToe
             board = new int[size, size];
             for (int x = 0; x < board.GetLength(0); x++)
                 for (int y = 0; y < board.GetLength(1); y++)
-                    board[x, y] = 2;
+                    board[x, y] = TicTacToeGraph.Empty;
             this.color = player;
             key = GetKey(board);
         }
@@ -41,7 +41,7 @@ namespace Graphs3D.Graphs.TicTacToe
             else if (IsTerminal())
             {
                 leaf = true;
-                this.win = -1;
+                this.win = 4; //draw
             }
         }
 
@@ -52,7 +52,7 @@ namespace Graphs3D.Graphs.TicTacToe
             {
                 for (int y = 0; y < state.GetLength(1); y++)
                 {
-                    sb.Append(state[x, y] == 2 ? " " : state[x, y] == 0 ? "X" : "O");
+                    sb.Append(state[x, y] == TicTacToeGraph.Empty ? " " : (state[x, y] == TicTacToeGraph.CrossColor ? "X" : "O"));
                 }
 
                 sb.Append("\n");
@@ -64,7 +64,7 @@ namespace Graphs3D.Graphs.TicTacToe
         {
             for (int x = 0; x < board.GetLength(0); x++)
                 for (int y = 0; y < board.GetLength(1); y++)
-                    if (board[x, y] == 2)
+                    if (board[x, y] == TicTacToeGraph.Empty)
                         return false;
             return true;
         }
@@ -84,10 +84,10 @@ namespace Graphs3D.Graphs.TicTacToe
                 int v1 = 0;
                 for (int j = 0; j < size; j++)
                 {
-                    if (board[i, j] == 0) h0++;
-                    if (board[i, j] == 1) h1++;
-                    if (board[j, i] == 0) v0++;
-                    if (board[j, i] == 1) v1++;
+                    if (board[i, j] == TicTacToeGraph.CrossColor) h0++;
+                    if (board[i, j] == TicTacToeGraph.CircleColor) h1++;
+                    if (board[j, i] == TicTacToeGraph.CrossColor) v0++;
+                    if (board[j, i] == TicTacToeGraph.CircleColor) v1++;
                 }
 
                 if (h0 == size || v0 == size)
@@ -96,17 +96,17 @@ namespace Graphs3D.Graphs.TicTacToe
                 if (h1 == size || v1 == size)
                     return 1;
 
-                if (board[i, i] == 0) da0++;
-                if (board[i, i] == 1) da1++;
-                if (board[i, size - i - 1] == 0) db0++;
-                if (board[i, size - i - 1] == 1) db1++;
+                if (board[i, i] == TicTacToeGraph.CrossColor) da0++;
+                if (board[i, i] == TicTacToeGraph.CircleColor) da1++;
+                if (board[i, size - i - 1] == TicTacToeGraph.CrossColor) db0++;
+                if (board[i, size - i - 1] == TicTacToeGraph.CircleColor) db1++;
             }
 
             if (da0 == size || db0 == size)
-                return 0;
+                return TicTacToeGraph.CrossColor;
 
             if (da1 == size || db1 == size)
-                return 1;
+                return TicTacToeGraph.CircleColor;
 
             return null;
         }

@@ -15,11 +15,18 @@ using System.Windows.Forms.Design;
 using System.Windows.Media;
 using Color = System.Windows.Media.Color;
 using Rectangle = System.Windows.Shapes.Rectangle;
+using System.Dynamic;
 
 namespace Graphs3D.Graphs.TicTacToe
 {
     public class TicTacToeGraph : GraphBase<TicTacToeNode>, IGraph
     {
+        public const int CircleColor = 3;
+
+        public const int CrossColor = 5;
+
+        public const int Empty = 2;
+
         private int size;
 
         private int[,] tmp;
@@ -30,7 +37,7 @@ namespace Graphs3D.Graphs.TicTacToe
         {
             this.size = size;
             tmp = new int[size, size];
-            var root = new TicTacToeNode(size, 0);
+            var root = new TicTacToeNode(size, CircleColor);
             AddNode(root);
         }
 
@@ -47,7 +54,7 @@ namespace Graphs3D.Graphs.TicTacToe
 
         private TicTacToeNode CreateNextMove(TicTacToeNode parent, int x, int y)
         {
-            var newNode = new TicTacToeNode(parent, x, y, 1 - parent.color);
+            var newNode = new TicTacToeNode(parent, x, y, parent.color == CrossColor ? CircleColor : CrossColor);
             newNode.level = parent.level + 1;
             var exist = CheckSymmetry(newNode.board);
             if (exist != null)
@@ -76,14 +83,14 @@ namespace Graphs3D.Graphs.TicTacToe
                 {
                     if (y > 0) CanvasUtil.AddLine(canvas, 0.1 * w, y * h, size * w - 0.1 * w, y * h, 2, Brushes.White);
                     if (x > 0) CanvasUtil.AddLine(canvas, x * w, 0.1 * h, x * w, size * h - 0.1 * h, 2, Brushes.White);
-                    if (node.board[x, y] == 0)
+                    if (node.board[x, y] == CircleColor)
                     {
-                        CanvasUtil.AddEllipse(canvas, x * w + 0.15 * w, y * h + 0.15 * h, w * 0.7, h * 0.7, 10, AppContext.BrushesColors[0], Brushes.Transparent);
+                        CanvasUtil.AddEllipse(canvas, x * w + 0.15 * w, y * h + 0.15 * h, w * 0.7, h * 0.7, 10, AppContext.BrushesColors[CircleColor], Brushes.Transparent);
                     }
-                    else if (node.board[x, y] == 1)
+                    else if (node.board[x, y] == CrossColor)
                     {
-                        CanvasUtil.AddLine(canvas, x * w + 0.15 * w, y * h + 0.15 * h, x * w + 0.85 * w, y * h + 0.85 * h, 10, AppContext.BrushesColors[1]);
-                        CanvasUtil.AddLine(canvas, x * w + 0.85 * w, y * h + 0.15 * h, x * w + 0.15 * w, y * h + 0.85 * h, 10, AppContext.BrushesColors[1]);
+                        CanvasUtil.AddLine(canvas, x * w + 0.15 * w, y * h + 0.15 * h, x * w + 0.85 * w, y * h + 0.85 * h, 10, AppContext.BrushesColors[CrossColor]);
+                        CanvasUtil.AddLine(canvas, x * w + 0.85 * w, y * h + 0.15 * h, x * w + 0.15 * w, y * h + 0.85 * h, 10, AppContext.BrushesColors[CrossColor]);
                     }
 
                     string str = "";
