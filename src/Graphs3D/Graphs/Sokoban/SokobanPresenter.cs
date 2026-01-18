@@ -152,7 +152,7 @@ namespace Graphs3D.Graphs.Sokoban
         {
             this.canvas = canv;
             canvas.Children.Clear();
-            canvas.Background = new SolidColorBrush(Color.FromArgb(255, 32, 16, 16));
+            canvas.Background = Brushes.Transparent;
             walls = new List<Rectangle>();
             boxes = new List<Rectangle>();
             targets = new List<Rectangle>();
@@ -164,12 +164,13 @@ namespace Graphs3D.Graphs.Sokoban
             cellHeight = canv.Height / size;
             marginLeft = (canv.Width - map.GetLength(0) * cellWidth) / 2;
             marginTop = (canv.Height - map.GetLength(1) * cellHeight) / 2;
+            marginTop = canv.Height - map.GetLength(1) * cellHeight;
 
             var boxBrush = CanvasUtil.CreateDiagonalStripeBrush(Colors.SandyBrown, Colors.Yellow, 5, 45);
             var targetBrush = new SolidColorBrush(Color.FromArgb(96, 0, 255, 0));
             var brickBrush = CanvasUtil.CreateBrickBrush(Colors.LightGray, Colors.DarkGray, cellWidth * 0.6, cellHeight * 0.25, cellWidth*0.05);
             var arrowBrush = new SolidColorBrush(Color.FromArgb(128, 160, 160, 160));
-
+            CanvasUtil.AddRect(canv, marginLeft, marginTop, cellWidth * map.GetLength(0), cellHeight * map.GetLength(1), 0, Brushes.Transparent, new SolidColorBrush(Color.FromArgb(255,32,32,32)));
             player = CanvasUtil.AddEllipse(canvas, 0, 0, cellWidth*0.7, cellHeight*0.7, 5, Brushes.Cyan, Brushes.Yellow, null, 100);
             for (int y=0; y< map.GetLength(1); y++)
                 for(int x=0; x<map.GetLength(0); x++)

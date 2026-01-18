@@ -161,7 +161,7 @@ namespace Graphs3D.Graphs.Klotski
         {
             this.canvas = canv;
             canvas.Children.Clear();
-            canvas.Background = Brushes.Black;
+            canvas.Background = Brushes.Transparent;
             boxes = new List<Rectangle>();
             connectors = new List<Line>();
             var size = Math.Max(map.GetLength(0), map.GetLength(1));
@@ -169,6 +169,7 @@ namespace Graphs3D.Graphs.Klotski
             cellHeight = canv.Height / size;
             marginLeft = (canv.Width - map.GetLength(0) * cellWidth) / 2;
             marginTop = (canv.Height - map.GetLength(1) * cellHeight) / 2;
+            CanvasUtil.AddRect(canv, marginLeft, marginTop, cellWidth * map.GetLength(0), cellHeight * map.GetLength(1), 0, Brushes.Transparent, Brushes.Black);
             for (int y = 0; y < map.GetLength(1); y++)
                 for (int x = 0; x < map.GetLength(0); x++)
                 {

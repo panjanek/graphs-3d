@@ -208,7 +208,7 @@ namespace Graphs3D.Gui
             rtb.CopyPixels(pixels, stride, 0);
             for (int i = 0; i < pixels.Length / 4; i++)
             {
-                pixels[i * 4 + 3] = 255;
+                //pixels[i * 4 + 3] = 255;
                 var r = pixels[i * 4 + 0];
                 pixels[i * 4 + 0] = pixels[i * 4 + 2];
                 pixels[i * 4 + 2] = r;
