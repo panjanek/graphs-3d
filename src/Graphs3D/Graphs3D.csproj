@@ -29,7 +29,11 @@
     <EmbeddedResource Include="maps\sokoban-classic2a.txt" />
     <EmbeddedResource Include="maps\sokoban-classic2.txt" />
     <EmbeddedResource Include="maps\sokoban-classic1.txt" />
-    <EmbeddedResource Include="maps\sokoban-easy.txt" />
+    <EmbeddedResource Include="maps\sokoban-online45.txt" />
+    <EmbeddedResource Include="maps\sokoban-online27.txt" />
+    <EmbeddedResource Include="maps\sokoban-online14.txt" />
+    <EmbeddedResource Include="maps\sokoban-online7.txt" />
+    <EmbeddedResource Include="maps\sokoban-online5.txt" />
     <EmbeddedResource Include="maps\sokoban-test2.txt" />
     <EmbeddedResource Include="maps\sokoban-test1.txt" />
     <EmbeddedResource Include="shaders\image.frag" />

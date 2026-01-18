@@ -139,6 +139,8 @@ namespace Graphs3D.Gui
 
         private void ConfigWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban online 45", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-online45.txt")) });
+
             //graphCombo.Items.Add(new ComboBoxItem() { Content = "Sliding test", Tag = new Func<IGraph>(() => new KlotskiGraph("maps.klotski-sliding2.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Klotski canon", Tag = new Func<IGraph>(() => new KlotskiGraph("maps.klotski-canon.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sliding puzzle", Tag = new Func<IGraph>(() => new KlotskiGraph("maps.klotski-sliding.txt")) });
@@ -152,7 +154,7 @@ namespace Graphs3D.Gui
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban Junior 4", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-jr4.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban classic level 2", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-classic2a.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban classic level 1", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-classic1.txt")) });
-            graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban easy", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-easy.txt")) });
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban online 5", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-online5.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Tic Tac Toe 3x3", Tag = new Func<IGraph>(() => new TicTacToeGraph(3)) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Cylinder 10x20", Tag = new Func<IGraph>(() => new LatticeGraph(20, 20, true, false)) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Torus 30x60", Tag = new Func<IGraph>(() => new LatticeGraph(30, 60, true, true)) });
