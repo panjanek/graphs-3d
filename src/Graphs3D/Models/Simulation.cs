@@ -231,9 +231,21 @@ namespace Graphs3D.Models
         public int? GetWinningNode()
         {
             int? win = null;
+            int level = int.MaxValue;
             for (int i = 0; i < nodes.Length; i++)
                 if (nodes[i].win > 0)
-                    win = i;
+                {
+                    if (!win.HasValue)
+                    {
+                        win = i;
+                        level = nodes[i].level;
+                    }
+                    else if (nodes[i].level < level)
+                    {
+                        win = i;
+                        level = nodes[i].level;
+                    }
+                }
             return win;
         }
     }

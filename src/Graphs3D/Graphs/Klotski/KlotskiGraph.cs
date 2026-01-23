@@ -48,7 +48,8 @@ namespace Graphs3D.Graphs.Klotski
 
         public override void PostExpandActions()
         {
-            for(int i=0; i<internalEdges.Count; i++)
+            var largePieceId = graphNodes[0].pieces.OrderByDescending(p => p.Value.Count).First().Key;
+            for (int i=0; i<internalEdges.Count; i++)
             {
                 var n1 = graphNodes[(int)internalEdges[i].a];
                 var n2 = graphNodes[(int)internalEdges[i].b];
@@ -59,6 +60,12 @@ namespace Graphs3D.Graphs.Klotski
                 var restLen = 10f;
                 if (n1_moves.Count <= 2 && n2_moves.Count <= 2 && n1.expanded && n2.expanded && n1_moves.Count > 1 && n2_moves.Count > 1)
                     restLen = 100.0f;
+
+                
+                if (n1_moves.Any(m=>m.pieceId == largePieceId) && n2_moves.Any(m => m.pieceId == largePieceId))
+                    restLen = 200.0f;
+
+
                 SetInternalEdgeAttributes(i, (int)internalEdges[i].color, restLen);
             }
         }
