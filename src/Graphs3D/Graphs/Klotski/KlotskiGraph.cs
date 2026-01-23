@@ -48,23 +48,48 @@ namespace Graphs3D.Graphs.Klotski
 
         public override void PostExpandActions()
         {
-            var largePieceId = graphNodes[0].pieces.OrderByDescending(p => p.Value.Count).First().Key;
+            var pieces = graphNodes[0].pieces;
             for (int i=0; i<internalEdges.Count; i++)
             {
                 var n1 = graphNodes[(int)internalEdges[i].a];
                 var n2 = graphNodes[(int)internalEdges[i].b];
+
+
+                /*
                 var n1_moves = n1.GenerateMoves();
                 var n2_moves = n2.GenerateMoves();
-                //var c = n1_moves.Count + n2_moves.Count;
+
 
                 var restLen = 10f;
+
+                /*
                 if (n1_moves.Count <= 2 && n2_moves.Count <= 2 && n1.expanded && n2.expanded && n1_moves.Count > 1 && n2_moves.Count > 1)
                     restLen = 100.0f;
 
                 
                 if (n1_moves.Any(m=>m.pieceId == largePieceId) && n2_moves.Any(m => m.pieceId == largePieceId))
                     restLen = 200.0f;
+                */
 
+
+                var restLen = 10f;
+                var t1 = GetAvailableTransitions(n1);
+                var t2 = GetAvailableTransitions(n2);
+                var n1_to_n2 = t1.Where(t => t.node.idx == n2.idx).FirstOrDefault();
+                var n2_to_n1 = t2.Where(t => t.node.idx == n1.idx).FirstOrDefault();
+
+                int movePieceSize = 1;
+                if (n1_to_n2 != null)
+                    movePieceSize = pieces[n1_to_n2.move.pieceId].Count;
+                else if (n2_to_n1 != null)
+                    movePieceSize = pieces[n2_to_n1.move.pieceId].Count;
+
+                if (movePieceSize == 1)
+                    restLen = 5;
+                else if (movePieceSize == 2)
+                    restLen = 20;
+                else if (movePieceSize == 4)
+                    restLen = 100;
 
                 SetInternalEdgeAttributes(i, (int)internalEdges[i].color, restLen);
             }
