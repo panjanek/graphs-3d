@@ -85,9 +85,9 @@ namespace Graphs3D.Graphs.Klotski
                     movePieceSize = pieces[n2_to_n1.move.pieceId].Count;
 
                 if (movePieceSize == 1)
-                    restLen = 5;
+                    restLen = 10;
                 else if (movePieceSize == 2)
-                    restLen = 20;
+                    restLen = 10;
                 else if (movePieceSize == 4)
                     restLen = 100;
 

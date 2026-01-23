@@ -93,11 +93,14 @@ namespace Graphs3D.Gpu
                 Profile = ContextProfile.Compatability,
                 Flags = ContextFlags.Default,
                 IsEventDriven = false,
-                NumberOfSamples = 8
+                NumberOfSamples = 16,
             });
             glControl.Dock = DockStyle.Fill;
             host.Child = glControl;
             placeholder.Children.Add(host);
+
+            int maxSamples;
+            GL.GetInteger(GetPName.MaxSamples, out maxSamples);
 
             //setup required features
             GL.Enable(EnableCap.ProgramPointSize);

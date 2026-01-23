@@ -222,6 +222,11 @@ namespace Graphs3D.Gpu
             GL.Enable(EnableCap.FramebufferSrgb);
             GL.DepthFunc(DepthFunction.Lequal);
 
+            GL.Enable(EnableCap.LineSmooth);
+            GL.Enable(EnableCap.PolygonSmooth);
+            GL.Hint(HintTarget.LineSmoothHint, HintMode.Nicest);
+            GL.Hint(HintTarget.PolygonSmoothHint, HintMode.Nicest);
+
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 2, nodesBuffer);
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, 3, edgesBuffer);
             var projection = view * projectionMatrix;
