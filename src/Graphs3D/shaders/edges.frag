@@ -15,7 +15,16 @@ out vec4 FragColor;
 
 void main()
 {
-    // ----- analytic anti-aliasing -----
+    // ----- analytic anti-aliasing simple -----
+    //float d = abs(vEdgeDist);
+    //float aa = max(fwidth(d), 1.0);                   
+    //float alphaEdge = 1.0 - smoothstep(lineWidth * 0.5 - aa, lineWidth * 0.5 + aa, d);
+
+    //manual
+    //alphaEdge = 1 - d / (lineWidth * vWidthMult);
+
+    // ----- analytic anti-aliasing advanced -----
+    
     vec2 p = gl_FragCoord.xy;
 
     vec2 v = vP1 - vP0;
@@ -33,6 +42,7 @@ void main()
     float aa = max(fwidth(d)*1.5, 1.0);
     float coverage = 1.0 - smoothstep(0.0, aa, d);
     float alphaEdge = coverage * 0.8;
+    
 
     // ---- fog (correct) ----
     float fog = exp(-fogDensity * vDepth);
@@ -40,4 +50,6 @@ void main()
 
     float alpha = alphaEdge * fog * vFadingAlpha;
     FragColor = vec4(vColor * fog, alpha);
+
+    //FragColor = vec4(1 - d / (lineWidth * vWidthMult), 0.0, 0.0, 1.0);
 }

@@ -114,6 +114,10 @@ void main()
     float side = (isTop ? 1.0 : -1.0);
     vEdgeDist = side * width;
 
+    //fix
+    //float halfWidthPx = vWidthMult * lineWidth * 0.5;
+    //vEdgeDist = side * halfWidthPx;
+
     vec2 screen0 = (ndc0 * 0.5 + 0.5) * viewportSize;
     vec2 screen1 = (ndc1 * 0.5 + 0.5) * viewportSize;
 
