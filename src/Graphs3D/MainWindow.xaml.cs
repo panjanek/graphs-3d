@@ -24,7 +24,6 @@ namespace Graphs3D
 {
     //TODO:
     // - restLength adaptation (to movements of biggest block?)
-    // - zooming: linear?
     // - fullscreen
 
     public partial class MainWindow : Window
@@ -139,10 +138,10 @@ namespace Graphs3D
             if (fullscreen == null)
             {
                 parent.Children.Remove(placeholder);
-                fullscreen = new FullscreenWindow();
+                fullscreen = new FullscreenWindow() { Owner = Window.GetWindow(this) };
                 fullscreen.KeyDown += MainWindow_KeyDown;
                 fullscreen.ContentHost.Content = placeholder;
-                fullscreen.ShowDialog();
+                fullscreen.Show();
             }
             else
             {

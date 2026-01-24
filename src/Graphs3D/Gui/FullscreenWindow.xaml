@@ -8,6 +8,7 @@
         Title="Fullscreen" Height="450" Width="800"        
         WindowStyle="None"
         WindowState="Maximized"
-        ResizeMode="NoResize">
+        ResizeMode="NoResize"
+        Topmost="False">
     <ContentControl x:Name="ContentHost"/>
 </Window>
