@@ -244,8 +244,11 @@ namespace Graphs3D.Gpu
             if (showImage)
             {
                 GL.UseProgram(imageProgram);
-                GL.Uniform2(offsetImageLocation, new Vector2(0,0));
-                GL.Uniform2(sizeImageLocation, new Vector2(1.0f*AppContext.PosWidth/viewportSize.X, 1.0f * AppContext.PosHeight / viewportSize.Y));
+                
+                var imageSize = new Vector2(1.0f*AppContext.PosWidth/viewportSize.X, 1.0f * AppContext.PosHeight / viewportSize.Y);
+                GL.Uniform2(sizeImageLocation, imageSize);
+                GL.Uniform2(offsetImageLocation, new Vector2(0,1.075f-imageSize.Y));
+                
                 GL.ActiveTexture(TextureUnit.Texture0);
                 GL.BindTexture(TextureTarget.Texture2D, imageTex);
                 GL.Uniform1(texImageLocation, 0);
