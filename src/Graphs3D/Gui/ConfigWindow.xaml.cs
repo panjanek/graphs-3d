@@ -141,7 +141,7 @@ namespace Graphs3D.Gui
         {
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sokoban online 45", Tag = new Func<IGraph>(() => new SokobanGraph("maps.sokoban-online45.txt")) });
 
-            //graphCombo.Items.Add(new ComboBoxItem() { Content = "Sliding test", Tag = new Func<IGraph>(() => new KlotskiGraph("maps.klotski-sliding2.txt")) });
+            graphCombo.Items.Add(new ComboBoxItem() { Content = "Collatz", Tag = new Func<IGraph>(() => new CollatzGraph()) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Klotski canon", Tag = new Func<IGraph>(() => new KlotskiGraph("maps.klotski-canon.txt")) });
             graphCombo.Items.Add(new ComboBoxItem() { Content = "Sliding puzzle", Tag = new Func<IGraph>(() => new KlotskiGraph("maps.klotski-sliding.txt")) });
             
