@@ -99,6 +99,19 @@ namespace Graphs3D
                     app.configWindow.ToggleImageVisible();
                     e.Handled = true;
                     break;
+                case Key.V:
+                    if (double.IsNaN(app.mainWindow.placeholder.Width))
+                    {
+                        app.mainWindow.placeholder.Width = 1080;
+                        app.mainWindow.placeholder.Height = 1920;
+                    }
+                    else
+                    {
+                        app.mainWindow.placeholder.Width = double.NaN;
+                        app.mainWindow.placeholder.Height = double.NaN;
+                    }
+                    e.Handled = true;
+                    break;
                 case Key.Up:
                     var selectedIdx = app.renderer.SelectedIdx;
                     if (!selectedIdx.HasValue)
@@ -186,10 +199,11 @@ namespace Graphs3D
             {
                 double fps = frames / timespan.TotalSeconds;
                 Title = $"Graphs3D. " +
-                        $"fps:{fps.ToString("0.0")} "+
-                        $"nodes:{app.simulation.config.nodesCount} "+
-                        $"edges:{app.simulation.config.edgesCount} "+
-                        $"cells:{app.simulation.config.useCells} ";
+                        $"fps:{fps.ToString("0.0")} " +
+                        $"nodes:{app.simulation.config.nodesCount} " +
+                        $"edges:{app.simulation.config.edgesCount} " +
+                        $"cells:{app.simulation.config.useCells} " +
+                        $"maxLevel:{app.simulation.graph.Nodes.Max(n=>n.level)} ";
 
                 if (!string.IsNullOrWhiteSpace(app.configWindow.recordDir))
                 {

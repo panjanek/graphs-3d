@@ -86,10 +86,10 @@ namespace Graphs3D.Models
             }
         }
 
-        public void ExpandMany()
+        public void ExpandMany(int? wanted = null)
         {
             renderer.DownloadNodes();
-            simulation.Expand();
+            simulation.Expand(wanted);
             if (simulation.graph.IsFinished())
             {
                 var msg = $"Finished after searching {simulation.nodes.Length} nodes.";
@@ -132,6 +132,24 @@ namespace Graphs3D.Models
                     var msg = $"Finished after searching {simulation.nodes.Length} nodes.";
                     msg += simulation.nodes.Any(n => n.win > 0) ? "\nWinning position found." : "\nWinning position not found.";
                     msg += simulation.graph.IsFinished() ? "\nFull graph expanded" : "\nMore nodes exist that was not expanded";
+                    PopupMessage.Show(mainWindow, msg, 5000);
+                }
+            });
+        }
+        
+        public void ExpandGradually(int total, int step, int ms)
+        {
+            int start = simulation.nodes.Length;
+            animation?.Stop();
+            animation = new DispatcherAnimation(ms, () =>
+            {
+                ExpandMany(step);
+                    
+                if (simulation.graph.IsFinished() || simulation.nodes.Length > start + total)
+                {
+                    animation?.Stop();
+                    animation = null;
+                    var msg = $"Finished nodes: {simulation.nodes.Length} nodes.";
                     PopupMessage.Show(mainWindow, msg, 5000);
                 }
             });

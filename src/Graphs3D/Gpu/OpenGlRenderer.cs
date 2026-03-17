@@ -343,6 +343,17 @@ namespace Graphs3D.Gpu
                 float step = 1f / app.simulation.cameraPeriod;
                 cameraPos = cameraPos * (1-step) + freePos * step;
             }
+
+            if (app.configWindow.AutozoomStartTime.HasValue)
+            {
+                double minDistance = 30;
+                double maxDistance = app.configWindow.AutozoomMaxDistance;
+                double zoomSpeed = app.simulation.autoZoomSpeed;
+                double deltaT = app.simulation.t - app.configWindow.AutozoomStartTime.Value;
+                double distanceRange = maxDistance - minDistance;
+                app.simulation.followDistance = (float)(minDistance + 
+                                                        0.5*distanceRange*(1+Math.Cos(deltaT * zoomSpeed)));
+            }
         }
 
         public void StartFreeNavigation()
@@ -451,10 +462,20 @@ namespace Graphs3D.Gpu
             if (!Paused)
             {
                 app.simulation.config.trackedIdx = AnimatingIdx ?? SelectedIdx ?? 0;
+                app.simulation.t += app.simulation.config.dt;
                 solverProgram.Run(ref app.simulation.config, frameCounter%100 == 0);
             }
 
-            glControl.Invalidate();
+            if (app.configWindow.recordDir != null)
+            {
+                GL.Finish();
+                GlControl_Paint(null, null);
+                Capture();
+            }
+            else
+            {
+                glControl.Invalidate();
+            }
         }
 
         private void Capture()

@@ -49,6 +49,10 @@ namespace Graphs3D.Gui
         public bool AutomaticDistance => autoDistCheckbox.IsChecked == true;
 
         public int NavigationMode => navigationCombo.SelectedIndex == -1 ? 0 : navigationCombo.SelectedIndex;
+        
+        public double? AutozoomStartTime { get; private set;  }
+        
+        public double AutozoomMaxDistance { get; private set;  }
 
         public void TogglePathHighlight()
         {
@@ -107,6 +111,19 @@ namespace Graphs3D.Gui
                     app.ExpandAll(true);
                 else if (expandCombo.SelectedIndex == 2)
                     app.ExpandAll(false);
+                else if (expandCombo.SelectedIndex == 3)
+                    app.ExpandGradually(5000, 3, 250);
+
+            };
+
+            autozoomCheckbox.Click += (s, e) =>
+            {
+                if (autozoomCheckbox.IsChecked == true)
+                {
+                    AutozoomStartTime = app.simulation.t;
+                    AutozoomMaxDistance = app.simulation.followDistance;
+                }
+                else AutozoomStartTime = null;
 
             };
 

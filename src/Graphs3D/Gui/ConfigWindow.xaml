@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="ConfigWindow" 
         Width="380"
-        Height="400"  
+        Height="430"  
         ResizeMode="CanMinimize"
         WindowStartupLocation="CenterOwner"
         WindowState="Normal"
@@ -74,6 +74,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">
@@ -96,6 +97,7 @@
                     <Button Grid.Row="0" Grid.Column="0" Name="restartButton" ToolTip="Restart current graph">Restart</Button>
                     <Button Grid.Row="0" Grid.Column="1" Name="centerButton">Center</Button>
                     <Button Grid.Row="0" Grid.Column="2" Name="stopButton" ToolTip="Stops current animations">Stop</Button>
+                    <CheckBox Grid.Row="0" Grid.Column="3" Grid.ColumnSpan="2" Name="autozoomCheckbox">Autozoom</CheckBox>
                     
                     <ToggleButton Name="recordButton" Grid.Row="0" Grid.Column="5" ToolTip="Record frames as PNG files to given folder" Click="Record_Click">
                         <ToggleButton.Style>
@@ -142,6 +144,7 @@
                         <ComboBoxItem>Next 100 nodes</ComboBoxItem>
                         <ComboBoxItem IsSelected="True">Till winning position found</ComboBoxItem>
                         <ComboBoxItem>All</ComboBoxItem>
+                        <ComboBoxItem>Gradually</ComboBoxItem>
                     </ComboBox>
 
 
@@ -203,9 +206,14 @@
                 <TextBlock Grid.Row="11" Grid.Column="0" Text="Expansion speed ⓘ" VerticalAlignment="Center" Margin="10,0,8,0" TextWrapping="Wrap" Foreground="White" ToolTip="How many nodes to add per each step"/>
                 <Slider Grid.Row="11" Grid.Column="1" Grid.ColumnSpan="1" Minimum="10" Maximum="3000" SmallChange="10" LargeChange="100" ValueChanged="Slider_ValueChanged" Tag="expansionSpeed" VerticalAlignment="Center"/>
                 <TextBlock Grid.Row="11" Grid.Column="2" Tag="expansionSpeed"  FontFamily="Courier New" Margin="0,5,10,0" VerticalAlignment="Center" FontSize="11" MouseDown="infoText_MouseDown" Foreground="White" Background="DarkGray" TextAlignment="Center" Padding="1"/>
+                
+                <!-- expansion speed -->
+                <TextBlock Grid.Row="12" Grid.Column="0" Text="autoZoomSpeed ⓘ" VerticalAlignment="Center" Margin="10,0,8,0" TextWrapping="Wrap" Foreground="White" ToolTip="autoZoomSpeed"/>
+                <Slider Grid.Row="12" Grid.Column="1" Grid.ColumnSpan="1" Minimum="0.001" Maximum="1" SmallChange="0.001" LargeChange="0.1" ValueChanged="Slider_ValueChanged" Tag="autoZoomSpeed" VerticalAlignment="Center"/>
+                <TextBlock Grid.Row="12" Grid.Column="2" Tag="autoZoomSpeed"  FontFamily="Courier New" Margin="0,5,10,0" VerticalAlignment="Center" FontSize="11" MouseDown="infoText_MouseDown" Foreground="White" Background="DarkGray" TextAlignment="Center" Padding="1"/>
 
                 <!-- hidden canvas -->
-                <StackPanel Grid.Row="12" Grid.Column="0" Grid.ColumnSpan="3" Opacity="0">
+                <StackPanel Grid.Row="13" Grid.Column="0" Grid.ColumnSpan="3" Opacity="0">
                 <Canvas Name="positionCanvas"  Width="300" Height="300" Background="Black" Margin="10,25,10,10" />
                 </StackPanel>
             </Grid>

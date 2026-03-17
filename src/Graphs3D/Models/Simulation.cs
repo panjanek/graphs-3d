@@ -23,6 +23,10 @@ namespace Graphs3D.Models
 
         public ShaderConfig config;
 
+        public double t;
+
+        public float autoZoomSpeed = 0.01f;
+
         public float particleSize = 0.3f;
 
         public float lineWidth = 300f;
@@ -70,14 +74,14 @@ namespace Graphs3D.Models
             Expand();
         }
 
-        public void Expand()
+        public void Expand(int? wantNodes = null)
         {
             lock (this)
             {
                 if (graph.IsFinished())
                     return;
 
-                int wantNodesCount = (int)expansionSpeed;
+                int wantNodesCount = wantNodes ?? (int)expansionSpeed;
                 int generatedNodes = 0;
                 int expandedCount = 0;
                 do

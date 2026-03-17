@@ -36,7 +36,8 @@ namespace Graphs3D.Graphs.Geometry
 
         public override void PostExpandActions()
         {
-            /*
+            base.PostExpandActions();
+            
             var maxLevel = graphNodes.Max(n => n.level);
             for (int i = 0; i < internalEdges.Count; i++)
             {
@@ -45,11 +46,24 @@ namespace Graphs3D.Graphs.Geometry
 
                 var max = Math.Max(n1.level, n2.level);
                 
+                //var restLen = 10f;
+                //restLen = (float)(20f * Math.Exp(-2*max/maxLevel));
+
                 var restLen = 10f;
-                restLen = (float)(20f * Math.Exp(-2*max/maxLevel));
+                if (max < 5)
+                    restLen = 10f;
+                else if (max < 45)
+                    restLen = 50f;
+                else if (max < 60)
+                    restLen = 20f;
+                else if (max < 160)
+                    restLen = 10f;
+                else
+                    restLen = 5f;
+                
                 SetInternalEdgeAttributes(i, (int)internalEdges[i].color, restLen);
                 
-            }*/
+            }
         }
 
         private void TryAdd(CollatzNode parent, long newX, int color)
