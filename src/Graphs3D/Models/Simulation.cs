@@ -25,7 +25,7 @@ namespace Graphs3D.Models
 
         public double t;
 
-        public float autoZoomSpeed = 0.01f;
+        public float autoZoomSpeed = 0.04f;
 
         public float particleSize = 0.3f;
 

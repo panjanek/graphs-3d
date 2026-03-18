@@ -64,7 +64,7 @@ void main()
 
     if (p.flags == 1) //marker
     {
-        vSphereRadiusMult = 1.2;
+        vSphereRadiusMult = 1.5;
         vColor = vec3(1.0, 1.0, 1.0);
     }
     else

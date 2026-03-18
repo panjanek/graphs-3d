@@ -112,7 +112,7 @@ namespace Graphs3D.Gui
                 else if (expandCombo.SelectedIndex == 2)
                     app.ExpandAll(false);
                 else if (expandCombo.SelectedIndex == 3)
-                    app.ExpandGradually(5000, 3, 250);
+                    app.ExpandGradually(250000, 30, 750);
 
             };
 
@@ -151,6 +151,11 @@ namespace Graphs3D.Gui
             };
 
             KeyDown += (s, e) => app.mainWindow.MainWindow_KeyDown(s, e);
+        }
+
+        public void SetTitle(string txt)
+        {
+            titleTxt.Text = txt;
         }
 
 

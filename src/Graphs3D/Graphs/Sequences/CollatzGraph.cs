@@ -53,7 +53,7 @@ namespace Graphs3D.Graphs.Geometry
                 if (max < 5)
                     restLen = 10f;
                 else if (max < 45)
-                    restLen = 50f;
+                    restLen = 30f;
                 else if (max < 60)
                     restLen = 20f;
                 else if (max < 160)

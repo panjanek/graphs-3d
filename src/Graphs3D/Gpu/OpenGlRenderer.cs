@@ -364,7 +364,12 @@ namespace Graphs3D.Gpu
         private void PositionCameraTo(Vector4 toTarget)
         {
             if (app.configWindow.NavigationMode <= 1)
+            {
                 xzAngle -= app.simulation.rotationSpeed;
+                yAngle += 0.0002 * Math.Sin(app.simulation.t*0.02);
+            }
+
+            
 
             float step = 1f / app.simulation.cameraPeriod;
             targetPos = targetPos * (1-step) + toTarget * step;

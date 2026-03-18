@@ -209,6 +209,8 @@ namespace Graphs3D
                 {
                     Title += $"[recording to {app.configWindow.recordDir}] ";
                 }
+                
+                app.configWindow.SetTitle(Title);
 
                 lastCheckFrameCount = app.renderer.FrameCounter;
                 lastCheckTime = now;
