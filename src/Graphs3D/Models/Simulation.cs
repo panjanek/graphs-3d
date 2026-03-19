@@ -25,7 +25,7 @@ namespace Graphs3D.Models
 
         public double t;
 
-        public float autoZoomSpeed = 0.04f;
+        public float autoZoomSpeed = 0.02f;
 
         public float particleSize = 0.3f;
 
@@ -47,7 +47,7 @@ namespace Graphs3D.Models
 
         public float followDistance = 100;
 
-        public float rotationSpeed = 0.001f;
+        public float rotationSpeed = 0.0005f;
 
         public float cameraPeriod = 100f;
 

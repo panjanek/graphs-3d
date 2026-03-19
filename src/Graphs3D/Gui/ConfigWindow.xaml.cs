@@ -112,7 +112,7 @@ namespace Graphs3D.Gui
                 else if (expandCombo.SelectedIndex == 2)
                     app.ExpandAll(false);
                 else if (expandCombo.SelectedIndex == 3)
-                    app.ExpandGradually(250000, 30, 750);
+                    app.ExpandGradually(200000, 30, 750);
 
             };
 

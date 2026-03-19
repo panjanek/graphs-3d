@@ -31,7 +31,7 @@ namespace Graphs3D.Models
 
         [FieldOffset(24)] public float cellSize = 0;
 
-        [FieldOffset(28)] public float maxDist = 100;
+        [FieldOffset(28)] public float maxDist = 200; //100 ?
 
         [FieldOffset(32)] public float gridSize = 0;
 

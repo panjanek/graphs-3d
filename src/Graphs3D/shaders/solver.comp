@@ -270,7 +270,7 @@ void update_one(uint idx)
     if (config.useCells == 0)
         force += repulsion_level4(idx, pos, uRepulsionK, uHopDecay);
     else
-        force += repulsion_cells(idx, pos, uRepulsionK);
+        force += repulsion_cells(idx, pos, uRepulsionK*2);
 
     //float forceMag = dot(force , force);
     //float restLengthMult = forceMag < 10000000 ? 1.0 : 10;
